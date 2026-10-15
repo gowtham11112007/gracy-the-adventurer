@@ -1,0 +1,22 @@
+[
+  {
+    "id": "orange",
+    "name": "Ginger Tabby",
+    "color": "#f2994a"
+  },
+  {
+    "id": "gray",
+    "name": "Silver Tabby",
+    "color": "#b0bec5"
+  },
+  {
+    "id": "black",
+    "name": "Midnight Black",
+    "color": "#37474f"
+  },
+  {
+    "id": "cream",
+    "name": "Snow Cream",
+    "color": "#fff3e0"
+  }
+]

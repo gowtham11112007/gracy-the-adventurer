@@ -1,0 +1,92 @@
+{
+  "version": 1,
+  "spriterrificVersion": "0.21.1",
+  "type": "character-plan",
+  "status": "completed",
+  "updatedAt": "2026-10-14T17:07:05.491204Z",
+  "characterId": "janani",
+  "direction": "w",
+  "actions": [
+    "run",
+    "jump",
+    "hurt",
+    "death"
+  ],
+  "steps": [
+    {
+      "stepId": "anchors",
+      "kind": "anchors",
+      "status": "completed",
+      "runDir": "runs/kh722d50mb2p31634w1qx2s32x8g9c0n/anchors-run",
+      "artifacts": {
+        "bootstrapJson": "runs/kh722d50mb2p31634w1qx2s32x8g9c0n/anchors-run/bootstrap.json",
+        "candidateAnchor": "runs/kh722d50mb2p31634w1qx2s32x8g9c0n/anchors-run/candidate/front/snapped-1024-chroma.png",
+        "anchor:w": "runs/kh722d50mb2p31634w1qx2s32x8g9c0n/anchors-run/anchors/w/anchor-snapped-1024-chroma.png",
+        "review": "runs/kh722d50mb2p31634w1qx2s32x8g9c0n/anchors-run/review/bootstrap/index.md"
+      },
+      "error": null,
+      "warnings": [],
+      "estimatedCostUsd": 2.000104
+    },
+    {
+      "stepId": "action:run",
+      "kind": "action",
+      "status": "completed",
+      "runDir": "runs/kh722d50mb2p31634w1qx2s32x8g9c0n/run-w",
+      "artifacts": {
+        "spritesheet": "runs/kh722d50mb2p31634w1qx2s32x8g9c0n/run-w/export/spritesheet.png",
+        "preview": "runs/kh722d50mb2p31634w1qx2s32x8g9c0n/run-w/export/preview.gif",
+        "manifest": "runs/kh722d50mb2p31634w1qx2s32x8g9c0n/run-w/export/manifest.json",
+        "runJson": "runs/kh722d50mb2p31634w1qx2s32x8g9c0n/run-w/run.json"
+      },
+      "error": null,
+      "warnings": [],
+      "estimatedCostUsd": 0.01
+    },
+    {
+      "stepId": "action:jump",
+      "kind": "action",
+      "status": "completed",
+      "runDir": "runs/kh722d50mb2p31634w1qx2s32x8g9c0n/jump-w",
+      "artifacts": {
+        "spritesheet": "runs/kh722d50mb2p31634w1qx2s32x8g9c0n/jump-w/export/spritesheet.png",
+        "preview": "runs/kh722d50mb2p31634w1qx2s32x8g9c0n/jump-w/export/preview.gif",
+        "manifest": "runs/kh722d50mb2p31634w1qx2s32x8g9c0n/jump-w/export/manifest.json",
+        "runJson": "runs/kh722d50mb2p31634w1qx2s32x8g9c0n/jump-w/run.json"
+      },
+      "error": null,
+      "warnings": [],
+      "estimatedCostUsd": 0.01
+    },
+    {
+      "stepId": "action:hurt",
+      "kind": "action",
+      "status": "completed",
+      "runDir": "runs/kh722d50mb2p31634w1qx2s32x8g9c0n/hurt-w",
+      "artifacts": {
+        "spritesheet": "runs/kh722d50mb2p31634w1qx2s32x8g9c0n/hurt-w/export/spritesheet.png",
+        "preview": "runs/kh722d50mb2p31634w1qx2s32x8g9c0n/hurt-w/export/preview.gif",
+        "manifest": "runs/kh722d50mb2p31634w1qx2s32x8g9c0n/hurt-w/export/manifest.json",
+        "runJson": "runs/kh722d50mb2p31634w1qx2s32x8g9c0n/hurt-w/run.json"
+      },
+      "error": null,
+      "warnings": [],
+      "estimatedCostUsd": 0.01
+    },
+    {
+      "stepId": "action:death",
+      "kind": "action",
+      "status": "completed",
+      "runDir": "runs/kh722d50mb2p31634w1qx2s32x8g9c0n/death-w",
+      "artifacts": {
+        "spritesheet": "runs/kh722d50mb2p31634w1qx2s32x8g9c0n/death-w/export/spritesheet.png",
+        "preview": "runs/kh722d50mb2p31634w1qx2s32x8g9c0n/death-w/export/preview.gif",
+        "manifest": "runs/kh722d50mb2p31634w1qx2s32x8g9c0n/death-w/export/manifest.json",
+        "runJson": "runs/kh722d50mb2p31634w1qx2s32x8g9c0n/death-w/run.json"
+      },
+      "error": null,
+      "warnings": [],
+      "estimatedCostUsd": 0.01
+    }
+  ]
+}

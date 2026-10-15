@@ -1,0 +1,154 @@
+{
+ "beta": {
+  "cell": 210,
+  "base": "kurti",
+  "actions": {
+   "run": {
+    "key": "hd/beta_run",
+    "frames": 13,
+    "fps": 12
+   },
+   "jump": {
+    "key": "hd/beta_jump",
+    "frames": 25,
+    "fps": 24
+   },
+   "hurt": {
+    "key": "hd/beta_hurt",
+    "frames": 25,
+    "fps": 24
+   },
+   "attack": {
+    "key": "hd/beta_attack",
+    "frames": 25,
+    "fps": 24
+   }
+  }
+ },
+ "kurti": {
+  "cell": 210,
+  "base": "kurti",
+  "actions": {
+   "run": {
+    "key": "hd/kurti_run",
+    "frames": 13,
+    "fps": 12
+   },
+   "jump": {
+    "key": "hd/kurti_jump",
+    "frames": 25,
+    "fps": 24
+   },
+   "hurt": {
+    "key": "hd/kurti_hurt",
+    "frames": 25,
+    "fps": 24
+   }
+  }
+ },
+ "print": {
+  "cell": 210,
+  "base": "kurti",
+  "actions": {
+   "run": {
+    "key": "hd/print_run",
+    "frames": 13,
+    "fps": 12
+   },
+   "jump": {
+    "key": "hd/print_jump",
+    "frames": 25,
+    "fps": 24
+   },
+   "hurt": {
+    "key": "hd/print_hurt",
+    "frames": 25,
+    "fps": 24
+   }
+  }
+ },
+ "black": {
+  "cell": 210,
+  "base": "kurti",
+  "actions": {
+   "run": {
+    "key": "hd/black_run",
+    "frames": 13,
+    "fps": 12
+   },
+   "jump": {
+    "key": "hd/black_jump",
+    "frames": 25,
+    "fps": 24
+   },
+   "hurt": {
+    "key": "hd/black_hurt",
+    "frames": 25,
+    "fps": 24
+   }
+  }
+ },
+ "jacket": {
+  "cell": 210,
+  "base": "kurti",
+  "actions": {
+   "run": {
+    "key": "hd/jacket_run",
+    "frames": 13,
+    "fps": 12
+   },
+   "jump": {
+    "key": "hd/jacket_jump",
+    "frames": 25,
+    "fps": 24
+   },
+   "hurt": {
+    "key": "hd/jacket_hurt",
+    "frames": 25,
+    "fps": 24
+   }
+  }
+ },
+ "top25": {
+  "cell": 210,
+  "base": "kurti",
+  "actions": {
+   "run": {
+    "key": "hd/top25_run",
+    "frames": 13,
+    "fps": 12
+   },
+   "jump": {
+    "key": "hd/top25_jump",
+    "frames": 25,
+    "fps": 24
+   },
+   "hurt": {
+    "key": "hd/top25_hurt",
+    "frames": 25,
+    "fps": 24
+   }
+  }
+ },
+ "maroon": {
+  "cell": 210,
+  "base": "kurti",
+  "actions": {
+   "run": {
+    "key": "hd/maroon_run",
+    "frames": 13,
+    "fps": 12
+   },
+   "jump": {
+    "key": "hd/maroon_jump",
+    "frames": 25,
+    "fps": 24
+   },
+   "hurt": {
+    "key": "hd/maroon_hurt",
+    "frames": 25,
+    "fps": 24
+   }
+  }
+ }
+}

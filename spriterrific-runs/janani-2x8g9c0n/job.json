@@ -1,0 +1,245 @@
+{
+  "actions": [
+    "run",
+    "jump",
+    "hurt",
+    "death"
+  ],
+  "archivedAt": null,
+  "artifacts": [
+    {
+      "contentType": "image/png",
+      "key": "jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/anchors/anchor-w.png",
+      "name": "anchors/anchor-w",
+      "size": 139714,
+      "url": "https://pub-656cad5276814bbab250de9f6f3ed93d.r2.dev/jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/anchors/anchor-w.png"
+    },
+    {
+      "contentType": "image/png",
+      "key": "jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/anchors/candidate.png",
+      "name": "anchors/candidate",
+      "size": 238792,
+      "url": "https://pub-656cad5276814bbab250de9f6f3ed93d.r2.dev/jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/anchors/candidate.png"
+    },
+    {
+      "contentType": "image/png",
+      "key": "jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/run/spritesheet.png",
+      "name": "run/spritesheet",
+      "size": 548788,
+      "url": "https://pub-656cad5276814bbab250de9f6f3ed93d.r2.dev/jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/run/spritesheet.png"
+    },
+    {
+      "contentType": "image/gif",
+      "key": "jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/run/preview.gif",
+      "name": "run/preview",
+      "size": 223934,
+      "url": "https://pub-656cad5276814bbab250de9f6f3ed93d.r2.dev/jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/run/preview.gif"
+    },
+    {
+      "contentType": "application/json",
+      "key": "jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/run/manifest.json",
+      "name": "run/manifest",
+      "size": 344,
+      "url": "https://pub-656cad5276814bbab250de9f6f3ed93d.r2.dev/jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/run/manifest.json"
+    },
+    {
+      "contentType": "image/png",
+      "key": "jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/jump/spritesheet.png",
+      "name": "jump/spritesheet",
+      "size": 616931,
+      "url": "https://pub-656cad5276814bbab250de9f6f3ed93d.r2.dev/jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/jump/spritesheet.png"
+    },
+    {
+      "contentType": "image/gif",
+      "key": "jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/jump/preview.gif",
+      "name": "jump/preview",
+      "size": 264679,
+      "url": "https://pub-656cad5276814bbab250de9f6f3ed93d.r2.dev/jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/jump/preview.gif"
+    },
+    {
+      "contentType": "application/json",
+      "key": "jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/jump/manifest.json",
+      "name": "jump/manifest",
+      "size": 346,
+      "url": "https://pub-656cad5276814bbab250de9f6f3ed93d.r2.dev/jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/jump/manifest.json"
+    },
+    {
+      "contentType": "image/png",
+      "key": "jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/hurt/spritesheet.png",
+      "name": "hurt/spritesheet",
+      "size": 535545,
+      "url": "https://pub-656cad5276814bbab250de9f6f3ed93d.r2.dev/jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/hurt/spritesheet.png"
+    },
+    {
+      "contentType": "image/gif",
+      "key": "jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/hurt/preview.gif",
+      "name": "hurt/preview",
+      "size": 252318,
+      "url": "https://pub-656cad5276814bbab250de9f6f3ed93d.r2.dev/jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/hurt/preview.gif"
+    },
+    {
+      "contentType": "application/json",
+      "key": "jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/hurt/manifest.json",
+      "name": "hurt/manifest",
+      "size": 346,
+      "url": "https://pub-656cad5276814bbab250de9f6f3ed93d.r2.dev/jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/hurt/manifest.json"
+    },
+    {
+      "contentType": "image/png",
+      "key": "jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/death/spritesheet.png",
+      "name": "death/spritesheet",
+      "size": 487772,
+      "url": "https://pub-656cad5276814bbab250de9f6f3ed93d.r2.dev/jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/death/spritesheet.png"
+    },
+    {
+      "contentType": "image/gif",
+      "key": "jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/death/preview.gif",
+      "name": "death/preview",
+      "size": 230511,
+      "url": "https://pub-656cad5276814bbab250de9f6f3ed93d.r2.dev/jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/death/preview.gif"
+    },
+    {
+      "contentType": "application/json",
+      "key": "jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/death/manifest.json",
+      "name": "death/manifest",
+      "size": 348,
+      "url": "https://pub-656cad5276814bbab250de9f6f3ed93d.r2.dev/jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/death/manifest.json"
+    },
+    {
+      "contentType": "application/json",
+      "key": "jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/character-plan.json",
+      "name": "plan",
+      "size": 3414,
+      "url": "https://pub-656cad5276814bbab250de9f6f3ed93d.r2.dev/jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/character-plan.json"
+    },
+    {
+      "contentType": "application/json",
+      "key": "jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/costs.json",
+      "name": "costs",
+      "size": 2139,
+      "url": "https://pub-656cad5276814bbab250de9f6f3ed93d.r2.dev/jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/costs.json"
+    },
+    {
+      "contentType": "application/json",
+      "key": "jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/run/frames-index.json",
+      "name": "run/frames-index",
+      "size": 1279,
+      "url": "https://pub-656cad5276814bbab250de9f6f3ed93d.r2.dev/jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/run/frames-index.json"
+    },
+    {
+      "contentType": "application/json",
+      "key": "jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/jump/frames-index.json",
+      "name": "jump/frames-index",
+      "size": 752,
+      "url": "https://pub-656cad5276814bbab250de9f6f3ed93d.r2.dev/jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/jump/frames-index.json"
+    },
+    {
+      "contentType": "application/json",
+      "key": "jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/hurt/frames-index.json",
+      "name": "hurt/frames-index",
+      "size": 752,
+      "url": "https://pub-656cad5276814bbab250de9f6f3ed93d.r2.dev/jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/hurt/frames-index.json"
+    },
+    {
+      "contentType": "application/json",
+      "key": "jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/death/frames-index.json",
+      "name": "death/frames-index",
+      "size": 753,
+      "url": "https://pub-656cad5276814bbab250de9f6f3ed93d.r2.dev/jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/death/frames-index.json"
+    },
+    {
+      "contentType": "application/json",
+      "key": "jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/run-index.json",
+      "name": "run-index",
+      "size": 47163,
+      "url": "https://pub-656cad5276814bbab250de9f6f3ed93d.r2.dev/jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/run-index.json"
+    },
+    {
+      "key": "jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/run/run-w/review/selected-contact.png",
+      "name": "run/contact",
+      "url": "https://pub-656cad5276814bbab250de9f6f3ed93d.r2.dev/jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/run/run-w/review/selected-contact.png"
+    },
+    {
+      "key": "jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/run/run-w/fal/raw-video.mp4",
+      "name": "run/raw-video",
+      "url": "https://pub-656cad5276814bbab250de9f6f3ed93d.r2.dev/jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/run/run-w/fal/raw-video.mp4"
+    },
+    {
+      "key": "jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/run/jump-w/review/selected-contact.png",
+      "name": "jump/contact",
+      "url": "https://pub-656cad5276814bbab250de9f6f3ed93d.r2.dev/jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/run/jump-w/review/selected-contact.png"
+    },
+    {
+      "key": "jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/run/jump-w/fal/raw-video.mp4",
+      "name": "jump/raw-video",
+      "url": "https://pub-656cad5276814bbab250de9f6f3ed93d.r2.dev/jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/run/jump-w/fal/raw-video.mp4"
+    },
+    {
+      "key": "jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/run/hurt-w/review/selected-contact.png",
+      "name": "hurt/contact",
+      "url": "https://pub-656cad5276814bbab250de9f6f3ed93d.r2.dev/jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/run/hurt-w/review/selected-contact.png"
+    },
+    {
+      "key": "jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/run/hurt-w/fal/raw-video.mp4",
+      "name": "hurt/raw-video",
+      "url": "https://pub-656cad5276814bbab250de9f6f3ed93d.r2.dev/jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/run/hurt-w/fal/raw-video.mp4"
+    },
+    {
+      "key": "jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/run/death-w/review/selected-contact.png",
+      "name": "death/contact",
+      "url": "https://pub-656cad5276814bbab250de9f6f3ed93d.r2.dev/jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/run/death-w/review/selected-contact.png"
+    },
+    {
+      "key": "jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/run/death-w/fal/raw-video.mp4",
+      "name": "death/raw-video",
+      "url": "https://pub-656cad5276814bbab250de9f6f3ed93d.r2.dev/jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89/run/death-w/fal/raw-video.mp4"
+    }
+  ],
+  "cached": false,
+  "characterName": "janani",
+  "createdAt": 1791997121468.711,
+  "creditsDebited": 460,
+  "creditsRefunded": 0,
+  "direction": "w",
+  "engineVersion": "0.21.1",
+  "error": null,
+  "finishedAt": 1791997883629,
+  "id": "kh722d50mb2p31634w1qx2s32x8g9c0n",
+  "progress": null,
+  "status": "completed",
+  "steps": [
+    {
+      "estimatedCostUsd": 2.000104,
+      "kind": "anchors",
+      "status": "completed",
+      "stepId": "anchors"
+    },
+    {
+      "estimatedCostUsd": 0.01,
+      "kind": "action",
+      "status": "completed",
+      "stepId": "action:run"
+    },
+    {
+      "estimatedCostUsd": 0.01,
+      "kind": "action",
+      "status": "completed",
+      "stepId": "action:jump"
+    },
+    {
+      "estimatedCostUsd": 0.01,
+      "kind": "action",
+      "status": "completed",
+      "stepId": "action:hurt"
+    },
+    {
+      "estimatedCostUsd": 0.01,
+      "kind": "action",
+      "status": "completed",
+      "stepId": "action:death"
+    }
+  ],
+  "storagePrefix": "jobs/kh722d50mb2p31634w1qx2s32x8g9c0n-2d254e39decadb89",
+  "type": "character",
+  "workerVersion": "0.3.24"
+}

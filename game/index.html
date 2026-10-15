@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <title>Gracy the Adventurer</title>
+    <style>
+        html, body { margin: 0; height: 100%; background: #1d1230; overflow: hidden; touch-action: none; user-select: none; -webkit-user-select: none; }
+        #game { width: 100vw; height: 100vh; height: 100dvh; }
+        /* the game is played sideways: ask to rotate when a phone is held upright */
+        #rotate { display: none; position: fixed; inset: 0; background: #140d1f; color: #f5c542; z-index: 10;
+                  font: 16px "Press Start 2P", monospace; text-align: center; line-height: 2.2;
+                  flex-direction: column; align-items: center; justify-content: center; padding: 24px; box-sizing: border-box; }
+        #rotate .phone { width: 64px; height: 108px; border: 6px solid #f5c542; border-radius: 12px; margin-bottom: 28px;
+                         animation: turn 2s ease-in-out infinite; }
+        @keyframes turn { 0%, 30% { transform: rotate(0); } 60%, 100% { transform: rotate(-90deg); } }
+        @media (orientation: portrait) and (max-width: 1000px) { #rotate { display: flex; } }
+    </style>
+</head>
+<body>
+    <div id="game"></div>
+    <div id="rotate"><div class="phone"></div>Turn your phone<br />sideways to play</div>
+    <script type="module" src="/src/main.js"></script>
+</body>
+</html>

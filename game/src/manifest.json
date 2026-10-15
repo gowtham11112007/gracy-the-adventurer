@@ -1,0 +1,464 @@
+{
+ "hero_kurti": {
+  "frameWidth": 104,
+  "frameHeight": 150,
+  "frames": 16
+ },
+ "hero_print": {
+  "frameWidth": 104,
+  "frameHeight": 150,
+  "frames": 16
+ },
+ "hero_black": {
+  "frameWidth": 104,
+  "frameHeight": 150,
+  "frames": 16
+ },
+ "hero_jacket": {
+  "frameWidth": 104,
+  "frameHeight": 150,
+  "frames": 16
+ },
+ "hero_top25": {
+  "frameWidth": 104,
+  "frameHeight": 150,
+  "frames": 16
+ },
+ "hero_maroon": {
+  "frameWidth": 104,
+  "frameHeight": 150,
+  "frames": 16
+ },
+ "hero_kurti_moves": {
+  "frameWidth": 104,
+  "frameHeight": 150,
+  "frames": 12
+ },
+ "hero_kurti_rope": {
+  "frameWidth": 150,
+  "frameHeight": 200,
+  "frames": 4,
+  "leapBottom": 138
+ },
+ "rope": {
+  "width": 30,
+  "height": 321
+ },
+ "hug": {
+  "frameWidth": 104,
+  "frameHeight": 150,
+  "frames": 2
+ },
+ "kitty_run": {
+  "frameWidth": 112,
+  "frameHeight": 84,
+  "frames": 6
+ },
+ "hero_print_moves": {
+  "frameWidth": 104,
+  "frameHeight": 150,
+  "frames": 12,
+  "run": 6
+ },
+ "hero_print_rope": {
+  "frameWidth": 150,
+  "frameHeight": 200,
+  "frames": 4,
+  "leapBottom": 151
+ },
+ "hero_black_moves": {
+  "frameWidth": 104,
+  "frameHeight": 150,
+  "frames": 12,
+  "run": 5
+ },
+ "hero_black_rope": {
+  "frameWidth": 150,
+  "frameHeight": 200,
+  "frames": 4,
+  "leapBottom": 129
+ },
+ "hero_jacket_moves": {
+  "frameWidth": 104,
+  "frameHeight": 150,
+  "frames": 12,
+  "run": 4
+ },
+ "hero_jacket_rope": {
+  "frameWidth": 150,
+  "frameHeight": 200,
+  "frames": 4,
+  "leapBottom": 129
+ },
+ "hero_top25_moves": {
+  "frameWidth": 104,
+  "frameHeight": 150,
+  "frames": 12,
+  "run": 6
+ },
+ "hero_top25_rope": {
+  "frameWidth": 150,
+  "frameHeight": 200,
+  "frames": 4,
+  "leapBottom": 132
+ },
+ "hero_maroon_moves": {
+  "frameWidth": 104,
+  "frameHeight": 150,
+  "frames": 12,
+  "run": 6
+ },
+ "hero_maroon_rope": {
+  "frameWidth": 150,
+  "frameHeight": 200,
+  "frames": 4,
+  "leapBottom": 120
+ },
+ "world1_map": {
+  "width": 1024,
+  "height": 572
+ },
+ "door_heaven": {
+  "width": 93,
+  "height": 124
+ },
+ "door_hell": {
+  "width": 92,
+  "height": 124
+ },
+ "notice_board": {
+  "width": 190,
+  "height": 151
+ },
+ "cave_ground_top": {
+  "width": 128,
+  "height": 88
+ },
+ "cave_ground_dirt": {
+  "width": 64,
+  "height": 64
+ },
+ "cave_tile_grass_float": {
+  "width": 64,
+  "height": 64
+ },
+ "bg_cave": {
+  "width": 1024,
+  "height": 572
+ },
+ "party": {
+  "width": 1024,
+  "height": 572
+ },
+ "cave_deco_crystal_s": {
+  "width": 32,
+  "height": 40
+ },
+ "cave_deco_crystal_m": {
+  "width": 51,
+  "height": 58
+ },
+ "cave_deco_crystal_l": {
+  "width": 79,
+  "height": 90
+ },
+ "cave_deco_crystal_blue": {
+  "width": 58,
+  "height": 60
+ },
+ "barrier_janani": {
+  "width": 64,
+  "height": 64
+ },
+ "barrier_janika": {
+  "width": 64,
+  "height": 64
+ },
+ "boulder": {
+  "width": 72,
+  "height": 52
+ },
+ "stalactite": {
+  "width": 107,
+  "height": 120
+ },
+ "tile_grass_block": {
+  "width": 64,
+  "height": 64
+ },
+ "tile_dirt_block": {
+  "width": 64,
+  "height": 64
+ },
+ "tile_grass_left": {
+  "width": 64,
+  "height": 64
+ },
+ "tile_grass_right": {
+  "width": 64,
+  "height": 64
+ },
+ "tile_grass_float": {
+  "width": 64,
+  "height": 64
+ },
+ "tile_brick": {
+  "width": 64,
+  "height": 64
+ },
+ "tile_gift": {
+  "width": 64,
+  "height": 64
+ },
+ "tile_gift_used": {
+  "width": 64,
+  "height": 64
+ },
+ "tile_crate": {
+  "width": 64,
+  "height": 64
+ },
+ "tile_spikes": {
+  "width": 64,
+  "height": 64
+ },
+ "tile_lava": {
+  "width": 64,
+  "height": 64
+ },
+ "ground_top": {
+  "width": 128,
+  "height": 99
+ },
+ "ground_dirt": {
+  "width": 64,
+  "height": 64
+ },
+ "mushroom": {
+  "frameWidth": 76,
+  "frameHeight": 72,
+  "frames": 6
+ },
+ "bee": {
+  "frameWidth": 64,
+  "frameHeight": 60,
+  "frames": 6
+ },
+ "snail": {
+  "frameWidth": 100,
+  "frameHeight": 64,
+  "frames": 6
+ },
+ "kitty": {
+  "frameWidth": 112,
+  "frameHeight": 84,
+  "frames": 12
+ },
+ "gem": {
+  "frameWidth": 32,
+  "frameHeight": 42,
+  "frames": 3
+ },
+ "gem_big": {
+  "width": 55,
+  "height": 60
+ },
+ "cupcake": {
+  "width": 40,
+  "height": 46
+ },
+ "star": {
+  "width": 49,
+  "height": 50
+ },
+ "heart": {
+  "width": 44,
+  "height": 40
+ },
+ "candle": {
+  "width": 12,
+  "height": 50
+ },
+ "deco_bush": {
+  "width": 101,
+  "height": 72
+ },
+ "deco_bush_tall": {
+  "width": 75,
+  "height": 85
+ },
+ "deco_bush_flowers": {
+  "width": 112,
+  "height": 74
+ },
+ "deco_flowers_yellow": {
+  "width": 101,
+  "height": 57
+ },
+ "deco_flowers_purple": {
+  "width": 104,
+  "height": 56
+ },
+ "deco_tree_small": {
+  "width": 66,
+  "height": 102
+ },
+ "deco_tree": {
+  "width": 96,
+  "height": 102
+ },
+ "deco_tree_round": {
+  "width": 82,
+  "height": 102
+ },
+ "deco_rock": {
+  "width": 82,
+  "height": 50
+ },
+ "deco_rock2": {
+  "width": 74,
+  "height": 58
+ },
+ "deco_fence": {
+  "width": 117,
+  "height": 61
+ },
+ "deco_sign": {
+  "width": 72,
+  "height": 75
+ },
+ "deco_tuft": {
+  "width": 48,
+  "height": 41
+ },
+ "deco_tuft2": {
+  "width": 61,
+  "height": 43
+ },
+ "finish_gate": {
+  "width": 554,
+  "height": 270
+ },
+ "bg_meadow": {
+  "width": 1289,
+  "height": 720
+ },
+ "boss": {
+  "frameWidth": 210,
+  "frameHeight": 190,
+  "frames": 12
+ },
+ "bomb": {
+  "width": 49,
+  "height": 49
+ },
+ "portrait_yuva": {
+  "width": 159,
+  "height": 128
+ },
+ "twin": {
+  "frameWidth": 104,
+  "frameHeight": 150,
+  "frames": 11
+ },
+ "hero_janika_moves": {
+  "frameWidth": 104,
+  "frameHeight": 150,
+  "frames": 12
+ },
+ "hero_janika_rope": {
+  "frameWidth": 150,
+  "frameHeight": 200,
+  "frames": 4,
+  "leapBottom": 140
+ },
+ "janika_denim": {
+  "frameWidth": 104,
+  "frameHeight": 150,
+  "frames": 6
+ },
+ "hero_janika_denim_moves": {
+  "frameWidth": 104,
+  "frameHeight": 150,
+  "frames": 12
+ },
+ "hero_janika_denim_rope": {
+  "frameWidth": 150,
+  "frameHeight": 200,
+  "frames": 4,
+  "leapBottom": 131
+ },
+ "janika_cargo": {
+  "frameWidth": 104,
+  "frameHeight": 150,
+  "frames": 6
+ },
+ "hero_janika_cargo_moves": {
+  "frameWidth": 104,
+  "frameHeight": 150,
+  "frames": 12
+ },
+ "hero_janika_cargo_rope": {
+  "frameWidth": 150,
+  "frameHeight": 200,
+  "frames": 4,
+  "leapBottom": 138
+ },
+ "janika_skirt": {
+  "frameWidth": 104,
+  "frameHeight": 150,
+  "frames": 6
+ },
+ "hero_janika_skirt_moves": {
+  "frameWidth": 104,
+  "frameHeight": 150,
+  "frames": 12
+ },
+ "hero_janika_skirt_rope": {
+  "frameWidth": 150,
+  "frameHeight": 200,
+  "frames": 4,
+  "leapBottom": 141
+ },
+ "janika_coop": {
+  "frameWidth": 104,
+  "frameHeight": 150,
+  "frames": 6
+ },
+ "portrait_janika": {
+  "width": 128,
+  "height": 128
+ },
+ "portrait_janani": {
+  "width": 128,
+  "height": 128
+ },
+ "portrait_kitty": {
+  "width": 125,
+  "height": 128
+ },
+ "balloons": {
+  "width": 135,
+  "height": 120
+ },
+ "balloon_pink": {
+  "width": 37,
+  "height": 90
+ },
+ "moon": {
+  "width": 111,
+  "height": 120
+ },
+ "star_lucky": {
+  "width": 46,
+  "height": 46
+ },
+ "cloud_small": {
+  "width": 106,
+  "height": 70
+ },
+ "cloud_big": {
+  "width": 147,
+  "height": 90
+ }
+}

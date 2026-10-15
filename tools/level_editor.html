@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Gracy Level Painter — Visual Map Editor</title>
+  <style>
+    :root {
+      --bg: #0c0f17;
+      --panel: #161c28;
+      --accent: #d4af37;
+      --accent-glow: rgba(212, 175, 55, 0.3);
+      --border: rgba(212, 175, 55, 0.25);
+      --text: #e6ebf5;
+      --muted: #8b99ad;
+    }
+    * { box-sizing: border-box; user-select: none; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    header {
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand h1 {
+      font-size: 1.15rem;
+      letter-spacing: 1px;
+      color: var(--accent);
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+    .brand span {
+      font-size: 0.8rem;
+      color: var(--muted);
+      background: rgba(255,255,255,0.06);
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    button, .file-btn {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 7px 14px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+    button:hover, .file-btn:hover {
+      background: rgba(212, 175, 55, 0.15);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    button.primary {
+      background: var(--accent);
+      color: #0b0d13;
+      border-color: var(--accent);
+    }
+    button.primary:hover {
+      background: #e6c253;
+      box-shadow: 0 0 14px var(--accent-glow);
+    }
+    .main-area {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+    .sidebar {
+      width: 240px;
+      background: var(--panel);
+      border-right: 1px solid var(--border);
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .section-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: var(--accent);
+      letter-spacing: 0.8px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .palette-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .tool-btn {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 6px;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .tool-btn:hover {
+      background: rgba(255,255,255,0.08);
+      border-color: var(--border);
+    }
+    .tool-btn.active {
+      background: rgba(212, 175, 55, 0.18);
+      border-color: var(--accent);
+      box-shadow: 0 0 10px var(--accent-glow);
+    }
+    .tool-btn .icon {
+      font-size: 1.4rem;
+      line-height: 1;
+    }
+    .tool-btn .label {
+      font-size: 0.72rem;
+      color: var(--text);
+      text-align: center;
+    }
+    .tool-btn .char {
+      font-size: 0.65rem;
+      color: var(--muted);
+      font-family: monospace;
+    }
+    .canvas-wrap {
+      flex: 1;
+      background: #080a0f;
+      overflow: auto;
+      position: relative;
+      padding: 30px;
+      display: flex;
+      align-items: flex-start;
+    }
+    #grid {
+      display: grid;
+      background: rgba(255,255,255,0.02);
+      border: 2px solid var(--border);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.7);
+    }
+    .cell {
+      width: 44px;
+      height: 44px;
+      border: 1px solid rgba(255,255,255,0.04);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+      font-family: monospace;
+      cursor: crosshair;
+      position: relative;
+    }
+    .cell:hover {
+      outline: 2px solid var(--accent);
+      z-index: 10;
+    }
+    /* Cell Styles */
+    .cell[data-ch="#"] { background: #2f4858; color: #a4c2cb; }
+    .cell[data-ch="="] { background: #5c4d3c; color: #dfc8a8; }
+    .cell[data-ch="L"] { background: #2e3846; color: #f4d06f; }
+    .cell[data-ch="C"] { background: #6b4d31; color: #ffe0b2; }
+    .cell[data-ch="R"] { background: #4a4e5a; color: #cfd8dc; }
+    .cell[data-ch="O"] { background: #5d4037; color: #d7ccc8; }
+    .cell[data-ch="^"] { background: #4a1525; color: #ff8a80; }
+    .cell[data-ch="?"] { background: #004d40; color: #ffd54f; }
+    .cell[data-ch="o"] { background: #4a148c; color: #e1bee7; }
+    .cell[data-ch="X"] { background: #311b92; color: #b39ddb; }
+    .cell[data-ch="*"] { background: #ff6f00; color: #fff9c4; }
+    .cell[data-ch="m"] { background: #3e2723; color: #ffab91; }
+    .cell[data-ch="n"] { background: #263238; color: #80cbc4; }
+    .cell[data-ch="b"] { background: #ffb300; color: #212121; }
+    
+    .floor-marker {
+      position: absolute;
+      left: -28px;
+      color: var(--accent);
+      font-size: 0.65rem;
+      font-weight: 700;
+    }
+    .jump-info-box {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px;
+      font-size: 0.75rem;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+    .jump-info-box strong {
+      color: var(--accent);
+    }
+    /* Modal */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+    .modal-box {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      width: 700px;
+      max-width: 90vw;
+      border-radius: 10px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+    }
+    .modal-box textarea {
+      width: 100%;
+      height: 300px;
+      background: #080a0f;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: #98c379;
+      font-family: monospace;
+      font-size: 0.8rem;
+      padding: 12px;
+      resize: none;
+      outline: none;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <h1>Gracy Level Painter</h1>
+    <span>12-Row Multi-Floor System</span>
+  </div>
+  <div class="controls">
+    <button onclick="loadBeta()">Load Sky Ruins (Beta)</button>
+    <button onclick="clearGrid()">Clear All</button>
+    <button onclick="openImport()">Import JSON</button>
+    <button class="primary" onclick="openExport()">Export Level JSON</button>
+  </div>
+</header>
+
+<div class="main-area">
+  <div class="sidebar">
+    <div>
+      <div class="section-title">Terrain & Floors</div>
+      <div class="palette-grid">
+        <div class="tool-btn active" data-char="#" onclick="selectTool('#')">
+          <span class="icon">🟩</span>
+          <span class="label">Solid Ground</span>
+          <span class="char">#</span>
+        </div>
+        <div class="tool-btn" data-char="=" onclick="selectTool('=')">
+          <span class="icon">🟫</span>
+          <span class="label">Upper Floor</span>
+          <span class="char">=</span>
+        </div>
+        <div class="tool-btn" data-char="L" onclick="selectTool('L')">
+          <span class="icon">🪜</span>
+          <span class="label">Ladder Rung</span>
+          <span class="char">L</span>
+        </div>
+        <div class="tool-btn" data-char=" " onclick="selectTool(' ')">
+          <span class="icon">🧹</span>
+          <span class="label">Air / Erase</span>
+          <span class="char">[space]</span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-title">Obstacles (1-Tile Hop)</div>
+      <div class="palette-grid">
+        <div class="tool-btn" data-char="C" onclick="selectTool('C')">
+          <span class="icon">📦</span>
+          <span class="label">Crate</span>
+          <span class="char">C</span>
+        </div>
+        <div class="tool-btn" data-char="R" onclick="selectTool('R')">
+          <span class="icon">🪨</span>
+          <span class="label">Boulder</span>
+          <span class="char">R</span>
+        </div>
+        <div class="tool-btn" data-char="O" onclick="selectTool('O')">
+          <span class="icon">🛢️</span>
+          <span class="label">Barrel</span>
+          <span class="char">O</span>
+        </div>
+        <div class="tool-btn" data-char="^" onclick="selectTool('^')">
+          <span class="icon">⚠️</span>
+          <span class="label">Spikes</span>
+          <span class="char">^</span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-title">Items & Secrets</div>
+      <div class="palette-grid">
+        <div class="tool-btn" data-char="?" onclick="selectTool('?')">
+          <span class="icon">🎁</span>
+          <span class="label">Gift Box</span>
+          <span class="char">?</span>
+        </div>
+        <div class="tool-btn" data-char="o" onclick="selectTool('o')">
+          <span class="icon">💎</span>
+          <span class="label">Amethyst Gem</span>
+          <span class="char">o</span>
+        </div>
+        <div class="tool-btn" data-char="X" onclick="selectTool('X')">
+          <span class="icon">🔮</span>
+          <span class="label">Giant Crystal</span>
+          <span class="char">X</span>
+        </div>
+        <div class="tool-btn" data-char="*" onclick="selectTool('*')">
+          <span class="icon">🕯️</span>
+          <span class="label">Candle</span>
+          <span class="char">*</span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-title">Enemies</div>
+      <div class="palette-grid">
+        <div class="tool-btn" data-char="n" onclick="selectTool('n')">
+          <span class="icon">🐌</span>
+          <span class="label">Snail</span>
+          <span class="char">n</span>
+        </div>
+        <div class="tool-btn" data-char="m" onclick="selectTool('m')">
+          <span class="icon">🍄</span>
+          <span class="label">Mushroom</span>
+          <span class="char">m</span>
+        </div>
+        <div class="tool-btn" data-char="b" onclick="selectTool('b')">
+          <span class="icon">🐝</span>
+          <span class="label">Bee</span>
+          <span class="char">b</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="jump-info-box">
+      <strong>Jump Hop Rules:</strong><br>
+      • <strong>1-Tile Hop:</strong> Janani easily clears Crates (C), Barrels (O) & Boulders (R).<br>
+      • <strong>Upper Floors (=):</strong> Must be 4–5 tiles high and <em>must have a ladder (L)</em> to reach!
+    </div>
+  </div>
+
+  <div class="canvas-wrap" id="canvasWrap">
+    <div id="grid"></div>
+  </div>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <h2 id="modalTitle" style="color: var(--accent);">Export Level JSON</h2>
+    <p id="modalDesc" style="color: var(--muted); font-size: 0.85rem;">Copy this JSON code and paste it into godot/data/beta_level.json or your level file:</p>
+    <textarea id="jsonArea"></textarea>
+    <div style="display:flex; justify-content: flex-end; gap: 10px;">
+      <button onclick="closeModal()">Close</button>
+      <button class="primary" id="modalActionBtn" onclick="copyJSON()">Copy to Clipboard</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const ROWS = 12;
+  const COLS = 120;
+  let currentTool = '#';
+  let isMouseDown = false;
+  let gridData = Array(ROWS).fill(null).map(() => Array(COLS).fill(' '));
+
+  const ICONS = {
+    '#': '🟩',
+    '=': '🟫',
+    'L': '🪜',
+    'C': '📦',
+    'R': '🪨',
+    'O': '🛢️',
+    '^': '⚠️',
+    '?': '🎁',
+    'o': '💎',
+    'X': '🔮',
+    '*': '🕯️',
+    'm': '🍄',
+    'n': '🐌',
+    'b': '🐝',
+    ' ': ''
+  };
+
+  function initGrid() {
+    const gridEl = document.getElementById('grid');
+    gridEl.style.gridTemplateColumns = `repeat(${COLS}, 44px)`;
+    gridEl.innerHTML = '';
+
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        cell.dataset.r = r;
+        cell.dataset.c = c;
+        cell.dataset.ch = gridData[r][c];
+        cell.textContent = ICONS[gridData[r][c]] || '';
+
+        cell.addEventListener('mousedown', (e) => {
+          if (e.button === 0) { // Left click
+            paintCell(r, c, currentTool);
+          } else if (e.button === 2) { // Right click erase
+            paintCell(r, c, ' ');
+          }
+        });
+
+        cell.addEventListener('mouseenter', () => {
+          if (isMouseDown) {
+            paintCell(r, c, currentTool);
+          }
+        });
+
+        cell.addEventListener('contextmenu', (e) => e.preventDefault());
+        gridEl.appendChild(cell);
+      }
+    }
+  }
+
+  function paintCell(r, c, ch) {
+    gridData[r][c] = ch;
+    const cell = document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
+    if (cell) {
+      cell.dataset.ch = ch;
+      cell.textContent = ICONS[ch] || '';
+    }
+  }
+
+  window.addEventListener('mousedown', () => isMouseDown = true);
+  window.addEventListener('mouseup', () => isMouseDown = false);
+
+  function selectTool(ch) {
+    currentTool = ch;
+    document.querySelectorAll('.tool-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.char === ch);
+    });
+  }
+
+  function clearGrid() {
+    if (confirm('Clear the entire level canvas?')) {
+      gridData = Array(ROWS).fill(null).map(() => Array(COLS).fill(' '));
+      // Keep bottom 2 rows as ground
+      for (let c = 0; c < COLS; c++) {
+        gridData[10][c] = '#';
+        gridData[11][c] = '#';
+      }
+      initGrid();
+    }
+  }
+
+  const BETA_RAW = [
+    "                                                                                        X  o  X  o  X  o                ",
+    "                                                                                ====L=====================L==           ",
+    "                                                                                    L                     L             ",
+    "                                                                                    L                     L             ",
+    "                                                         ooo  O     n     ^     C   L                     L             ",
+    "                                                  ====L================================                   L             ",
+    "                                                      L                                                   L             ",
+    "                                                      L                                                   L             ",
+    "                                          ?           L                                                   L             ",
+    "              C       R       O       ^       C       L                                                   L             ",
+    "########################################################################################################################",
+    "########################################################################################################################"
+  ];
+
+  function loadBeta() {
+    for (let r = 0; r < ROWS; r++) {
+      const line = BETA_RAW[r] || "";
+      for (let c = 0; c < COLS; c++) {
+        gridData[r][c] = line[c] || ' ';
+      }
+    }
+    initGrid();
+  }
+
+  function openExport() {
+    const lines = gridData.map(row => row.join(''));
+    const levelObj = {
+      id: "custom",
+      name: "Custom Realm",
+      width: COLS,
+      time: 300,
+      start: 3,
+      checkpoint: Math.floor(COLS / 2),
+      finish: COLS - 5,
+      mood: "sky",
+      grid: lines,
+      powers: [[42, 8, "arrow"]]
+    };
+    document.getElementById('modalTitle').textContent = "Export Level JSON";
+    document.getElementById('modalDesc').textContent = "Copy this JSON directly into godot/data/beta_level.json or send it to your agent!";
+    document.getElementById('jsonArea').value = JSON.stringify(levelObj, null, 1);
+    document.getElementById('modalActionBtn').textContent = "Copy to Clipboard";
+    document.getElementById('modalActionBtn').onclick = copyJSON;
+    document.getElementById('modal').style.display = 'flex';
+  }
+
+  function openImport() {
+    document.getElementById('modalTitle').textContent = "Import Level JSON";
+    document.getElementById('modalDesc').textContent = "Paste a level JSON below and click Load Grid:";
+    document.getElementById('jsonArea').value = "";
+    document.getElementById('modalActionBtn').textContent = "Load into Editor";
+    document.getElementById('modalActionBtn').onclick = loadImportedJSON;
+    document.getElementById('modal').style.display = 'flex';
+  }
+
+  function loadImportedJSON() {
+    try {
+      const text = document.getElementById('jsonArea').value;
+      const data = JSON.parse(text);
+      if (Array.isArray(data.grid)) {
+        for (let r = 0; r < ROWS; r++) {
+          const line = data.grid[r] || "";
+          for (let c = 0; c < COLS; c++) {
+            gridData[r][c] = line[c] || ' ';
+          }
+        }
+        initGrid();
+        closeModal();
+      } else {
+        alert("JSON must contain a 'grid' array of 12 strings!");
+      }
+    } catch(err) {
+      alert("Invalid JSON: " + err.message);
+    }
+  }
+
+  function copyJSON() {
+    const area = document.getElementById('jsonArea');
+    area.select();
+    navigator.clipboard.writeText(area.value);
+    document.getElementById('modalActionBtn').textContent = "Copied!";
+    setTimeout(() => {
+      document.getElementById('modalActionBtn').textContent = "Copy to Clipboard";
+    }, 1500);
+  }
+
+  function closeModal() {
+    document.getElementById('modal').style.display = 'none';
+  }
+
+  // Initial Load
+  loadBeta();
+</script>
+
+</body>
+</html>

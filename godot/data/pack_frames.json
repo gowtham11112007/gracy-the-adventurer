@@ -1,0 +1,14 @@
+{
+ "fireball": {
+  "frameWidth": 40,
+  "frames": 8
+ },
+ "fire_arrow": {
+  "frameWidth": 91,
+  "frames": 8
+ },
+ "explosion": {
+  "frameWidth": 164,
+  "frames": 10
+ }
+}

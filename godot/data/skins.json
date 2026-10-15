@@ -1,0 +1,219 @@
+{
+ "meadow": {
+  "tiles": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12,
+   13,
+   14,
+   15,
+   16
+  ],
+  "bg": [
+   "bg_0",
+   "bg_1",
+   "bg_2"
+  ],
+  "deco": {
+   "tree": [
+    "tree_0",
+    "tree_1"
+   ],
+   "bush": [
+    "bush_0",
+    "bush_1"
+   ],
+   "small": [
+    "small_0",
+    "small_1",
+    "small_2",
+    "small_3"
+   ],
+   "rock": [
+    "rock_0"
+   ],
+   "sign": [
+    "sign_0"
+   ]
+  },
+  "float": [
+   13,
+   14,
+   15
+  ]
+ },
+ "sky": {
+  "tiles": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12,
+   13,
+   14,
+   15,
+   16
+  ],
+  "bg": [
+   "bg_0",
+   "bg_1"
+  ],
+  "deco": {
+   "tree": [
+    "tree_0",
+    "tree_1",
+    "tree_2"
+   ],
+   "bush": [
+    "bush_0",
+    "bush_1",
+    "bush_2",
+    "bush_3"
+   ],
+   "small": [
+    "small_0",
+    "small_1",
+    "small_2",
+    "small_3"
+   ],
+   "rock": [
+    "rock_0",
+    "rock_1",
+    "rock_2",
+    "rock_3",
+    "rock_4",
+    "rock_5",
+    "rock_6",
+    "rock_7",
+    "rock_8"
+   ],
+   "sign": [
+    "sign_0",
+    "sign_1",
+    "sign_2",
+    "sign_3",
+    "sign_4",
+    "sign_5"
+   ]
+  },
+  "float": [
+   13,
+   14,
+   15
+  ]
+ },
+ "desert": {
+  "tiles": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12,
+   13,
+   14,
+   15,
+   16
+  ],
+  "bg": [
+   "bg_0"
+  ],
+  "deco": {
+   "tree": [
+    "tree_0",
+    "tree_1"
+   ],
+   "bush": [
+    "bush_0",
+    "bush_1"
+   ],
+   "small": [
+    "small_0",
+    "small_1",
+    "small_2"
+   ],
+   "rock": [
+    "rock_0",
+    "rock_1"
+   ],
+   "sign": [
+    "sign_0"
+   ]
+  },
+  "float": [
+   14,
+   15,
+   16
+  ]
+ },
+ "graveyard": {
+  "tiles": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12,
+   13,
+   14,
+   15,
+   16
+  ],
+  "bg": [
+   "bg_0"
+  ],
+  "deco": {
+   "tree": [
+    "tree_0"
+   ],
+   "bush": [
+    "bush_0",
+    "bush_1"
+   ],
+   "small": [
+    "small_0",
+    "small_1",
+    "small_2"
+   ],
+   "rock": [
+    "rock_0"
+   ],
+   "sign": [
+    "sign_0"
+   ]
+  },
+  "float": [
+   14,
+   15,
+   16
+  ]
+ }
+}

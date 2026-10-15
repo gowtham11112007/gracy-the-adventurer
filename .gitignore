@@ -1,0 +1,32 @@
+# Environment & Secrets (NEVER COMMIT)
+.env
+.env.*
+*.env
+
+# Local agent & editor metadata
+.agents/
+.claude/
+
+# OS files
+.DS_Store
+._*
+Thumbs.db
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+
+# Godot 4 import cache & editor artifacts
+godot/.godot/
+
+# Node
+node_modules/
+
+# Android Binaries (GitHub 100MB limit & generated builds)
+*.apk
+*.aab
+*.idsig
+
+# Raw CraftPix zip archives (over 100MB and protected by license)
+art/packs/_zips/

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Gracy the Adventurer</string>
+    <string name="title_activity_main">Gracy the Adventurer</string>
+    <string name="package_name">com.jananijanika.gracy</string>
+    <string name="custom_url_scheme">com.jananijanika.gracy</string>
+</resources>

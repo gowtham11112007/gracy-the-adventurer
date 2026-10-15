@@ -1,0 +1,33 @@
+{
+  "kurti": {
+    "cell": 210,
+    "base": "kurti",
+    "actions": {
+      "run": {
+        "key": "hero2/kurti_run",
+        "frames": 6,
+        "fps": 12
+      },
+      "jump": {
+        "key": "hero2/kurti_jump",
+        "frames": 6,
+        "fps": 12
+      },
+      "idle": {
+        "key": "hero2/kurti_idle",
+        "frames": 4,
+        "fps": 4
+      },
+      "hurt": {
+        "key": "hero2/kurti_hurt",
+        "frames": 1,
+        "fps": 1
+      },
+      "victory": {
+        "key": "hero2/kurti_victory",
+        "frames": 1,
+        "fps": 1
+      }
+    }
+  }
+}

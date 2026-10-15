@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gracy the Adventurer - 16-Bit World Map Generator</title>
+  <style>
+    :root {
+      --bg: #0d0f1a;
+      --panel: #191d30;
+      --border: #384166;
+      --accent: #ffcc00;
+      --pink: #ff5e97;
+      --cyan: #38e4ae;
+      --text: #f0f4ff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: radial-gradient(circle at top, #1e2440 0%, #090b12 100%);
+      color: var(--text);
+      font-family: 'Courier New', Courier, monospace;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      gap: 12px;
+    }
+    .header-bar {
+      width: 960px;
+      max-width: 100%;
+      background: var(--panel);
+      border: 3px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 16px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .title {
+      font-size: 18px;
+      font-weight: 900;
+      color: var(--accent);
+      text-shadow: 2px 2px 0 #000;
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+    .btn {
+      background: #283050;
+      color: var(--text);
+      border: 2px solid #53629c;
+      padding: 8px 13px;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.1s, background 0.15s;
+    }
+    .btn:hover { background: #384370; transform: translateY(-1px); }
+    .btn-download {
+      background: var(--pink);
+      border-color: #ffa6c6;
+      color: #fff;
+    }
+    .btn-download:hover { background: #ff3b7f; }
+    .canvas-frame {
+      width: 960px;
+      max-width: 100%;
+      aspect-ratio: 16 / 9;
+      border: 4px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.75);
+      background: #000;
+    }
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      image-rendering: pixelated;
+    }
+    .hint {
+      font-size: 13px;
+      color: #a8b3db;
+      text-align: center;
+    }
+    .hint code {
+      color: var(--cyan);
+      background: #191d30;
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header-bar">
+    <div class="title">🗺️ GRACY WORLD MAP GENERATOR (16-BIT PIXEL ART)</div>
+    <div class="controls">
+      <button class="btn" id="btnSeed">🎲 New Terrain Seed</button>
+      <button class="btn" id="btnTogglePaths">📍 Paths & Clearings: ON</button>
+      <button class="btn" id="btnToggleLabels">🏷️ Stage Labels: OFF</button>
+      <button class="btn btn-download" id="btnDownload">⬇ Download world_map.png</button>
+    </div>
+  </div>
+
+  <div class="canvas-frame">
+    <!-- Native 320x180 16-bit pixel canvas upscaled 3x to 960x540 -->
+    <canvas id="mapCanvas" width="960" height="540"></canvas>
+  </div>
+
+  <div class="hint">
+    Save the downloaded <code>world_map.png</code> inside your <code>gracy the adventurer</code> folder. 
+    Keep <strong>Stage Labels: OFF</strong> if using it inside the playable HTML5 game (since the game draws interactive nodes on top).
+  </div>
+
+<script>
+(() => {
+  const outCanvas = document.getElementById('mapCanvas');
+  const outCtx = outCanvas.getContext('2d');
+  outCtx.imageSmoothingEnabled = false;
+
+  // Low-res 16-bit pixel art buffer (320 x 180 = exact 16:9 ratio, 3x pixel scale = 960x540)
+  const PW = 320;
+  const PH = 180;
+  const pxCanvas = document.createElement('canvas');
+  pxCanvas.width = PW;
+  pxCanvas.height = PH;
+  const ctx = pxCanvas.getContext('2d');
+  ctx.imageSmoothingEnabled = false;
+
+  let seed = 1337;
+  let showPaths = true;
+  let showLabels = false;
+
+  // Exact node coordinates matching Gracy_The_Adventurer.html (divided by 3 for pixel buffer)
+  const NODES = [
+    { x: Math.round(160 / 3), y: Math.round(370 / 3), title: "1. Sunny Meadow", color: "#4cd137" },
+    { x: Math.round(320 / 3), y: Math.round(260 / 3), title: "2. Whispering Woods", color: "#2ecc71" },
+    { x: Math.round(480 / 3), y: Math.round(350 / 3), title: "3. Crystal Cavern", color: "#00d2d3" },
+    { x: Math.round(640 / 3), y: Math.round(230 / 3), title: "4. Twilight Bridge", color: "#ff9f43" },
+    { x: Math.round(810 / 3), y: Math.round(170 / 3), title: "5. Spooky Fortress", color: "#ff4757" }
+  ];
+
+  function rand() {
+    seed = (seed * 1664525 + 1013904223) % 4294967296;
+    return seed / 4294967296;
+  }
+
+  function pRect(x, y, w, h, color) {
+    ctx.fillStyle = color;
+    ctx.fillRect(Math.round(x), Math.round(y), Math.round(w), Math.round(h));
+  }
+
+  function pCircle(cx, cy, r, color) {
+    ctx.fillStyle = color;
+    const r2 = r * r;
+    for (let dy = -r; dy <= r; dy++) {
+      for (let dx = -r; dx <= r; dx++) {
+        if (dx * dx + dy * dy <= r2) {
+          ctx.fillRect(Math.round(cx + dx), Math.round(cy + dy), 1, 1);
+        }
+      }
+    }
+  }
+
+  function pEllipse(cx, cy, rx, ry, color) {
+    ctx.fillStyle = color;
+    for (let dy = -ry; dy <= ry; dy++) {
+      for (let dx = -rx; dx <= rx; dx++) {
+        if ((dx * dx) / (rx * rx) + (dy * dy) / (ry * ry) <= 1) {
+          ctx.fillRect(Math.round(cx + dx), Math.round(cy + dy), 1, 1);
+        }
+      }
+    }
+  }
+
+  // --- PIXEL ART STRUCTURES ---
+  function drawCloud(x, y, w, tint = '#ffffff', shade = '#c7d8ff') {
+    pEllipse(x, y, w, 4, shade);
+    pEllipse(x, y - 1, w - 1, 4, tint);
+    pCircle(x - w * 0.4, y - 3, 4, tint);
+    pCircle(x + w * 0.1, y - 4, 5, tint);
+    pCircle(x + w * 0.45, y - 2, 3, tint);
+  }
+
+  function drawPineTree(x, y, dark = false) {
+    const trunk = '#4a2e1b';
+    const c1 = dark ? '#143828' : '#1e5c3a';
+    const c2 = dark ? '#1f5239' : '#2e854b';
+    const c3 = dark ? '#2d6e4c' : '#4cd137';
+    pRect(x - 1, y, 2, 3, trunk);
+    // Layered triangle canopy
+    for (let i = 0; i < 6; i++) pRect(x - (5 - i), y - 2 - i, (5 - i) * 2 + 1, 1, c1);
+    for (let i = 0; i < 5; i++) pRect(x - (4 - i), y - 5 - i, (4 - i) * 2 + 1, 1, c2);
+    for (let i = 0; i < 4; i++) pRect(x - (3 - i), y - 8 - i, (3 - i) * 2, 1, c3);
+  }
+
+  function drawOakTree(x, y) {
+    pRect(x - 1, y - 1, 3, 4, '#6e4225');
+    pCircle(x, y - 5, 5, '#267339');
+    pCircle(x - 2, y - 6, 4, '#399e4a');
+    pCircle(x - 1, y - 7, 3, '#63db5c');
+  }
+
+  function drawCottage(x, y) {
+    // Meadow Hero House
+    pRect(x - 6, y - 5, 12, 7, '#f5deb3');
+    pRect(x - 4, y - 2, 3, 4, '#6e4225'); // Door
+    pRect(x + 1, y - 3, 3, 3, '#70d6ff'); // Window
+    // Red Pixel Roof
+    for (let i = 0; i < 5; i++) {
+      pRect(x - 8 + i, y - 6 - i, 16 - i * 2, 1, i % 2 === 0 ? '#ff4757' : '#d63031');
+    }
+    pRect(x + 3, y - 11, 2, 4, '#7f8fa6'); // Chimney
+  }
+
+  function drawCrystalMountain(cx, cy) {
+    // Rock peak
+    for (let i = 0; i < 26; i++) {
+      const w = 34 - i * 1.2;
+      pRect(cx - w / 2, cy - i, w, 1, i > 18 ? '#57606f' : '#2f3542');
+      pRect(cx - w / 2, cy - i, w * 0.45, 1, i > 18 ? '#747d8c' : '#3d4454');
+    }
+    // Dark cave entrance
+    pEllipse(cx, cy - 4, 6, 5, '#0b0c14');
+    pEllipse(cx, cy - 4, 7, 1, '#57606f');
+    // Glowing Cyan & Magenta Crystals
+    const crystals = [
+      { dx: -11, dy: -6, h: 7, c1: '#00d2d3', c2: '#a3fffe' },
+      { dx: 10, dy: -8, h: 8, c1: '#ff5e97', c2: '#ffc2d9' },
+      { dx: -6, dy: -16, h: 6, c1: '#00d2d3', c2: '#a3fffe' },
+      { dx: 6, dy: -14, h: 7, c1: '#a55eea', c2: '#e2c2ff' }
+    ];
+    crystals.forEach(cr => {
+      for (let j = 0; j < cr.h; j++) {
+        pRect(cx + cr.dx - (cr.h - j) * 0.3, cy + cr.dy - j, 3, 1, cr.c1);
+        pRect(cx + cr.dx, cy + cr.dy - j, 1, 1, cr.c2);
+      }
+    });
+  }
+
+  function drawTwilightBridge(cx, cy) {
+    // Floating Sky Island
+    pEllipse(cx, cy + 4, 34, 8, '#4a2545');
+    pEllipse(cx, cy + 1, 35, 6, '#783b6a');
+    pEllipse(cx, cy - 1, 34, 5, '#ff9f43');
+    // Hanging rock spires underneath
+    for (let i = -24; i <= 24; i += 6) {
+      const h = 14 - Math.abs(i) * 0.4;
+      for (let y = 0; y < h; y++) {
+        pRect(cx + i - (h - y) * 0.2, cy + 7 + y, (h - y) * 0.4 + 1, 1, '#331832');
+      }
+    }
+    // Waterfalls pouring off sky island
+    pRect(cx - 12, cy + 4, 4, 24, '#4facfe');
+    pRect(cx - 11, cy + 4, 2, 24, '#a6e3ff');
+    // Golden Skybridge Arches
+    pRect(cx - 24, cy - 5, 48, 2, '#ffd32a');
+    for (let x = -22; x <= 22; x += 6) {
+      pRect(cx + x, cy - 9, 2, 5, '#fff200');
+    }
+  }
+
+  function drawSpookyFortress(cx, cy) {
+    // Volcano / Dark Crag Base
+    pEllipse(cx, cy + 8, 38, 12, '#1e1b2e');
+    pEllipse(cx, cy + 4, 34, 9, '#2c2842');
+    // Lava moat glow
+    pEllipse(cx, cy + 6, 28, 3, '#ff3838');
+    pEllipse(cx, cy + 6, 24, 1, '#ff9f1a');
+
+    // Main Castle Keep
+    pRect(cx - 16, cy - 20, 32, 24, '#2f3640');
+    pRect(cx - 14, cy - 18, 28, 22, '#353b48');
+    // Left & Right Towers
+    pRect(cx - 22, cy - 26, 9, 30, '#272c36');
+    pRect(cx + 13, cy - 26, 9, 30, '#272c36');
+    // Center High Spire
+    pRect(cx - 7, cy - 32, 14, 36, '#1e2229');
+    for (let i = 0; i < 10; i++) {
+      pRect(cx - (9 - i), cy - 33 - i, (9 - i) * 2, 1, '#8c1d40');
+    }
+    // Tower Roof Cones
+    for (let i = 0; i < 7; i++) {
+      pRect(cx - 23 + i, cy - 27 - i, 11 - i * 2, 1, '#6d1430');
+      pRect(cx + 12 + i, cy - 27 - i, 11 - i * 2, 1, '#6d1430');
+    }
+    // Battlements
+    for (let x = -15; x <= 13; x += 4) {
+      pRect(cx + x, cy - 22, 2, 2, '#2f3640');
+    }
+    // Glowing Yellow/Red Spooky Windows & Gate
+    pRect(cx - 19, cy - 20, 3, 4, '#ffcc00');
+    pRect(cx + 16, cy - 20, 3, 4, '#ffcc00');
+    pRect(cx - 2, cy - 26, 4, 5, '#ff4757');
+    pEllipse(cx, cy, 5, 6, '#08090f'); // Gate
+    // Portcullis bars
+    pRect(cx - 3, cy - 4, 1, 8, '#718093');
+    pRect(cx, cy - 5, 1, 9, '#718093');
+    pRect(cx + 3, cy - 4, 1, 8, '#718093');
+  }
+
+  function generateMap(currentSeed) {
+    seed = currentSeed;
+
+    // 1. Twilight Sky & Ocean Backdrop
+    const skyColors = ['#0c1026', '#162047', '#1e3264', '#284b82', '#1d6396', '#1882b3'];
+    for (let y = 0; y < PH; y++) {
+      const band = Math.min(skyColors.length - 1, Math.floor((y / PH) * skyColors.length));
+      pRect(0, y, PW, 1, skyColors[band]);
+    }
+
+    // Distant Stars in Upper Sky
+    for (let i = 0; i < 65; i++) {
+      const sx = Math.floor(rand() * PW);
+      const sy = Math.floor(rand() * 65);
+      pRect(sx, sy, 1, 1, rand() > 0.3 ? '#ffffff' : '#ffeaa7');
+    }
+
+    // Spooky Full Moon behind the Fortress (Top Right)
+    pCircle(292, 28, 14, '#fff3b0');
+    pCircle(290, 26, 12, '#ffffff');
+    pCircle(286, 24, 3, '#f7e18b');
+    pCircle(295, 31, 2, '#f7e18b');
+
+    // Ocean Waves & Shimmering Water
+    pRect(0, 62, PW, PH - 62, '#125c8a');
+    pRect(0, 88, PW, PH - 88, '#1674ab');
+    pRect(0, 120, PW, PH - 120, '#1b8cc9');
+    for (let i = 0; i < 140; i++) {
+      const wx = Math.floor(rand() * PW);
+      const wy = 66 + Math.floor(rand() * (PH - 70));
+      pRect(wx, wy, 3 + Math.floor(rand() * 4), 1, '#54b9eb');
+    }
+
+    // Background Clouds
+    drawCloud(48, 28, 16);
+    drawCloud(135, 22, 20);
+    drawCloud(210, 32, 14);
+
+    // 2. Main Continent & Biome Landmasses
+    // Sandy Coastal Shallows & Cliff Wall
+    const islands = [
+      { x: 60, y: 128, rx: 52, ry: 28 },   // Region 1: Sunny Meadow
+      { x: 108, y: 92, rx: 46, ry: 25 },   // Region 2: Whispering Woods
+      { x: 162, y: 122, rx: 48, ry: 26 },  // Region 3: Crystal Cavern
+    ];
+
+    // Water foam & cliffs
+    islands.forEach(isl => {
+      pEllipse(isl.x, isl.y + 7, isl.rx + 5, isl.ry + 4, '#70d6ff'); // Foam
+      pEllipse(isl.x, isl.y + 6, isl.rx + 2, isl.ry + 2, '#6e472b'); // Cliff dark
+      pEllipse(isl.x, isl.y + 3, isl.rx + 1, isl.ry + 1, '#9c6640'); // Cliff light
+      pEllipse(isl.x, isl.y, isl.rx, isl.ry, '#f7d794');             // Beach rim
+    });
+
+    // Region 1: Sunny Meadow Turf
+    pEllipse(60, 127, 48, 24, '#4cd137');
+    pEllipse(56, 124, 42, 20, '#63e649');
+
+    // Region 2: Whispering Woods Turf
+    pEllipse(108, 91, 43, 22, '#218c53');
+    pEllipse(106, 89, 38, 19, '#2ecc71');
+
+    // Region 3: Crystal Cavern Highland Turf
+    pEllipse(162, 121, 44, 23, '#3b4b59');
+    pEllipse(160, 119, 39, 19, '#52677a');
+
+    // Sparkling River cutting between Meadow and Woods
+    for (let y = 92; y <= 148; y++) {
+      const rx = 86 + Math.sin(y * 0.15) * 6;
+      pRect(rx - 3, y, 6, 1, '#00a8ff');
+      pRect(rx - 1, y, 2, 1, '#9cffff');
+    }
+    // Wooden Bridge across the river
+    pRect(81, 106, 12, 5, '#8c5828');
+    pRect(81, 105, 12, 1, '#d49a6a');
+    pRect(81, 111, 12, 1, '#4a2c11');
+
+    // 3. Draw Biome Landmarks
+    // Sunny Meadow details (Flowers, Cottage, Oak Trees)
+    drawCottage(34, 120);
+    drawOakTree(24, 132);
+    drawOakTree(74, 140);
+    drawOakTree(45, 142);
+    for (let i = 0; i < 28; i++) {
+      const fx = 25 + Math.floor(rand() * 62);
+      const fy = 112 + Math.floor(rand() * 28);
+      pRect(fx, fy, 1, 1, rand() > 0.5 ? '#ff5e97' : '#ffcc00');
+    }
+
+    // Whispering Woods details (Dense Pine Forest & Red Mushrooms)
+    const treeCoords = [
+      [78, 82], [86, 76], [96, 74], [108, 73], [120, 75], [130, 80],
+      [74, 92], [84, 88], [125, 89], [136, 92], [95, 100], [118, 99]
+    ];
+    treeCoords.forEach(([tx, ty], i) => drawPineTree(tx, ty, i % 2 === 0));
+    // Giant Pixel Mushrooms in Woods
+    pRect(100, 80, 2, 2, '#f5f6fa');
+    pEllipse(101, 79, 3, 2, '#ff3838');
+    pRect(116, 94, 2, 2, '#f5f6fa');
+    pEllipse(117, 93, 3, 2, '#ff3838');
+
+    // Region 3: Crystal Cavern Mountain & Glowing Crystals
+    drawCrystalMountain(178, 114);
+    drawPineTree(138, 125, true);
+    drawPineTree(145, 132, true);
+
+    // Region 4: Twilight Skybridge (Floating Island at 213, 77)
+    drawTwilightBridge(NODES[3].x, NODES[3].y);
+
+    // Region 5: Spooky Fortress Castle (at 270, 57)
+    drawSpookyFortress(NODES[4].x, NODES[4].y);
+
+    // 4. Dotted Cobblestone Path & Level Clearing Pads
+    if (showPaths) {
+      for (let i = 0; i < NODES.length - 1; i++) {
+        const a = NODES[i];
+        const b = NODES[i + 1];
+        const steps = 16;
+        for (let s = 1; s < steps; s++) {
+          const t = s / steps;
+          const px = a.x + (b.x - a.x) * t;
+          const py = a.y + (b.y - a.y) * t - Math.sin(t * Math.PI) * 5;
+          pRect(px - 1, py - 1, 3, 2, '#2f3542');
+          pRect(px - 1, py - 2, 2, 2, '#ffeaa7');
+        }
+      }
+
+      // 5 Level Clearing Pedestals
+      NODES.forEach((n) => {
+        pEllipse(n.x, n.y + 1, 10, 6, '#1e272e');
+        pEllipse(n.x, n.y, 9, 5, '#ffcc00');
+        pEllipse(n.x, n.y, 7, 4, n.color);
+        pRect(n.x - 1, n.y - 1, 2, 2, '#ffffff');
+      });
+    }
+
+    // 5. Render Upscaled Crisp 960x540 Canvas
+    outCtx.clearRect(0, 0, outCanvas.width, outCanvas.height);
+    outCtx.drawImage(pxCanvas, 0, 0, outCanvas.width, outCanvas.height);
+
+    // Optional Crisp High-Res Retro Labels
+    if (showLabels) {
+      outCtx.font = 'bold 14px "Courier New", monospace';
+      outCtx.textAlign = 'center';
+      NODES.forEach((n) => {
+        const sx = n.x * 3;
+        const sy = n.y * 3;
+        const textW = outCtx.measureText(n.title).width + 14;
+        outCtx.fillStyle = 'rgba(13, 15, 26, 0.88)';
+        outCtx.fillRect(sx - textW / 2, sy + 20, textW, 22);
+        outCtx.strokeStyle = '#ffcc00';
+        outCtx.lineWidth = 2;
+        outCtx.strokeRect(sx - textW / 2, sy + 20, textW, 22);
+        outCtx.fillStyle = '#ffffff';
+        outCtx.fillText(n.title, sx, sy + 35);
+      });
+    }
+  }
+
+  // --- UI EVENTS ---
+  document.getElementById('btnSeed').onclick = () => {
+    generateMap(Math.floor(Math.random() * 999999));
+  };
+
+  document.getElementById('btnTogglePaths').onclick = (e) => {
+    showPaths = !showPaths;
+    e.target.textContent = `📍 Paths & Clearings: ${showPaths ? 'ON' : 'OFF'}`;
+    generateMap(seed);
+  };
+
+  document.getElementById('btnToggleLabels').onclick = (e) => {
+    showLabels = !showLabels;
+    e.target.textContent = `🏷️ Stage Labels: ${showLabels ? 'ON' : 'OFF'}`;
+    generateMap(seed);
+  };
+
+  document.getElementById('btnDownload').onclick = () => {
+    const link = document.createElement('a');
+    link.download = 'world_map.png';
+    link.href = outCanvas.toDataURL('image/png');
+    link.click();
+  };
+
+  // Initial render
+  generateMap(seed);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "character": "janani",
+  "action": "run",
+  "frameWidth": 312,
+  "frameHeight": 463,
+  "frames": 6,
+  "fps": 12,
+  "loopStart": 0,
+  "loopLength": 6
+}

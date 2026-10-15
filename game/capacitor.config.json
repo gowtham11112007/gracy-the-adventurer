@@ -1,0 +1,14 @@
+{
+  "appId": "com.jananijanika.gracy",
+  "appName": "Gracy the Adventurer",
+  "webDir": "dist",
+  "backgroundColor": "#000000",
+  "android": {
+    "allowMixedContent": false
+  },
+  "plugins": {
+    "CapacitorUpdater": {
+      "autoUpdate": false
+    }
+  }
+}
