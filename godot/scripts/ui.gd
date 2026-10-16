@@ -292,6 +292,51 @@ class Switch extends Button:
 		draw_circle(Vector2(x, r), r - 7, MIST.lerp(GOLD, knob))
 
 
+## A slider from 0 to 1: a thin gold track with a round knob you drag (mouse or finger). `changed` gets the value
+## while dragging.
+static func slider(value: float, changed: Callable) -> Control:
+	var s := VolumeSlider.new()
+	s.value = value
+	s.changed_cb = changed
+	s.custom_minimum_size = Vector2(240, 48)
+	s.size = s.custom_minimum_size
+	s.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	return s
+
+
+class VolumeSlider extends Control: ## (not "Slider": Godot already has a class with that name)
+	var value := 0.5
+	var changed_cb := Callable()
+	var _drag := false
+
+	func _gui_input(event: InputEvent) -> void:
+		var pos := Vector2.ZERO
+		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+			_drag = event.pressed
+			pos = event.position
+			if not event.pressed:
+				return
+		elif event is InputEventMouseMotion and _drag:
+			pos = event.position
+		else:
+			return # (touches arrive here as emulated mouse events too)
+		value = clampf((pos.x - 14.0) / (size.x - 28.0), 0.0, 1.0)
+		queue_redraw()
+		if changed_cb.is_valid():
+			changed_cb.call(value)
+
+	func _draw() -> void:
+		var cy := size.y / 2
+		var x0 := 14.0
+		var x1 := size.x - 14.0
+		draw_line(Vector2(x0, cy), Vector2(x1, cy), Color(GOLD_DIM, 0.35), 6.0, true)
+		draw_line(Vector2(x0, cy), Vector2(lerpf(x0, x1, value), cy), GOLD, 6.0, true)
+		var kx := lerpf(x0, x1, value)
+		draw_circle(Vector2(kx, cy), 14.0, Color(0, 0, 0, 0.35))
+		draw_circle(Vector2(kx, cy), 12.0, GOLD)
+		draw_circle(Vector2(kx, cy), 5.0, NIGHT)
+
+
 ## A picture as a Control (icons inside panels).
 static func picture(t: Texture2D, size: Vector2) -> TextureRect:
 	var r := TextureRect.new()

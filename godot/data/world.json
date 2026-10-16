@@ -1,0 +1,512 @@
+{
+ "areas": {
+  "meadow": {
+   "name": "Sunny Meadow",
+   "color": "#7ec850"
+  },
+  "wood": {
+   "name": "Whispering Wood",
+   "color": "#2f9e8f"
+  },
+  "ruins": {
+   "name": "Sky Ruins",
+   "color": "#8fb8ff"
+  },
+  "shaft": {
+   "name": "The Long Shaft",
+   "color": "#c0c8d8"
+  },
+  "fortress": {
+   "name": "Sunken Fortress",
+   "color": "#d9a441"
+  },
+  "hill": {
+   "name": "Yuva's Hill",
+   "color": "#9a7bd1"
+  }
+ },
+ "rooms": [
+  {
+   "id": "m1",
+   "name": "Birthday Glade",
+   "area": "meadow",
+   "x": 0,
+   "y": 3,
+   "has": [
+    "start",
+    "bench"
+   ]
+  },
+  {
+   "id": "m2",
+   "name": "Windmill Road",
+   "area": "meadow",
+   "x": 1,
+   "y": 3,
+   "has": []
+  },
+  {
+   "id": "m3",
+   "name": "Old Fence",
+   "area": "meadow",
+   "x": 2,
+   "y": 3,
+   "has": []
+  },
+  {
+   "id": "m4",
+   "name": "Hilltop",
+   "area": "meadow",
+   "x": 1,
+   "y": 2,
+   "has": [
+    "candle"
+   ]
+  },
+  {
+   "id": "m5",
+   "name": "Creek Bank",
+   "area": "meadow",
+   "x": 1,
+   "y": 4,
+   "has": []
+  },
+  {
+   "id": "m6",
+   "name": "Mossy Tunnel",
+   "area": "meadow",
+   "x": 2,
+   "y": 4,
+   "has": []
+  },
+  {
+   "id": "w1",
+   "name": "Wood Gate",
+   "area": "wood",
+   "x": 3,
+   "y": 3,
+   "has": []
+  },
+  {
+   "id": "w2",
+   "name": "Lantern Crossroads",
+   "area": "wood",
+   "x": 4,
+   "y": 3,
+   "has": [
+    "bench"
+   ]
+  },
+  {
+   "id": "w3",
+   "name": "Fallen Oak",
+   "area": "wood",
+   "x": 4,
+   "y": 2,
+   "has": []
+  },
+  {
+   "id": "w4",
+   "name": "Mushroom Hollow",
+   "area": "wood",
+   "x": 4,
+   "y": 4,
+   "has": [
+    "bench"
+   ]
+  },
+  {
+   "id": "w5",
+   "name": "Glowing Pond",
+   "area": "wood",
+   "x": 5,
+   "y": 4,
+   "has": [
+    "candle"
+   ]
+  },
+  {
+   "id": "w6",
+   "name": "Dash Shrine",
+   "area": "wood",
+   "x": 5,
+   "y": 3,
+   "has": [
+    "ability:dash"
+   ]
+  },
+  {
+   "id": "w7",
+   "name": "Wide Gap",
+   "area": "wood",
+   "x": 6,
+   "y": 3,
+   "has": []
+  },
+  {
+   "id": "w8",
+   "name": "Lower Path",
+   "area": "wood",
+   "x": 3,
+   "y": 4,
+   "has": []
+  },
+  {
+   "id": "w9",
+   "name": "Cliff Edge",
+   "area": "wood",
+   "x": 7,
+   "y": 3,
+   "has": []
+  },
+  {
+   "id": "s1",
+   "name": "Ruin Steps",
+   "area": "ruins",
+   "x": 4,
+   "y": 1,
+   "has": [
+    "bench"
+   ]
+  },
+  {
+   "id": "s2",
+   "name": "Floating Stones",
+   "area": "ruins",
+   "x": 5,
+   "y": 1,
+   "has": []
+  },
+  {
+   "id": "s3",
+   "name": "Cloud Terrace",
+   "area": "ruins",
+   "x": 5,
+   "y": 0,
+   "has": [
+    "ability:double_jump"
+   ]
+  },
+  {
+   "id": "s4",
+   "name": "Candle Tower",
+   "area": "ruins",
+   "x": 6,
+   "y": 0,
+   "has": [
+    "candle"
+   ]
+  },
+  {
+   "id": "s5",
+   "name": "Sky Bridge",
+   "area": "ruins",
+   "x": 6,
+   "y": 1,
+   "has": []
+  },
+  {
+   "id": "h1",
+   "name": "Windy Shaft",
+   "area": "shaft",
+   "x": 7,
+   "y": 1,
+   "has": []
+  },
+  {
+   "id": "h2",
+   "name": "Shaft Middle",
+   "area": "shaft",
+   "x": 7,
+   "y": 2,
+   "has": []
+  },
+  {
+   "id": "h3",
+   "name": "Shaft Bottom",
+   "area": "shaft",
+   "x": 7,
+   "y": 4,
+   "has": []
+  },
+  {
+   "id": "h4",
+   "name": "Drowned Ledge",
+   "area": "shaft",
+   "x": 7,
+   "y": 5,
+   "has": []
+  },
+  {
+   "id": "f1",
+   "name": "Sunken Gate",
+   "area": "fortress",
+   "x": 4,
+   "y": 5,
+   "has": []
+  },
+  {
+   "id": "f2",
+   "name": "Flooded Hall",
+   "area": "fortress",
+   "x": 5,
+   "y": 5,
+   "has": []
+  },
+  {
+   "id": "f3",
+   "name": "Climbing Wall",
+   "area": "fortress",
+   "x": 5,
+   "y": 6,
+   "has": [
+    "ability:wall_jump"
+   ]
+  },
+  {
+   "id": "f4",
+   "name": "Deep Vault",
+   "area": "fortress",
+   "x": 4,
+   "y": 6,
+   "has": [
+    "bench",
+    "candle"
+   ]
+  },
+  {
+   "id": "f5",
+   "name": "Rusty Pipe",
+   "area": "fortress",
+   "x": 6,
+   "y": 5,
+   "has": []
+  },
+  {
+   "id": "y1",
+   "name": "Dark Slope",
+   "area": "hill",
+   "x": 8,
+   "y": 3,
+   "has": []
+  },
+  {
+   "id": "y2",
+   "name": "Graveyard",
+   "area": "hill",
+   "x": 9,
+   "y": 3,
+   "has": [
+    "bench",
+    "candle"
+   ]
+  },
+  {
+   "id": "y3",
+   "name": "Yuva's Gate",
+   "area": "hill",
+   "x": 9,
+   "y": 2,
+   "has": []
+  },
+  {
+   "id": "y4",
+   "name": "Yuva's Arena",
+   "area": "hill",
+   "x": 9,
+   "y": 1,
+   "has": [
+    "boss"
+   ]
+  }
+ ],
+ "edges": [
+  {
+   "from": "m1",
+   "to": "m2",
+   "gate": ""
+  },
+  {
+   "from": "m2",
+   "to": "m3",
+   "gate": ""
+  },
+  {
+   "from": "m2",
+   "to": "m4",
+   "gate": ""
+  },
+  {
+   "from": "m2",
+   "to": "m5",
+   "gate": ""
+  },
+  {
+   "from": "m5",
+   "to": "m6",
+   "gate": ""
+  },
+  {
+   "from": "m3",
+   "to": "w1",
+   "gate": ""
+  },
+  {
+   "from": "w1",
+   "to": "w2",
+   "gate": ""
+  },
+  {
+   "from": "w1",
+   "to": "w8",
+   "gate": ""
+  },
+  {
+   "from": "m6",
+   "to": "w8",
+   "gate": ""
+  },
+  {
+   "from": "w8",
+   "to": "w4",
+   "gate": ""
+  },
+  {
+   "from": "w2",
+   "to": "w4",
+   "gate": ""
+  },
+  {
+   "from": "w4",
+   "to": "w5",
+   "gate": ""
+  },
+  {
+   "from": "w2",
+   "to": "w3",
+   "gate": ""
+  },
+  {
+   "from": "w2",
+   "to": "w6",
+   "gate": ""
+  },
+  {
+   "from": "w6",
+   "to": "w7",
+   "gate": "dash"
+  },
+  {
+   "from": "w7",
+   "to": "w9",
+   "gate": ""
+  },
+  {
+   "from": "w3",
+   "to": "s1",
+   "gate": "dash"
+  },
+  {
+   "from": "s1",
+   "to": "s2",
+   "gate": ""
+  },
+  {
+   "from": "s2",
+   "to": "s3",
+   "gate": ""
+  },
+  {
+   "from": "s3",
+   "to": "s4",
+   "gate": "double_jump"
+  },
+  {
+   "from": "s2",
+   "to": "s5",
+   "gate": ""
+  },
+  {
+   "from": "s5",
+   "to": "h1",
+   "gate": ""
+  },
+  {
+   "from": "h1",
+   "to": "h2",
+   "gate": ""
+  },
+  {
+   "from": "h2",
+   "to": "w9",
+   "gate": ""
+  },
+  {
+   "from": "w9",
+   "to": "h3",
+   "gate": ""
+  },
+  {
+   "from": "h3",
+   "to": "h4",
+   "gate": ""
+  },
+  {
+   "from": "h4",
+   "to": "f5",
+   "gate": "wall_jump"
+  },
+  {
+   "from": "f5",
+   "to": "f2",
+   "gate": ""
+  },
+  {
+   "from": "w4",
+   "to": "f1",
+   "gate": ""
+  },
+  {
+   "from": "f1",
+   "to": "f2",
+   "gate": ""
+  },
+  {
+   "from": "f2",
+   "to": "f3",
+   "gate": ""
+  },
+  {
+   "from": "f3",
+   "to": "f4",
+   "gate": "wall_jump"
+  },
+  {
+   "from": "w9",
+   "to": "y1",
+   "gate": "double_jump"
+  },
+  {
+   "from": "y1",
+   "to": "y2",
+   "gate": ""
+  },
+  {
+   "from": "y2",
+   "to": "y3",
+   "gate": "candles:3"
+  },
+  {
+   "from": "y3",
+   "to": "y4",
+   "gate": ""
+  }
+ ],
+ "start": "m1",
+ "abilities": [
+  "dash",
+  "double_jump",
+  "wall_jump"
+ ],
+ "candles": 5
+}

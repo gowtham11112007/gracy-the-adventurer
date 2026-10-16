@@ -179,7 +179,14 @@ Java path was probably cleared when the editor saved; set it again in Editor Set
 - Fire magic (fireball and fire arrow), charged by defeating animals; on-screen shoot button.
 - Phone touch controls; APK builds and installs as a separate app "Gracy (Godot)".
 
-## What's next (in rough priority order)
+## NEW DIRECTION (16 Oct): read `GAME_DESIGN.md` first
+The owner is changing the whole Godot game into a sword-fighting, connected-world action-adventure
+("metroidvania") inspired by Hollow Knight, Silksong and Divinum, starring only the Spriterrific "Beta" Janani
+with a sword. Inspired by, NEVER copied: no code, art, audio or layouts from those games. The list below is the
+older plan: where it conflicts with GAME_DESIGN.md, the design file wins. Newly built (16 Oct): save slots,
+Continue, full settings (`Game.slot`, `Game.settings`, `UI.slider`, `popup.add_all_settings`); the repo is private.
+
+## What's next (in rough priority order, older plan)
 
 1. **Music:** the current tracks (`assets/audio/`, synthesized chiptune) feel childish. Replace with calm
    orchestral/ambient loops: suggested free packs (the user downloads them): HZSMITH "Epic Fantasy Forest"

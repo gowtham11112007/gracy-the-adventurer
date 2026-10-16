@@ -3,7 +3,8 @@ extends Node2D
 ## falling through the trees, drifting fog and fireflies. "GRACY - The Adventurer" in carved gold, the menu
 ## below it, Janani and Kitty on the forest floor, and Yuva floating among the trees with Janika in her bubble.
 
-signal start_game
+signal start_game                  ## continue into the world map (a slot is loaded)
+signal new_game_started(slot: int) ## a fresh game was started in this slot
 signal open_story
 signal open_wardrobe
 signal open_shrine
@@ -32,6 +33,11 @@ func _ready() -> void:
 	_menu(ui)
 	_progress(ui)
 	Game.play_music("title")
+	var args := OS.get_cmdline_user_args()
+	if "slots" in args: # (testing) open the save slots / settings straight away
+		_open_slots()
+	elif "settings" in args:
+		_open_settings()
 
 
 func _x(x: float) -> float:
@@ -104,8 +110,14 @@ func _logo(ui: CanvasLayer) -> void:
 
 
 func _menu(ui: CanvasLayer) -> void:
-	var entries := [["Play", start_game], ["Story", open_story], ["Wardrobe", open_wardrobe],
-		["Candles", open_shrine], ["Settings", Signal()]]
+	# Continue (only when a save is loaded), then the save slots, the story, wardrobe, candles and settings.
+	# A Callable entry runs here; a Signal entry is emitted.
+	var entries: Array = []
+	if Game.slot >= 1:
+		entries.append(["Continue", start_game])
+	entries.append(["Save Slots", _open_slots])
+	entries.append_array([["Story", open_story], ["Wardrobe", open_wardrobe], ["Candles", open_shrine],
+		["Settings", _open_settings]])
 	var box := VBoxContainer.new()
 	box.size = Vector2(440, 320)
 	box.position = Vector2((_vp.x - 440) / 2, 318)
@@ -114,12 +126,12 @@ func _menu(ui: CanvasLayer) -> void:
 	for i in entries.size():
 		var item := UI.menu_item(entries[i][0], 40 if i == 0 else 30)
 		item.custom_minimum_size = Vector2(440, 64 if i == 0 else 54)
-		var sig: Signal = entries[i][1]
+		var action: Variant = entries[i][1]
 		item.pressed.connect(func() -> void:
-			if sig.is_null():
-				_open_settings()
+			if action is Callable:
+				action.call()
 			else:
-				sig.emit())
+				(action as Signal).emit())
 		var idx := i
 		item.mouse_entered.connect(func() -> void: _select(idx))
 		box.add_child(item)
@@ -148,9 +160,69 @@ func _progress(ui: CanvasLayer) -> void:
 func _open_settings() -> void:
 	var p := preload("res://scripts/popup.gd").new()
 	p.title = "Settings"
-	p.sheet_size = Vector2(520, 320)
+	p.sheet_size = Vector2(640, 520)
 	add_child(p)
-	p.add_audio_switches("title")
+	p.add_all_settings("title")
+
+
+## The three save slots: an empty one starts a new game; a used one shows its progress and can be loaded or
+## deleted (the delete button asks once more before it deletes).
+func _open_slots() -> void:
+	var p := preload("res://scripts/popup.gd").new()
+	p.title = "Save Slots"
+	p.sheet_size = Vector2(940, 560)
+	add_child(p)
+	for i in range(1, Game.SLOTS + 1):
+		var info := Game.slot_summary(i)
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation", 14)
+		row.custom_minimum_size = Vector2(0, 92)
+		var card := UI.panel(Vector2(0, 92), 16)
+		card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		card.custom_minimum_size = Vector2(0, 92)
+		row.add_child(card)
+		var name := UI.title("Slot %d" % i, 24)
+		name.position = Vector2(22, 10)
+		card.add_child(name)
+		var line := "Empty" if info.is_empty() else "Levels %d/5   Crystals %d/15   Candles %d/5   %s" % [
+			info.cleared, info.crystals, info.candles, _play_time(info.played)]
+		var sub := UI.text(line, 18, UI.MIST if info.is_empty() else UI.CREAM)
+		sub.position = Vector2(22, 50)
+		card.add_child(sub)
+		var go := UI.button("New game" if info.is_empty() else "Load", "gold", 150, 70, 22)
+		var slot := i
+		go.pressed.connect(func() -> void:
+			if info.is_empty():
+				Game.new_game(slot)
+				p.close()
+				new_game_started.emit(slot)
+			else:
+				Game.load_slot(slot)
+				p.close()
+				start_game.emit())
+		row.add_child(go)
+		if not info.is_empty():
+			var del := UI.button("Delete", "glass", 130, 70, 18)
+			var armed := [false]
+			del.pressed.connect(func() -> void:
+				if not armed[0]:
+					armed[0] = true
+					del.text = "SURE?" # one more tap deletes
+					get_tree().create_timer(3.0).timeout.connect(func() -> void:
+						if is_instance_valid(del):
+							armed[0] = false
+							del.text = "DELETE")
+					return
+				Game.delete_slot(slot)
+				p.close()
+				_open_slots())
+			row.add_child(del)
+		p.body.add_child(row)
+
+
+func _play_time(seconds: float) -> String:
+	var m := int(seconds / 60.0)
+	return "%dh %02dm" % [m / 60, m % 60] if m >= 60 else "%d min" % m
 
 
 func _unhandled_input(event: InputEvent) -> void:

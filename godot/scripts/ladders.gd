@@ -10,6 +10,7 @@ var _ladders: Array[Rect2] = []
 var _top_rungs: Dictionary = {} ## col -> highest row of ladder
 var _bot_rungs: Dictionary = {} ## col -> lowest row of ladder
 var _climb_col := -1
+var _no_grab := false ## just stepped off the top: Up must be let go before a ladder grabs her again
 
 
 func build(grid: PackedStringArray, width: int) -> void:
@@ -73,9 +74,11 @@ func _physics_process(delta: float) -> void:
 	var wants_up := Input.is_action_pressed("up")
 	var wants_down := Input.is_action_pressed("down")
 
+	if not wants_up:
+		_no_grab = false
 	if not p.climbing:
 		# Mount ladder when pressing up while in front of ladder
-		if on_any_ladder and wants_up:
+		if on_any_ladder and wants_up and not _no_grab:
 			p.climbing = true
 			_climb_col = ladder_col
 			p.position.x = _climb_col * TILE + TILE / 2.0
@@ -117,11 +120,13 @@ func _physics_process(delta: float) -> void:
 		# Reached top platform: step onto the floor shelf
 		if _top_rungs.has(_climb_col):
 			var top_y: float = _top_rungs[_climb_col] * TILE
-			if p.position.y <= top_y + 8 and wants_up:
+			var sideways := Input.get_axis("left", "right")
+			if p.position.y <= top_y + 8 and (wants_up or sideways != 0.0):
 				p.climbing = false
 				p.position.y = top_y
-				p.velocity = Vector2.ZERO
+				p.velocity = Vector2(sideways * 160.0, 0.0) # (left or right at the top steps straight off the ladder)
 				_climb_col = -1
+				_no_grab = true # holding Up must not grab the ladder again
 				return
 
 		# Reached bottom floor: step onto the ground

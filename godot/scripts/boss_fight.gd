@@ -111,6 +111,19 @@ func touch(p: CharacterBody2D) -> void:
 		level.hurt_from(boss.position.x)
 
 
+## Janani's sword reached Yuva: a hit like a stomp (he flashes for a moment after each). True if it landed.
+func sword_hit() -> bool:
+	if boss.defeated or boss.invuln > 0:
+		return false
+	var last: bool = boss.hit()
+	_bar[boss.hits - 1].color = Color(0.2, 0.2, 0.2, 0.6)
+	if last:
+		_won()
+	else:
+		level.add_score(5000)
+	return true
+
+
 func boss_landed(at: Vector2) -> void:
 	level.shake(0.22)
 	level.puff_at(at, 18)

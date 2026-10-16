@@ -13,6 +13,41 @@ func _initialize() -> void:
 	assert(game.save.outfit == "beta")
 	print("PASS  Save data and outfit persistence")
 
+	print("Testing save slots and settings...")
+	var keep_slot: int = game.slot
+	var keep_last: int = game.settings.last_slot
+	var keep_shake: bool = game.settings.shake
+	if game.has_slot(3):
+		print("SKIP  slot 3 already holds a real save: slot tests not run")
+	else:
+		game.new_game(3)
+		assert(game.has_slot(3) and game.slot == 3)
+		assert(game.slot_summary(3).cleared == 0)
+		game.save.cleared.append("1-1")
+		game.save.crystals["1-1"] = [0, 2, 2, 2] # (the same crystal saved again and again, as an old bug did)
+		game.write_save()
+		var info: Dictionary = game.slot_summary(3)
+		assert(info.cleared == 1 and info.crystals == 2)
+		print("PASS  A new game in slot 3 is saved and summarised")
+		game.save = game.SAVE_DEFAULTS.duplicate(true)
+		game.load_slot(3)
+		assert(game.save.cleared == ["1-1"] and game.settings.last_slot == 3)
+		assert(game.save.crystals["1-1"] == [0, 2] and game.save.crystals["1-1"].has(2)) # whole numbers, once each
+		print("PASS  Loading slot 3 brings its progress back, crystals as whole numbers once each")
+		game.delete_slot(3)
+		assert(not game.has_slot(3) and game.slot == 0 and game.settings.last_slot == 0)
+		print("PASS  Deleting slot 3 removes it")
+		game.write_save()
+		assert(not game.has_slot(3)) # no slot chosen: nothing may be written
+		print("PASS  With no slot chosen nothing is written")
+	game.set_setting("shake", false)
+	assert(JSON.parse_string(FileAccess.get_file_as_string("user://settings.json")).shake == false)
+	game.set_setting("shake", keep_shake)
+	game.slot = keep_slot
+	game.settings.last_slot = keep_last
+	game._save_settings()
+	print("PASS  Settings are saved and restored")
+
 	print("Testing World Map instantiation...")
 	var map: Node2D = load("res://scripts/world_map.gd").new()
 	root.add_child(map)

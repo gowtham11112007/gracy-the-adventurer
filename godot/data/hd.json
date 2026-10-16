@@ -150,5 +150,208 @@
     "fps": 24
    }
   }
+ },
+ "beta2": {
+  "cell": 210,
+  "base": "kurti",
+  "actions": {
+   "run": {
+    "key": "hd/beta2_run",
+    "frames": 11,
+    "fps": 12
+   },
+   "jump": {
+    "key": "hd/beta2_jump",
+    "frames": 13,
+    "fps": 12
+   },
+   "hurt": {
+    "key": "hd/beta2_hurt",
+    "frames": 25,
+    "fps": 24
+   },
+   "attack": {
+    "key": "hd/beta2_attack",
+    "frames": 25,
+    "fps": 24
+   }
+  }
+ },
+ "beta3": {
+  "cell": 210,
+  "base": "kurti",
+  "actions": {
+   "run": {
+    "key": "hd/beta3_run",
+    "frames": 13,
+    "fps": 24
+   },
+   "jump": {
+    "key": "hd/beta3_jump",
+    "frames": 25,
+    "fps": 24
+   },
+   "hurt": {
+    "key": "hd/beta3_hurt",
+    "frames": 25,
+    "fps": 24
+   },
+   "idle": {
+    "key": "hd/beta3_idle",
+    "frames": 10,
+    "fps": 6
+   }
+  }
+ },
+ "beta4": {
+  "cell": 210,
+  "base": "kurti",
+  "actions": {
+   "run": {
+    "key": "hd/beta4_run",
+    "frames": 21,
+    "fps": 24
+   },
+   "jump": {
+    "key": "hd/beta4_jump",
+    "frames": 25,
+    "fps": 24
+   },
+   "hurt": {
+    "key": "hd/beta4_hurt",
+    "frames": 25,
+    "fps": 24
+   },
+   "climb": {
+    "key": "hd/janani25_climb",
+    "frames": 25,
+    "fps": 11
+   },
+   "slash": {
+    "key": "hd/janani25_slash",
+    "frames": 22,
+    "fps": 24,
+    "w": 300,
+    "h": 250,
+    "ax": 70
+   }
+  }
+ },
+ "beta5": {
+  "cell": 210,
+  "base": "kurti",
+  "actions": {
+   "run": {
+    "key": "hd/beta5_run",
+    "frames": 9,
+    "fps": 12
+   },
+   "jump": {
+    "key": "hd/beta5_jump",
+    "frames": 25,
+    "fps": 24
+   },
+   "hurt": {
+    "key": "hd/beta5_hurt",
+    "frames": 25,
+    "fps": 24
+   },
+   "idle": {
+    "key": "hd/beta5_idle",
+    "frames": 10,
+    "fps": 6
+   },
+   "climb": {
+    "key": "hd/janani25_climb",
+    "frames": 25,
+    "fps": 11
+   },
+   "slash": {
+    "key": "hd/janani25_slash",
+    "frames": 22,
+    "fps": 24,
+    "w": 300,
+    "h": 250,
+    "ax": 70
+   }
+  }
+ },
+ "beta6": {
+  "cell": 210,
+  "base": "kurti",
+  "actions": {
+   "run": {
+    "key": "hd/beta6_run",
+    "frames": 9,
+    "fps": 12
+   },
+   "jump": {
+    "key": "hd/beta6_jump",
+    "frames": 25,
+    "fps": 24
+   },
+   "hurt": {
+    "key": "hd/beta6_hurt",
+    "frames": 25,
+    "fps": 24
+   },
+   "walk": {
+    "key": "hd/beta6_walk",
+    "frames": 8,
+    "fps": 10
+   },
+   "climb": {
+    "key": "hd/janani25_climb",
+    "frames": 25,
+    "fps": 11
+   },
+   "slash": {
+    "key": "hd/janani25_slash",
+    "frames": 22,
+    "fps": 24,
+    "w": 300,
+    "h": 250,
+    "ax": 70
+   }
+  }
+ },
+ "beta7": {
+  "cell": 210,
+  "base": "kurti",
+  "actions": {
+   "run": {
+    "key": "hd/beta7_run",
+    "frames": 16,
+    "fps": 24
+   },
+   "jump": {
+    "key": "hd/beta7_jump",
+    "frames": 25,
+    "fps": 24
+   },
+   "hurt": {
+    "key": "hd/beta7_hurt",
+    "frames": 25,
+    "fps": 24
+   },
+   "idle": {
+    "key": "hd/beta7_idle",
+    "frames": 10,
+    "fps": 6
+   },
+   "climb": {
+    "key": "hd/janani25_climb",
+    "frames": 25,
+    "fps": 11
+   },
+   "slash": {
+    "key": "hd/janani25_slash",
+    "frames": 22,
+    "fps": 24,
+    "w": 300,
+    "h": 250,
+    "ax": 70
+   }
+  }
  }
 }

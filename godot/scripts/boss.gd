@@ -2,12 +2,14 @@ extends CharacterBody2D
 ## Yuva (same as game/src/objects/Boss.js): throws bombs at Janani, leaps across the arena,
 ## and needs three stomps on the head. Confident at first, crying after the first stomp, dizzy after the second.
 
-## boss strip frames for each mood (see tools/prepare_sprites.py)
+## frames of the red demon strip for each mood (assets/pack/yuva_demon.png, see tools/prepare_demon.py)
 const FRAMES := [
-	{ "idle": 0, "windup": 2, "throw": 5, "jump": 3 },
-	{ "idle": 6, "windup": 8, "throw": 9, "jump": 10 },
-	{ "idle": 7, "windup": 8, "throw": 9, "jump": 10 },
+	{ "idle": 0, "windup": 14, "throw": 12, "jump": 19 },
+	{ "idle": 4, "windup": 14, "throw": 12, "jump": 19 },
+	{ "idle": 8, "windup": 15, "throw": 12, "jump": 19 },
 ]
+const STUNNED_FRAME := 23
+const DEFEATED_FRAME := 21
 const GRAVITY := 1800.0
 
 var fight: Node2D          ## the boss fight: throws the bombs, knows where Janani is
@@ -32,13 +34,14 @@ func _ready() -> void:
 	add_child(shape)
 	look = Sprite2D.new()
 	look.centered = false
-	look.offset = Vector2(-105, -190) # 210x190 frames, feet on the bottom edge
+	look.offset = Vector2(-112, -216) # 224x220 frames, feet on the bottom edge
+	look.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST # pixel art stays crisp
 	add_child(look)
-	_frame(3)
+	_frame(FRAMES[0].jump)
 
 
 func _frame(i: int) -> void:
-	look.texture = Game.frame("boss", i)
+	look.texture = Game.frame("yuva_demon", i)
 
 
 var frames: Dictionary:
@@ -101,7 +104,7 @@ func _physics_process(delta: float) -> void:
 			if on_floor and _timer <= 0:
 				_set_mode("idle", 0.6)
 		"stunned": # Super Kitty pounced on him: dizzy, wide open for a stomp
-			_frame(7)
+			_frame(STUNNED_FRAME)
 			if on_floor:
 				velocity.x = 0
 			if _timer <= 0:
@@ -145,7 +148,7 @@ func hit() -> bool:
 	invuln = 1.5
 	if hits >= 3:
 		defeated = true
-		_frame(4) # sitting, dizzy
+		_frame(DEFEATED_FRAME) # crouched, beaten
 		look.visible = true
 		return true
 	# bounces away from Janani, crying

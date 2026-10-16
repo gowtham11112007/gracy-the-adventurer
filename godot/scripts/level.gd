@@ -6,6 +6,7 @@ extends Node2D
 ## moving platforms, ropes, and doors and signs.
 
 signal finished
+signal exited(to_room: String, arrive: String)  ## she walked off the edge of a room into the next one
 signal restart_requested   ## from the pause menu
 signal quit_requested      ## from the pause menu: back to the map
 
@@ -17,6 +18,13 @@ const SOLID := "#="                ## plain ground and grass platforms (special 
 const ENEMY_KIND := { "m": "mushroom", "M": "hopper", "b": "bee", "d": "diver", "n": "snail" }
 const STOMP_BOUNCE := 620.0
 const MAX_CHARGES := 3             ## magic charges she can save up (one per animal defeated)
+const SWORD_REACH := 200.0         ## how far in front of her the sword reaches
+const World := preload("res://scripts/world.gd")
+## the moves she learns at the shrines, and the doors they open
+const SHRINE_NAME := { "dash": "Dash Shrine", "double_jump": "Cloud Shrine", "wall_jump": "Climbing Shrine" }
+const MOVE_NAME := { "dash": "The wind's blessing", "double_jump": "Double jump", "wall_jump": "The climber's blessing" }
+const MOVE_HINT := { "dash": "The doors marked for the wind are open now", "double_jump": "Jump again in mid-air",
+	"wall_jump": "The deep doors of the fortress are open now" }
 ## which art pack dresses each level (World 1): ground tiles, background and decorations
 const SKIN_FOR_MOOD := { "day": "meadow", "windy": "meadow", "sky": "sky", "golden": "desert", "dusk": "graveyard" }
 
@@ -52,6 +60,11 @@ var _gems: Array[Area2D] = []    ## for the gem magnet
 var _boss_fight: Node2D          ## only on the boss level
 var skin := ""                   ## the art pack this level uses ("" = the original Gemini look)
 var _skin: Dictionary
+var entry := ""                  ## rooms: where she comes in: "left", "right" or "bench" ("" = the room's start)
+var _age := 0.0                  ## seconds since the level opened
+var _closed_told := false        ## the "way is closed" message was just shown
+var _doorways: Array[Dictionary] = []  ## rooms: the arches to the rooms above and below ({ exit, at })
+var _bench_here := -1            ## the bench column she is standing at (so resting happens once per visit)
 var _cinema: Node2D              ## the level's light and mood (cinema.gd)
 var _lean := 150.0               ## how far the camera looks ahead of her
 var _crystals_placed := 0        ## numbers the big crystals 0, 1, 2 (saved as found)
@@ -60,7 +73,7 @@ var _crystals_placed := 0        ## numbers the big crystals 0, 1, 2 (saved as f
 func _ready() -> void:
 	_grid = PackedStringArray(def.grid)
 	_width = int(def.width)
-	_respawn = Vector2(def.start * TILE + TILE / 2.0, GROUND_Y)
+	_respawn = _start_pos()
 	hearts = Game.state.max_hearts
 	skin = SKIN_FOR_MOOD.get(def.get("mood", ""), "")
 	_skin = Game.skins.get(skin, {})
@@ -75,6 +88,9 @@ func _ready() -> void:
 	_build_things()
 	_build_checkpoint()
 	_build_finish()
+	_build_benches()
+	_build_doorways()
+	_build_shrine()
 	_secrets = _part("secrets")
 	_secrets.build(def, _grid, _width)
 	_part("movers").build(def, skin_art("tile_%d" % _skin.float[1]) if skin else "tile_grass_float")
@@ -92,6 +108,36 @@ func _ready() -> void:
 	add_child(_iris)
 	iris_open()
 	Game.play_music(def.get("mood", "meadow"))
+	if def.get("room", false):
+		Game.discover_room(def.id) # the world map remembers every room she walks into
+
+
+## Does this level use the Beta rules: a low hop that clears one-tile obstacles, floors only reachable by ladder?
+## (The Beta level, and every world room.)
+func hop_physics() -> bool:
+	return def.get("id") == "beta" or def.get("hop", false)
+
+
+## Where she appears (her feet): the level's start; or, in a room, beside the door she came through (in the
+## doorway, for one above or below), or at her bench.
+func _start_pos() -> Vector2:
+	var col := int(def.start)
+	var row := 10
+	if def.get("room", false):
+		match entry:
+			"left":
+				col = 2
+			"right":
+				col = _width - 3
+			"bench":
+				if not def.benches.is_empty():
+					col = int(def.benches[0])
+			"up", "down":
+				for ex: Dictionary in def.exits:
+					if ex.side == entry:
+						col = int(ex.col)
+						row = int(ex.row)
+	return Vector2(col * TILE + TILE / 2.0, row * TILE)
 
 
 ## one of the level's helper scripts, added as a child that knows its level
@@ -103,6 +149,7 @@ func _part(script: String) -> Node2D:
 
 
 func _physics_process(delta: float) -> void:
+	_age += delta
 	_lean = lerpf(_lean, -150.0 if player.look.flip_h else 150.0, 0.03) # look ahead of her
 	_cam.position = Vector2(_lean, -150) # (Juice shakes the camera's offset)
 	if _done or _dying:
@@ -113,6 +160,9 @@ func _physics_process(delta: float) -> void:
 		_reach_checkpoint()
 	if def.has("finish") and player.position.x >= def.finish * TILE + TILE / 2.0:
 		_finish()
+	if def.get("room", false):
+		_check_exits()
+		_check_doorways()
 	blocks.check(player)
 	if Input.is_action_just_pressed("shoot"):
 		_shoot()
@@ -134,6 +184,176 @@ func _physics_process(delta: float) -> void:
 	if player.is_on_floor() and absf(player.velocity.x) > 220 and _dust_timer <= 0:
 		puff(2, -signf(player.velocity.x) * 14)
 		_dust_timer = 0.11
+
+
+## Rooms: walking off the left or right edge goes through that side's door to the next room (a fade, then
+## `exited`). A side with no door, or one marked closed ("to": ""), is a wall.
+func _check_exits() -> void:
+	var x := player.position.x
+	var lo := TILE * 0.4
+	var hi := (_width - 0.4) * TILE
+	if x >= lo and x <= hi:
+		_closed_told = false
+		return
+	var side := "left" if x < lo else "right"
+	for ex: Dictionary in def.exits:
+		if ex.side == side and not String(ex.to).is_empty() and gate_open(ex):
+			_leave(ex)
+			return
+	player.position.x = clampf(x, lo, hi) # a wall
+	player.velocity.x = 0.0
+	for ex: Dictionary in def.exits:
+		if ex.side == side and not _closed_told:
+			_closed_told = true
+			_tell_closed(ex)
+
+
+## is this door open? Some need a move she learns at a shrine, Yuva's needs three lit candles.
+func gate_open(ex: Dictionary) -> bool:
+	return World.gate_open(String(ex.get("gate", "")), Game.save.abilities, Game.save.candles.size())
+
+
+func _tell_closed(ex: Dictionary) -> void:
+	var gate := String(ex.get("gate", ""))
+	if gate.begins_with("candles"):
+		banner("The way is sealed", "Light three birthday candles (%d of 3)" % mini(3, Game.save.candles.size()), 2.0)
+	elif not gate.is_empty():
+		banner("The way is closed", "Find the %s" % SHRINE_NAME.get(gate, "shrine"), 2.0)
+	else:
+		banner("The way is closed", "for now", 1.6)
+
+
+## Doorways to the rooms above and below: a glowing arch. Standing in one and pressing Up goes through.
+func _build_doorways() -> void:
+	for ex: Dictionary in def.get("exits", []):
+		if not ex.has("col"):
+			continue
+		var at := Vector2(int(ex.col) * TILE + TILE / 2.0, int(ex.row) * TILE)
+		var arch := Sprite2D.new()
+		arch.texture = Game.texture("portal")
+		var size := 150.0 / arch.texture.get_height()
+		arch.scale = Vector2(size, size)
+		arch.position = at + Vector2(0, -75)
+		arch.z_index = Z.DECO_BACK
+		arch.modulate = Color(1, 1, 1, 1) if gate_open(ex) else Color(0.45, 0.45, 0.55, 0.9)
+		add_child(arch)
+		var glow := UI.glow(110, Color(0.5, 0.8, 1.0, 0.45) if gate_open(ex) else Color(0.6, 0.5, 0.8, 0.2))
+		glow.position = arch.position
+		add_child(glow)
+		UI.breathe(glow, 0.5, 1.3)
+		var to: Dictionary = World.room(String(ex.to))
+		var sign := Game.label(("^ " if ex.side == "up" else "v ") + String(to.get("name", "")), 11, Color(1.0, 0.92, 0.7))
+		sign.position = at + Vector2(-90, -186)
+		sign.size.x = 180
+		sign.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		sign.z_index = Z.DECO_FRONT
+		add_child(sign)
+		_doorways.append({ "exit": ex, "at": at })
+
+
+## standing in a doorway and pressing Up: through it (or told what it needs)
+func _check_doorways() -> void:
+	if not Input.is_action_just_pressed("up") or player.climbing:
+		return
+	for d: Dictionary in _doorways:
+		var at: Vector2 = d.at
+		if absf(player.position.x - at.x) < 44 and absf(player.position.y - at.y) < 24:
+			if gate_open(d.exit):
+				_leave(d.exit)
+			else:
+				_tell_closed(d.exit)
+			return
+
+
+## A shrine (def.shrine): a glowing stone that teaches her a move. Its doors open once she has it.
+func _build_shrine() -> void:
+	if not def.has("shrine"):
+		return
+	var ability := String(def.shrine.ability)
+	var x := int(def.shrine.col) * TILE + TILE / 2.0
+	var stone := _stand("gem_big", x, GROUND_Y - 30, Z.DECO_BACK, 1.6)
+	var glow := UI.glow(200, Color(0.55, 0.9, 1.0, 0.65))
+	glow.position = Vector2(x, GROUND_Y - 80)
+	add_child(glow)
+	UI.breathe(glow, 0.5, 1.0)
+	var name := Game.label(SHRINE_NAME.get(ability, "Shrine"), 14, UI.GOLD)
+	name.position = Vector2(x - 120, GROUND_Y - 230)
+	name.size.x = 240
+	name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	name.z_index = Z.DECO_FRONT
+	add_child(name)
+	var area := Area2D.new()
+	area.position = Vector2(x, GROUND_Y - 60)
+	area.collision_layer = 0
+	area.collision_mask = 2
+	var box := RectangleShape2D.new()
+	box.size = Vector2(120, 140)
+	var shape := CollisionShape2D.new()
+	shape.shape = box
+	area.add_child(shape)
+	area.body_entered.connect(func(body: Node) -> void:
+		if body == player and Game.unlock_ability(ability):
+			stone.modulate = Color(1.4, 1.4, 1.6)
+			flash(Color(0.7, 0.9, 1.0, 0.5))
+			Game.play_sfx("one_up")
+			banner(String(MOVE_NAME.get(ability, ability)).to_upper(), MOVE_HINT.get(ability, ""), 2.6))
+	add_child(area)
+
+
+func _leave(ex: Dictionary) -> void:
+	if _done:
+		return
+	_done = true
+	player.frozen = true
+	iris_close_on_player(func() -> void: exited.emit(ex.to, ex.arrive))
+
+
+## Benches (def.benches: columns): a glowing lantern post. Touching one heals her and saves the game there.
+func _build_benches() -> void:
+	for col: int in def.get("benches", []):
+		var x := col * TILE + TILE / 2.0
+		var post := Node2D.new()
+		post.position = Vector2(x, GROUND_Y)
+		post.z_index = Z.DECO_BACK
+		post.set_script(preload("res://scripts/bench_art.gd"))
+		add_child(post)
+		var glow := UI.glow(120, Color(1.0, 0.8, 0.45, 0.5))
+		glow.position = Vector2(0, -96)
+		post.add_child(glow)
+		UI.breathe(glow, 0.55, 1.1)
+		var area := Area2D.new()
+		area.position = Vector2(x, GROUND_Y - 60)
+		area.collision_layer = 0
+		area.collision_mask = 2
+		var box := RectangleShape2D.new()
+		box.size = Vector2(110, 140)
+		var shape := CollisionShape2D.new()
+		shape.shape = box
+		area.add_child(shape)
+		area.body_entered.connect(func(body: Node) -> void:
+			if body == player and _bench_here != col:
+				_bench_here = col
+				_rest())
+		area.body_exited.connect(func(body: Node) -> void:
+			if body == player and _bench_here == col:
+				_bench_here = -1)
+		add_child(area)
+
+
+## she rests: full hearts, and the game is saved here (she returns to this bench).
+func _rest() -> void:
+	hearts = Game.state.max_hearts
+	player.charges = 0
+	Game.save.bench = def.id
+	Game.save.room = def.id
+	Game.write_save()
+	_update_hud()
+	puff_at(player.position + Vector2(0, -80), 10, Color(1.0, 0.85, 0.5))
+	Game.play_sfx("one_up")
+	var wait := maxf(0.0, 3.6 - _age) # (not on top of the room's title card at the start)
+	if wait > 0.0:
+		await get_tree().create_timer(wait).timeout
+	banner("Rested", "Your game is saved", 1.4)
 
 
 ## is there solid ground at this point of the level? (enemies use it to stop at ledges)
@@ -269,7 +489,7 @@ func _float_piece(c: int, r: int) -> String:
 ## Trees, bushes, flowers and rocks along the ground, clouds drifting in the sky, faded trees on the
 ## horizon and grass tufts in front of her feet (same recipe as the original, so each level looks the same).
 func _decorate() -> void:
-	if def.get("id") == "beta":
+	if hop_physics():
 		return
 	var rnd := RandomNumberGenerator.new()
 	rnd.seed = hash(def.id)
@@ -593,6 +813,7 @@ func _build_player() -> void:
 
 	# dust: a puff when she jumps, a bigger one on hard landings, and little kicks while running
 	player.jumped.connect(func() -> void: puff(6))
+	player.slashed.connect(_sword_swing)
 	player.landed.connect(func(speed: float) -> void:
 		if speed > 380:
 			puff(14 if speed > 800 else 8))
@@ -669,7 +890,7 @@ func _build_hud() -> void:
 	# the phone's buttons (on a computer only when started with `-- touch` or `autorun`)
 	_hud.pad = null
 	var args := OS.get_cmdline_user_args()
-	if DisplayServer.is_touchscreen_available() or "touch" in args or "autorun" in args:
+	if DisplayServer.is_touchscreen_available() or "touch" in args: # (not in "autorun": the pad would undo its key presses)
 		_hud.pad = preload("res://scripts/touch_pad.gd").new()
 		layer.add_child(_hud.pad)
 	_update_hud()
@@ -682,7 +903,7 @@ func _level_card(layer: CanvasLayer, vp: Vector2) -> void:
 	card.position = Vector2(0, vp.y * 0.3)
 	card.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	layer.add_child(card)
-	var world := UI.centered(UI.text("World %s" % def.id, 24, UI.MIST), Vector2(vp.x, 36))
+	var world := UI.centered(UI.text(def.get("area_name", "World %s" % def.id), 24, UI.MIST), Vector2(vp.x, 36))
 	card.add_child(world)
 	var title := UI.heading(String(def.name), minf(vp.x, 900), 54)
 	title.position = Vector2((vp.x - title.size.x) / 2, 38)
@@ -702,14 +923,19 @@ func open_pause_menu() -> void:
 	get_tree().paused = true
 	var p := preload("res://scripts/popup.gd").new()
 	p.title = "Paused"
-	p.sheet_size = Vector2(520, 520)
+	var in_room: bool = def.get("room", false)
+	p.sheet_size = Vector2(520, 620 if in_room else 520)
 	p.closed.connect(func() -> void: get_tree().paused = false)
 	add_child(p)
 	p.add_button("Resume", "gold", p.close)
-	p.add_button("Restart level", "glass", func() -> void:
+	if in_room: # the world map: only the rooms she has walked into are filled in
+		p.add_button("Map", "glass", func() -> void:
+			var m := preload("res://scripts/map_screen.gd").new()
+			add_child(m))
+	p.add_button("Restart room" if in_room else "Restart level", "glass", func() -> void:
 		get_tree().paused = false
 		restart_requested.emit())
-	p.add_button("World map", "glass", func() -> void:
+	p.add_button("Title screen" if in_room else "World map", "glass", func() -> void:
 		get_tree().paused = false
 		quit_requested.emit())
 	p.add_audio_switches(def.get("mood", "meadow"))
@@ -774,6 +1000,31 @@ func _shoot() -> void:
 	_update_hud()
 
 
+## Her sword: a moment after she swings (when the blade comes round), every animal in front of her within
+## reach is knocked out, and Yuva takes a hit. A hit freezes the action for an instant and shakes the camera.
+func _sword_swing() -> void:
+	await get_tree().create_timer(0.12, false, true).timeout
+	if not is_instance_valid(player) or not is_playing():
+		return
+	var dir := -1.0 if player.look.flip_h else 1.0
+	var reach := Rect2(player.position.x - (SWORD_REACH if dir < 0 else 30.0), player.position.y - 200, SWORD_REACH + 30.0, 220)
+	var hit := false
+	for e: Node in _enemies:
+		if is_instance_valid(e) and not e.dead and reach.has_point(e.position + Vector2(0, -30)):
+			e.defeat()
+			score += 200
+			_charge()
+			puff_at(e.position + Vector2(0, -40), 8, Color(1.0, 0.95, 0.8))
+			hit = true
+	if _boss_fight and is_instance_valid(_boss_fight.boss) and reach.has_point(_boss_fight.boss.position + Vector2(0, -60)):
+		hit = _boss_fight.sword_hit() or hit
+	if hit:
+		Game.play_sfx("smash")
+		Juice.hitstop(0.06, 0.05)
+		shake(0.12)
+		_update_hud()
+
+
 ## an animated cartoon explosion (fireball hits, Yuva's bombs)
 func boom(at: Vector2, size := 1.0) -> void:
 	var fx := AnimatedSprite2D.new()
@@ -797,7 +1048,8 @@ func hurt_from(x: float) -> void:
 
 ## the camera shakes (Saltmire Juice): a short shake for small bumps, a longer one punches harder
 func shake(seconds: float) -> void:
-	Juice.shake(_cam, clampf(seconds * 3.0, 0.25, 0.8))
+	if Game.settings.shake: # a setting: some people don't like a shaking screen
+		Juice.shake(_cam, clampf(seconds * 3.0, 0.25, 0.8))
 
 
 ## keep the camera between two x positions (the boss arena)
@@ -1112,7 +1364,7 @@ func _respawn_after_death() -> void:
 	if Game.state.lives < 0:
 		banner("GAME OVER", "", 2.0)
 		Game.state.lives = 7 # start the world again with full lives
-		_respawn = Vector2(def.start * TILE + TILE / 2.0, GROUND_Y)
+		_respawn = _start_pos()
 	for c in player.get_children():
 		if c is CollisionShape2D:
 			c.set_deferred("disabled", false)

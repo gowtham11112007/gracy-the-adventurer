@@ -148,8 +148,8 @@ func _purr() -> void:
 
 
 func _panel(ui: CanvasLayer) -> void:
-	var w := 440.0
-	var h := 520.0
+	var w := 650.0
+	var h := 600.0
 	var panel := UI.panel(Vector2(w, h), 24)
 	panel.position = Vector2(_vp.x - w - 40, (_vp.y - h) / 2)
 	ui.add_child(panel)
@@ -172,22 +172,13 @@ func _panel(ui: CanvasLayer) -> void:
 		var look := UI.picture(Game.outfit_picture(outfit.id), Vector2(104, 150))
 		look.position = Vector2((card_w - 104) / 2.0, 18)
 		card.add_child(look)
-		var name := UI.centered(UI.text(outfit.name, 16, UI.CREAM, "bold"), Vector2(card_w, 44))
-		name.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		name.position.y = 180
+		var name := UI.centered(UI.text(outfit.name, 18, UI.GOLD, "bold"), Vector2(card_w, 26))
+		name.position.y = 172
 		card.add_child(name)
-		if beta:
-			var tag := UI.centered(UI.title("Beta", 14, UI.NIGHT), Vector2(56, 22))
-			var bg := Panel.new() # a small gold badge
-			var gold := UI.glass(11, 1.0, UI.GOLD)
-			gold.bg_color = UI.GOLD
-			gold.shadow_size = 0
-			bg.add_theme_stylebox_override("panel", gold)
-			bg.size = tag.size
-			bg.position = Vector2(card_w - 64, 8)
-			bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			bg.add_child(tag)
-			card.add_child(bg)
+		var desc := UI.centered(UI.text(outfit.get("desc", ""), 13, UI.MIST), Vector2(card_w - 8, 34))
+		desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		desc.position = Vector2(4, 194)
+		card.add_child(desc)
 		var id: String = outfit.id
 		card.pressed.connect(func() -> void: _wear(id))
 	_mark_worn()

@@ -20,6 +20,8 @@ func _initialize() -> void:
 	await _test_magic()
 	await _test_boss()
 	await _test_beta_outfit()
+	await _test_every_beta()
+	await _test_sword()
 	print("\n%s" % ("ALL PASSED" if _fails == 0 else "%d FAILED" % _fails))
 	quit(_fails)
 
@@ -151,6 +153,54 @@ func _test_beta_outfit() -> void:
 	_check(p.look.sprite_frames.has_animation("rise") and p.look.sprite_frames.has_animation("hurt"), "with her jump and hurt moves")
 	game.save.outfit = "no-such-outfit"
 	_check(game.outfit() == "beta", "a missing outfit falls back to the beta version")
+	game.save.outfit = before
+
+
+## every Spriterrific set in the wardrobe (Beta 1..7) builds all her animations, and no frame points outside its strip
+func _test_every_beta() -> void:
+	var game := root.get_node("Game")
+	var needed := ["idle", "walk", "run", "takeoff", "rise", "peak", "fall", "land", "hurt", "victory"]
+	var bad: Array = []
+	for o: Dictionary in game.OUTFITS:
+		var sf: SpriteFrames = game.detailed_frames(o.id)
+		if sf == null:
+			bad.append(o.id + " (no data)")
+			continue
+		for anim: String in needed:
+			if not sf.has_animation(anim) or sf.get_frame_count(anim) == 0:
+				bad.append("%s/%s (empty)" % [o.id, anim])
+				continue
+			for i in sf.get_frame_count(anim):
+				var t := sf.get_frame_texture(anim, i) as AtlasTexture
+				if t == null or t.region.end.x > t.atlas.get_width() or t.region.end.y > t.atlas.get_height():
+					bad.append("%s/%s frame %d (outside its strip)" % [o.id, anim, i])
+					break
+	_check(bad.is_empty() and game.OUTFITS.size() == 7, "all %d Beta sets build every animation inside their strips %s" % [game.OUTFITS.size(), bad])
+
+
+## her sword (the AutoSprite slash, on the "25" sets): an animal in front of her is knocked out, one behind isn't
+func _test_sword() -> void:
+	var game := root.get_node("Game")
+	var before: String = game.save.get("outfit", "beta")
+	game.save.outfit = "beta7"
+	var level := await _open(0)
+	var p: CharacterBody2D = level.player
+	_check(p.look.sprite_frames.get_frame_count("slash") > 10 and p.look.sprite_frames.get_frame_count("climb") > 10, "the \"25\" Janani has her sword slash and ladder climb")
+	var enemies: Array = level._enemies.duplicate()
+	enemies.sort_custom(func(a, b): return a.position.x < b.position.x)
+	var target: Node = enemies[0]
+	p.teleport(target.position + Vector2(-260, 0)) # out of reach
+	p.look.flip_h = false
+	await _wait(0.1)
+	p.slash()
+	await _wait(0.3)
+	_check(not target.dead, "the sword doesn't reach far-away animals")
+	await _wait(0.4)
+	p.teleport(target.position + Vector2(-130, 0))
+	await physics_frame
+	p.slash()
+	await _wait(0.3)
+	_check(target.dead and p.charges == 1, "a sword slash knocks out the animal in front of her (and charges her magic)")
 	game.save.outfit = before
 
 

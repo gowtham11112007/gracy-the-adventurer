@@ -1,0 +1,92 @@
+{
+  "version": 1,
+  "spriterrificVersion": "0.21.1",
+  "type": "character-plan",
+  "status": "completed",
+  "updatedAt": "2026-10-16T16:19:08.012089Z",
+  "characterId": "character",
+  "direction": "w",
+  "actions": [
+    "run",
+    "jump",
+    "hurt",
+    "idle"
+  ],
+  "steps": [
+    {
+      "stepId": "anchors",
+      "kind": "anchors",
+      "status": "completed",
+      "runDir": "runs/kh7e8x1r4n8s10j80r6v5zt6898gdvfk/anchors-run",
+      "artifacts": {
+        "bootstrapJson": "runs/kh7e8x1r4n8s10j80r6v5zt6898gdvfk/anchors-run/bootstrap.json",
+        "candidateAnchor": "runs/kh7e8x1r4n8s10j80r6v5zt6898gdvfk/anchors-run/candidate/front/snapped-1024-chroma.png",
+        "anchor:w": "runs/kh7e8x1r4n8s10j80r6v5zt6898gdvfk/anchors-run/anchors/w/anchor-snapped-1024-chroma.png",
+        "review": "runs/kh7e8x1r4n8s10j80r6v5zt6898gdvfk/anchors-run/review/bootstrap/index.md"
+      },
+      "error": null,
+      "warnings": [],
+      "estimatedCostUsd": 2.000113
+    },
+    {
+      "stepId": "action:run",
+      "kind": "action",
+      "status": "completed",
+      "runDir": "runs/kh7e8x1r4n8s10j80r6v5zt6898gdvfk/run-w",
+      "artifacts": {
+        "spritesheet": "runs/kh7e8x1r4n8s10j80r6v5zt6898gdvfk/run-w/export/spritesheet.png",
+        "preview": "runs/kh7e8x1r4n8s10j80r6v5zt6898gdvfk/run-w/export/preview.gif",
+        "manifest": "runs/kh7e8x1r4n8s10j80r6v5zt6898gdvfk/run-w/export/manifest.json",
+        "runJson": "runs/kh7e8x1r4n8s10j80r6v5zt6898gdvfk/run-w/run.json"
+      },
+      "error": null,
+      "warnings": [],
+      "estimatedCostUsd": 0.01
+    },
+    {
+      "stepId": "action:jump",
+      "kind": "action",
+      "status": "completed",
+      "runDir": "runs/kh7e8x1r4n8s10j80r6v5zt6898gdvfk/jump-w",
+      "artifacts": {
+        "spritesheet": "runs/kh7e8x1r4n8s10j80r6v5zt6898gdvfk/jump-w/export/spritesheet.png",
+        "preview": "runs/kh7e8x1r4n8s10j80r6v5zt6898gdvfk/jump-w/export/preview.gif",
+        "manifest": "runs/kh7e8x1r4n8s10j80r6v5zt6898gdvfk/jump-w/export/manifest.json",
+        "runJson": "runs/kh7e8x1r4n8s10j80r6v5zt6898gdvfk/jump-w/run.json"
+      },
+      "error": null,
+      "warnings": [],
+      "estimatedCostUsd": 0.01
+    },
+    {
+      "stepId": "action:hurt",
+      "kind": "action",
+      "status": "completed",
+      "runDir": "runs/kh7e8x1r4n8s10j80r6v5zt6898gdvfk/hurt-w",
+      "artifacts": {
+        "spritesheet": "runs/kh7e8x1r4n8s10j80r6v5zt6898gdvfk/hurt-w/export/spritesheet.png",
+        "preview": "runs/kh7e8x1r4n8s10j80r6v5zt6898gdvfk/hurt-w/export/preview.gif",
+        "manifest": "runs/kh7e8x1r4n8s10j80r6v5zt6898gdvfk/hurt-w/export/manifest.json",
+        "runJson": "runs/kh7e8x1r4n8s10j80r6v5zt6898gdvfk/hurt-w/run.json"
+      },
+      "error": null,
+      "warnings": [],
+      "estimatedCostUsd": 0.01
+    },
+    {
+      "stepId": "action:idle",
+      "kind": "action",
+      "status": "completed",
+      "runDir": "runs/kh7e8x1r4n8s10j80r6v5zt6898gdvfk/idle-w",
+      "artifacts": {
+        "spritesheet": "runs/kh7e8x1r4n8s10j80r6v5zt6898gdvfk/idle-w/export/spritesheet.png",
+        "preview": "runs/kh7e8x1r4n8s10j80r6v5zt6898gdvfk/idle-w/export/preview.gif",
+        "manifest": "runs/kh7e8x1r4n8s10j80r6v5zt6898gdvfk/idle-w/export/manifest.json",
+        "runJson": "runs/kh7e8x1r4n8s10j80r6v5zt6898gdvfk/idle-w/run.json"
+      },
+      "error": null,
+      "warnings": [],
+      "estimatedCostUsd": 0.01
+    }
+  ]
+}

@@ -4,7 +4,7 @@ extends Node
 ## - Title Screen: Play (World Map), Story (Intro), Wardrobe (Cottage), Shrine (Chapel).
 ## - Level finish: Celebratory Victory Results Card (Score, Gems, Stars).
 ## - Boss finish: World 1 Ending Cutscene (Janika rescue & hug, Kitty kidnapped!).
-## - Testing args still work: level=N col=X power=fire autorun screen=map/cottage/chapel/story/title.
+## - Testing args still work: level=N col=X power=fire autorun (slash) screen=map/cottage/chapel/story/title.
 ## - Keys: 1-5 levels, T title, M map, C cottage, S shrine.
 
 var _current_screen: Node2D
@@ -17,6 +17,27 @@ func _ready() -> void:
 	for a in args:
 		if a.begins_with("outfit="): # (testing) wear an outfit for this run only, without saving it
 			Game.save.outfit = a.get_slice("=", 1)
+	for a in args:
+		if a.begins_with("room="): # (testing) start in a world room: room=m2, with entry=left|right|bench
+			var entry := ""
+			for b in args:
+				if b.begins_with("entry="):
+					entry = b.get_slice("=", 1)
+			open_room(a.get_slice("=", 1), entry)
+			if "autorun" in args:
+				_autorun()
+			return
+	if "screen=worldmap" in args: # (testing) the new world map: a few rooms explored, or all with "all"
+		var backdrop := preload("res://scripts/ui.gd").backdrop("teal_forest", Color(0.5, 0.55, 0.65))
+		backdrop.scale = Vector2(get_viewport().get_visible_rect().size.x / 1280.0, get_viewport().get_visible_rect().size.y / 720.0)
+		add_child(backdrop)
+		for id in ["m1", "m2", "m3", "m4", "w1", "w2", "w3", "w4", "w6", "s1"]:
+			Game.discover_room(id)
+		Game.unlock_ability("dash")
+		var map := preload("res://scripts/map_screen.gd").new()
+		map.show_all = "all" in args
+		add_child(map)
+		return
 	if "screen=title" in args:
 		open_title_screen()
 		if "goto=map" in args: # (testing) go on to the map after a second, through the wipe
@@ -85,19 +106,24 @@ func _autorun() -> void:
 		if _keep_power and _level and is_instance_valid(_level.player) and _level.player.charges <= 0:
 			_level.player.charges = 3
 			_level._update_hud()
-		Input.action_press("jump")
+		if "slash" in OS.get_cmdline_user_args(): # (testing) swing the sword instead of jumping
+			Input.action_press("attack")
+		else:
+			Input.action_press("jump")
 		Input.action_press("shoot")
 		if _level and is_instance_valid(_level.player):
 			_level._shoot()
 		await get_tree().create_timer(0.35).timeout
 		await get_tree().physics_frame
 		Input.action_release("jump")
+		Input.action_release("attack")
 		Input.action_release("shoot")
 
 
 func open_title_screen() -> void:
 	var title: Node2D = load("res://scripts/title_screen.gd").new()
-	title.start_game.connect(open_world_map)
+	title.start_game.connect(func() -> void: open_room(Game.save.get("bench", "m1"), "bench")) # Continue: at her last bench
+	title.new_game_started.connect(func(_slot: int) -> void: open_story("intro")) # a new game starts with the story
 	title.open_story.connect(func() -> void: open_story("intro"))
 	title.open_wardrobe.connect(open_rpg_cottage)
 	title.open_shrine.connect(open_rpg_chapel)
@@ -109,10 +135,30 @@ func open_story(story_mode := "intro") -> void:
 	story.mode = story_mode
 	story.finished.connect(func(m: String) -> void:
 		if m == "intro":
-			open_world_map()
+			open_room("m1", "") # the story ends in the Birthday Glade, where the game begins
 		else:
 			open_title_screen())
 	_show(story)
+
+
+## A room of the world (data/rooms.json): walking off its left or right edge leads to the next room.
+## `entry` is where she appears: "left", "right", "bench", or "" for the room's own start.
+func open_room(room_id: String, entry := "") -> void:
+	var def: Dictionary = Game.room_def(room_id)
+	if def.is_empty():
+		def = Game.room_def("m1") # (a room that isn't built yet: start again at the Birthday Glade)
+		room_id = "m1"
+		entry = "bench"
+	var level: Node2D = preload("res://scripts/level.gd").new()
+	level.def = def
+	level.entry = entry
+	level.exited.connect(func(to: String, arrive: String) -> void: open_room(to, arrive))
+	level.restart_requested.connect(func() -> void: open_room(room_id, entry))
+	level.quit_requested.connect(open_title_screen)
+	level.finished.connect(func() -> void: # Yuva beaten in his arena: the twins' reunion
+		await get_tree().create_timer(1.8).timeout
+		open_story("world1end"))
+	_show(level)
 
 
 func open_world_map() -> void:
@@ -127,13 +173,13 @@ func open_world_map() -> void:
 
 func open_rpg_cottage() -> void:
 	var cottage: Node2D = load("res://scripts/rpg_cottage.gd").new()
-	cottage.back_to_map.connect(open_world_map)
+	cottage.back_to_map.connect(open_title_screen)
 	_show(cottage)
 
 
 func open_rpg_chapel() -> void:
 	var chapel: Node2D = load("res://scripts/rpg_chapel.gd").new()
-	chapel.back_to_map.connect(open_world_map)
+	chapel.back_to_map.connect(open_title_screen)
 	_show(chapel)
 
 

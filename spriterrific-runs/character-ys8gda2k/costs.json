@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "updatedAt": "2026-10-16T16:09:25.151801Z",
+  "totalEstimatedUsd": 2.040111,
+  "currency": "USD",
+  "generationCount": 7,
+  "entries": [
+    {
+      "manifest": "anchors-run/anchors/w/facing-vlm-run.json",
+      "modelAlias": null,
+      "endpointId": "openrouter/router/vision",
+      "taskType": "vision-facing-check",
+      "status": "completed",
+      "estimatedCostUsd": 0.000111,
+      "reconciled": false
+    },
+    {
+      "manifest": "anchors-run/anchors-nsew/fal/anchor-w/anchor-w-run.json",
+      "modelAlias": "nano-banana-2-lite-edit",
+      "endpointId": "google/nano-banana-2-lite/edit",
+      "taskType": "image-edit",
+      "status": "completed",
+      "estimatedCostUsd": 1.0,
+      "reconciled": false
+    },
+    {
+      "manifest": "anchors-run/candidate-fal/candidate-front-run.json",
+      "modelAlias": "nano-banana-2-lite-edit",
+      "endpointId": "google/nano-banana-2-lite/edit",
+      "taskType": "image-edit",
+      "status": "completed",
+      "estimatedCostUsd": 1.0,
+      "reconciled": false
+    },
+    {
+      "manifest": "hurt-w/fal/fal-video-run.json",
+      "modelAlias": null,
+      "endpointId": "xai/grok-imagine-video/v1.5/image-to-video",
+      "taskType": null,
+      "status": "completed",
+      "estimatedCostUsd": 0.01,
+      "reconciled": false
+    },
+    {
+      "manifest": "jump-w/fal/fal-video-run.json",
+      "modelAlias": null,
+      "endpointId": "xai/grok-imagine-video/v1.5/image-to-video",
+      "taskType": null,
+      "status": "completed",
+      "estimatedCostUsd": 0.01,
+      "reconciled": false
+    },
+    {
+      "manifest": "run-w/fal/fal-video-run.json",
+      "modelAlias": null,
+      "endpointId": "xai/grok-imagine-video/v1.5/image-to-video",
+      "taskType": null,
+      "status": "completed",
+      "estimatedCostUsd": 0.01,
+      "reconciled": false
+    },
+    {
+      "manifest": "walk-w/fal/fal-video-run.json",
+      "modelAlias": null,
+      "endpointId": "xai/grok-imagine-video/v1.5/image-to-video",
+      "taskType": null,
+      "status": "completed",
+      "estimatedCostUsd": 0.01,
+      "reconciled": false
+    }
+  ]
+}

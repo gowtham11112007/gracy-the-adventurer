@@ -5,7 +5,14 @@ const TILE := 64
 ## Janani's outfits in unlock order (as in the Phaser game): she starts in the white kurti, and each
 ## World 1 level she clears unlocks the next one. Each has strips hero_<id>, hero_<id>_moves, hero_<id>_rope.
 const OUTFITS := [
-	{ "id": "beta", "name": "Janani (Beta)", "beta": true },
+	# the Spriterrific Janani sets, for testing which one is best (data/hd.json, made by tools/prepare_hero2.py)
+	{ "id": "beta", "name": "Beta 1", "desc": "White kurti", "beta": true },
+	{ "id": "beta2", "name": "Beta 2", "desc": "White kurti 2", "beta": true },
+	{ "id": "beta3", "name": "Beta 3", "desc": "Black dress", "beta": true },
+	{ "id": "beta4", "name": "Beta 4", "desc": "\"25\" long run", "beta": true },
+	{ "id": "beta5", "name": "Beta 5", "desc": "\"25\" idle", "beta": true },
+	{ "id": "beta6", "name": "Beta 6", "desc": "\"25\" walk", "beta": true },
+	{ "id": "beta7", "name": "Beta 7", "desc": "\"25\" smooth run", "beta": true },
 ]
 
 var manifest: Dictionary   ## frame sizes of every sprite strip (data/manifest.json, made by tools/prepare_sprites.py)
@@ -23,15 +30,26 @@ const KITTY_SKINS := [
 ## carried from level to level in one play session (7 lives and 4 hearts: friendly for new players)
 var state := { "lives": 7, "max_hearts": 4, "gems": 0 }
 ## saved player progress across sessions
-var save := {
+const SLOTS := 3
+const SAVE_DEFAULTS := {
 	"cleared": [],   ## level ids finished (1-1 is always open; each cleared level opens the next)
 	"crystals": {},
 	"candles": [],
-	"outfit": "beta",
+	"outfit": "beta7", # the "25" set: the one with the sword slash and ladder climb
 	"kitty_skin": "orange",
-	"music": true,
-	"sound": true
+	"rooms_seen": [],   ## world rooms she has walked into (the map fills in as she explores)
+	"abilities": [],    ## what she has learned: "dash", "double_jump", "wall_jump"
+	"room": "m1",       ## the room she is in (or last rested in)
+	"bench": "m1",      ## the room of the bench she rested at last (where she returns after the title screen)
+	"played": 0.0,   ## seconds played in this slot
+	"saved_at": 0,   ## when this slot was last written (unix time)
 }
+## the progress of the slot being played (written to user://save_<slot>.json)
+var save: Dictionary = SAVE_DEFAULTS.duplicate(true)
+## 1..SLOTS; 0 means no slot is chosen yet (a fresh start: nothing is written until New Game picks one)
+var slot := 0
+## settings shared by every slot (user://settings.json)
+var settings := { "music": true, "sound": true, "music_volume": 0.8, "sound_volume": 1.0, "shake": true, "last_slot": 0 }
 var _textures := {}
 
 
@@ -41,13 +59,16 @@ func _ready() -> void:
 	levels = _load_json("res://data/levels.json")
 	skins = _load_json("res://data/skins.json")
 	manifest.merge(_load_json("res://data/pack_frames.json")) # the effects strips (tools/prepare_effects.py)
+	if FileAccess.file_exists("res://data/extra_frames.json"):
+		manifest.merge(_load_json("res://data/extra_frames.json")) # the demon boss strip (tools/prepare_demon.py)
 	# the new, detailed Janani (Spriterrific, tools/prepare_hero2.py): outfits that have her use these strips
 	if FileAccess.file_exists("res://data/hd.json"):
 		hd = _load_json("res://data/hd.json")
 		for outfit_id: String in hd:
 			var cell: int = hd[outfit_id].cell
 			for action: Dictionary in hd[outfit_id].actions.values():
-				manifest[action.key] = { "frameWidth": cell, "frameHeight": cell, "frames": action.frames }
+				# (the sword slash is wider than her square cell: it says its own size)
+				manifest[action.key] = { "frameWidth": int(action.get("w", cell)), "frameHeight": int(action.get("h", cell)), "frames": action.frames }
 	var powers: Dictionary = _load_json("res://data/powers.json")
 	for def: Dictionary in levels.solo:
 		def.powers = powers.get(def.id, [])
@@ -67,10 +88,17 @@ func _init_audio() -> void:
 		var p := AudioStreamPlayer.new()
 		add_child(p)
 		_sfx_players.append(p)
+	apply_volumes() # the players exist now: use the saved volumes
+
+
+## counts the time played in the current slot (saved with it)
+func _process(delta: float) -> void:
+	if slot >= 1:
+		save.played = float(save.get("played", 0.0)) + delta
 
 
 func play_sfx(name: String) -> void:
-	if save.has("sound") and not save.sound:
+	if not settings.sound:
 		return
 	var path := "res://assets/audio/sfx/%s.wav" % name
 	if not ResourceLoader.exists(path):
@@ -89,7 +117,7 @@ func play_sfx(name: String) -> void:
 
 
 func play_music(track: String) -> void:
-	if save.has("music") and not save.music:
+	if not settings.music:
 		return
 	var path := "res://assets/audio/music/%s.wav" % track
 	if not ResourceLoader.exists(path):
@@ -115,18 +143,151 @@ func stop_music() -> void:
 		_music_player.stop()
 
 
+## Starts the game: loads the settings, moves an old single save into slot 1 (once), and loads the slot
+## played last, if there is one.
 func load_save() -> void:
-	if FileAccess.file_exists("user://save.json"):
-		var json_str := FileAccess.get_file_as_string("user://save.json")
-		var parsed: Variant = JSON.parse_string(json_str)
-		if parsed is Dictionary:
-			save.merge(parsed, true)
+	_load_settings()
+	if FileAccess.file_exists("user://save.json") and not FileAccess.file_exists(_slot_path(1)):
+		DirAccess.rename_absolute("user://save.json", _slot_path(1)) # the save from before there were slots
+		settings.last_slot = 1
+	var last := int(settings.last_slot)
+	if last >= 1 and last <= SLOTS and has_slot(last):
+		load_slot(last)
+
+
+func _slot_path(i: int) -> String:
+	return "user://save_%d.json" % i
+
+
+func has_slot(i: int) -> bool:
+	return FileAccess.file_exists(_slot_path(i))
+
+
+func has_any_save() -> bool:
+	for i in range(1, SLOTS + 1):
+		if has_slot(i):
+			return true
+	return false
+
+
+## What a slot holds, for the slot list: {} when empty, else cleared / crystals / candles / saved_at.
+func slot_summary(i: int) -> Dictionary:
+	if not has_slot(i):
+		return {}
+	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(_slot_path(i)))
+	if not parsed is Dictionary:
+		return {}
+	var crystals := 0
+	for k: String in parsed.get("crystals", {}):
+		var seen: Array = []
+		for n: Variant in parsed.crystals[k]:
+			if not seen.has(int(n)):
+				seen.append(int(n))
+		crystals += seen.size()
+	return { "cleared": (parsed.get("cleared", []) as Array).size(), "crystals": crystals,
+		"candles": (parsed.get("candles", []) as Array).size(), "saved_at": int(parsed.get("saved_at", 0)),
+		"played": float(parsed.get("played", 0.0)) }
+
+
+## Plays a saved slot.
+func load_slot(i: int) -> void:
+	save = SAVE_DEFAULTS.duplicate(true)
+	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(_slot_path(i)))
+	if parsed is Dictionary:
+		save.merge(parsed, true)
+	# JSON turns whole numbers into decimals (2 becomes 2.0), which then never match "has(2)": make the crystal
+	# numbers whole again, once each (older saves had the same crystal saved many times over)
+	for level_id: String in save.crystals:
+		var whole: Array = []
+		for n: Variant in save.crystals[level_id]:
+			if not whole.has(int(n)):
+				whole.append(int(n))
+		save.crystals[level_id] = whole
+	slot = i
+	settings.last_slot = i
+	_save_settings()
+
+
+## Starts a fresh game in slot i (what was there is replaced).
+func new_game(i: int) -> void:
+	save = SAVE_DEFAULTS.duplicate(true)
+	state = { "lives": 7, "max_hearts": 4, "gems": 0 }
+	slot = i
+	settings.last_slot = i
+	write_save()
+	_save_settings()
+
+
+## She walks into a world room: the map remembers it (true when it's the first time).
+func discover_room(id: String) -> bool:
+	save.room = id
+	if save.rooms_seen.has(id):
+		return false
+	save.rooms_seen.append(id)
+	write_save()
+	return true
+
+
+func has_ability(ability: String) -> bool:
+	return save.abilities.has(ability)
+
+
+## She learns a move at a shrine ("dash", "double_jump", "wall_jump"); true when it's new.
+func unlock_ability(ability: String) -> bool:
+	if save.abilities.has(ability):
+		return false
+	save.abilities.append(ability)
+	write_save()
+	return true
+
+
+func delete_slot(i: int) -> void:
+	if has_slot(i):
+		DirAccess.remove_absolute(_slot_path(i))
+	if slot == i:
+		slot = 0
+		save = SAVE_DEFAULTS.duplicate(true)
+	if int(settings.last_slot) == i:
+		settings.last_slot = 0
+		_save_settings()
 
 
 func write_save() -> void:
-	var file := FileAccess.open("user://save.json", FileAccess.WRITE)
+	if slot < 1:
+		return # no slot chosen yet: nothing to write
+	save.saved_at = int(Time.get_unix_time_from_system())
+	var file := FileAccess.open(_slot_path(slot), FileAccess.WRITE)
 	if file:
 		file.store_string(JSON.stringify(save, "\t"))
+
+
+func _load_settings() -> void:
+	if FileAccess.file_exists("user://settings.json"):
+		var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string("user://settings.json"))
+		if parsed is Dictionary:
+			settings.merge(parsed, true)
+	apply_volumes()
+
+
+func _save_settings() -> void:
+	var file := FileAccess.open("user://settings.json", FileAccess.WRITE)
+	if file:
+		file.store_string(JSON.stringify(settings, "\t"))
+
+
+## Changes one setting, saves it and applies it at once.
+func set_setting(key: String, value: Variant) -> void:
+	settings[key] = value
+	_save_settings()
+	apply_volumes()
+
+
+## The music and sound volumes (0 to 1) become the loudness of the players.
+func apply_volumes() -> void:
+	if _music_player:
+		_music_player.volume_db = linear_to_db(maxf(0.0001, float(settings.music_volume)))
+	for p in _sfx_players:
+		p.volume_db = linear_to_db(maxf(0.0001, float(settings.sound_volume)))
 
 
 func _load_json(path: String) -> Variant:
@@ -224,16 +385,42 @@ func detailed_frames(outfit_id: String) -> SpriteFrames:
 	var run: String = a.run.key
 	var jump: String = a.jump.key
 	var hurt: String = a.hurt.key # its first frames are her standing still
+	var rf: int = int(a.run.frames)
+	var jf: int = int(a.jump.frames)
+	var hf: int = int(a.hurt.frames)
+	# the frames between two points of a clip (0 = its start, 1 = its end): every set has its own frame counts
+	var part := func(n: int, from: float, to: float) -> Array:
+		var out: Array = []
+		for i in range(int(n * from), maxi(int(n * from) + 1, int(n * to))):
+			out.append(mini(i, n - 1))
+		return out
+	var run_fps := clampf(rf / 0.65, 12.0, 26.0) # one stride cycle takes about two thirds of a second
+	var idle_def: Array = [hurt, part.call(hf, 0.0, 0.24) + part.call(hf, 0.12, 0.2), 6, true] # (still frames of the hurt clip)
+	if a.has("idle"):
+		idle_def = [a.idle.key, range(int(a.idle.frames)), float(a.idle.get("fps", 6)), true]
+	var walk_def: Array = [run, range(rf), run_fps * 0.6, true]
+	if a.has("walk"):
+		walk_def = [a.walk.key, range(int(a.walk.frames)), float(a.walk.get("fps", 10)), true]
+	# on a ladder: her own climbing frames (AutoSprite, the "25" sets), or the walk cycle
+	var climb_def: Array = [walk_def[0], walk_def[1], walk_def[2], true]
+	if a.has("climb"):
+		climb_def = [a.climb.key, range(int(a.climb.frames)), float(a.climb.get("fps", 11)), true]
+	# the sword slash: from the wind-up's end (frame 5) so the hit comes quickly; without one, a quick lunge
+	var slash_def: Array = [jump, part.call(jf, 0.80, 0.92), 16, false]
+	if a.has("slash"):
+		slash_def = [a.slash.key, range(mini(5, int(a.slash.frames) - 1), int(a.slash.frames)), 36, false]
 	return sprite_frames({
-		"idle": [hurt, [0, 1, 2, 3, 4, 5, 4, 3, 2, 1], 6, true],
-		"walk": [run, range(a.run.frames), 8, true],
-		"run": [run, range(a.run.frames), 16, true],
-		"takeoff": [jump, [6, 7], 16, false],
-		"rise": [jump, [10, 11, 12], 12, false],
-		"peak": [jump, [14, 15, 16], 10, false],
-		"fall": [jump, [17, 18, 19], 12, false],
-		"land": [jump, [20, 21, 22], 16, false],
-		"hurt": [hurt, [8, 9, 10, 11, 12], 24, false],
+		"climb": climb_def,
+		"slash": slash_def,
+		"idle": idle_def,
+		"walk": walk_def,
+		"run": [run, range(rf), run_fps, true],
+		"takeoff": [jump, part.call(jf, 0.24, 0.32), 16, false],
+		"rise": [jump, part.call(jf, 0.40, 0.52), 12, false],
+		"peak": [jump, part.call(jf, 0.56, 0.68), 10, false],
+		"fall": [jump, part.call(jf, 0.68, 0.80), 12, false],
+		"land": [jump, part.call(jf, 0.80, 0.92), 16, false],
+		"hurt": [hurt, part.call(hf, 0.32, 0.52), 24, false],
 		"victory": [jump, [0], 1, false],
 	})
 
@@ -284,7 +471,8 @@ func _setup_controls() -> void:
 		"up": [KEY_UP, KEY_W],
 		"down": [KEY_DOWN, KEY_S],
 		"jump": [KEY_UP, KEY_W, KEY_SPACE],
-		"shoot": [KEY_X, KEY_J]
+		"shoot": [KEY_X, KEY_J],
+		"attack": [KEY_Z, KEY_K],
 	}
 	for action: String in keys:
 		if InputMap.has_action(action):
@@ -294,6 +482,16 @@ func _setup_controls() -> void:
 			var key := InputEventKey.new()
 			key.physical_keycode = code
 			InputMap.action_add_event(action, key)
+
+
+## A world room as a level definition (data/rooms.json, made by tools/build_rooms.py); {} if it isn't built yet.
+func room_def(id: String) -> Dictionary:
+	if _rooms.is_empty() and FileAccess.file_exists("res://data/rooms.json"):
+		_rooms = _load_json("res://data/rooms.json")
+	return _rooms.get(id, {})
+
+
+var _rooms: Dictionary = {}
 
 
 func beta_level() -> Dictionary:

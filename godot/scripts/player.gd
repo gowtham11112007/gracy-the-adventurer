@@ -5,6 +5,7 @@ extends CharacterBody2D
 signal jumped
 signal landed(speed: float)
 signal air_jumped
+signal slashed  ## she swung her sword (the level checks what the blade hits)
 
 const GRAVITY := 1800.0
 const RUN_SPEED := 300.0
@@ -37,7 +38,10 @@ var last_rope = null           ## can't grab the rope she just let go of until s
 var leap_time := 0.0           ## just let go of a rope: the leap pose
 var rope_look: Sprite2D        ## her picture while hanging (fists at the top)
 var climbing := false          ## climbing a ladder
+var slash_time := 0.0          ## seconds left of a sword swing
 var level: Node2D
+var _base_offset := Vector2.ZERO  ## where her picture sits around her feet
+var _slash_box := Vector3.ZERO    ## the slash frames' width, height and where her feet are across (x)
 
 ## true while she can't be hurt (flashing after a hit, or star power)
 var safe: bool:
@@ -79,6 +83,9 @@ func _ready() -> void:
 		var cell: int = Game.hd[outfit].cell
 		look.sprite_frames = detailed
 		look.offset = Vector2(-cell / 2.0, -cell)
+		var s: Dictionary = Game.hd[outfit].actions.get("slash", {})
+		if s.has("w"):
+			_slash_box = Vector3(s.w, s.h, s.ax)
 	else: # frames are 104x150 with her feet on the bottom edge
 		look.offset = Vector2(-52, -150)
 		var hero := "hero_" + outfit
@@ -87,6 +94,8 @@ func _ready() -> void:
 		look.sprite_frames = Game.sprite_frames({
 			"idle": [hero, [0, 0, 0, 0, 1, 0, 0, 2], 4, true],
 			"walk": [hero, [7, 8, 9, 10], 7, true],
+			"climb": [hero, [7, 8, 9, 10], 7, true],
+			"slash": [moves, [11], 4, false],
 			"run": [moves, range(run_frames), 15.0 * run_frames / 6, true],
 			"takeoff": [moves, [7], 1, false],
 			"rise": [moves, [8], 1, false],
@@ -97,6 +106,7 @@ func _ready() -> void:
 			"victory": [hero, [15], 1, false],
 		})
 	add_child(look)
+	_base_offset = look.offset
 	look.play("idle")
 
 	# while hanging on a rope: frames with her fists at the top middle (150x200 cells)
@@ -129,8 +139,9 @@ func _physics_process(delta: float) -> void:
 		_coyote = 0
 		_jumping = false
 		move_and_slide()
+		slash_time = 0.0
 		if absf(velocity.y) > 10:
-			look.play("walk")
+			look.play("climb")
 			look.speed_scale = 1.0
 		else:
 			look.pause()
@@ -150,6 +161,9 @@ func _physics_process(delta: float) -> void:
 	_land_time -= delta
 	hurt_time -= delta
 	safe_time -= delta
+	slash_time -= delta
+	if Input.is_action_just_pressed("attack"):
+		slash()
 	_air_time = 0.0 if on_floor else _air_time + delta
 	if on_floor:
 		_air_jumps = 1
@@ -160,15 +174,16 @@ func _physics_process(delta: float) -> void:
 	var grip := 14.0 if on_floor else 7.0
 	if hurt_time > 0:
 		grip = 0.0 # knocked back: no steering for a moment
-	velocity.x += (dir * RUN_SPEED - velocity.x) * minf(1.0, grip * delta)
+	var speed := RUN_SPEED * (0.3 if slash_time > 0 and on_floor else 1.0) # planted feet while she swings
+	velocity.x += (dir * speed - velocity.x) * minf(1.0, grip * delta)
 	if _buffer > 0 and _coyote > 0:
 		jump()
-	elif Input.is_action_just_pressed("jump") and not on_floor and float_time > 0 and _air_jumps > 0:
-		_air_jumps -= 1 # balloon: one extra jump in mid-air
+	elif Input.is_action_just_pressed("jump") and not on_floor and (float_time > 0 or Game.has_ability("double_jump")) and _air_jumps > 0:
+		_air_jumps -= 1 # balloon, or the Cloud Shrine's double jump: one extra jump in mid-air
 		jump(JUMP_SPEED * 0.85)
 		air_jumped.emit()
 	# a tap gives an accurate short hop; holding gives the full obstacle-clearing jump
-	var is_beta: bool = level != null and level.def.get("id") == "beta"
+	var is_beta: bool = level != null and level.hop_physics()
 	if _jumping and not Input.is_action_pressed("jump"):
 		if is_beta:
 			if velocity.y < -240.0:
@@ -181,17 +196,29 @@ func _physics_process(delta: float) -> void:
 	velocity.y = minf(velocity.y + pull * delta, MAX_FALL)
 	if float_time > 0 and Input.is_action_pressed("jump") and velocity.y > 160:
 		velocity.y = 160 # balloon: drift down gently while jump is held
-	if dir != 0:
+	if dir != 0 and slash_time <= 0: # (no turning round in the middle of a swing)
 		look.flip_h = dir < 0
 	move_and_slide()
 	_animate(is_on_floor())
+
+
+## Swing the sword: the slash plays and the level checks what the blade reaches (`slashed`).
+func slash() -> void:
+	if slash_time > 0 or frozen or climbing or not hanging.is_empty() or hurt_time > 0:
+		return
+	var anim := look.sprite_frames
+	slash_time = anim.get_frame_count("slash") / anim.get_animation_speed("slash")
+	look.stop()
+	look.play("slash")
+	Game.play_sfx("whoosh")
+	slashed.emit()
 
 
 func jump(speed := -1.0) -> void:
 	climbing = false
 	var sp := speed
 	if sp < 0:
-		sp = 540.0 if (level and level.def.get("id") == "beta") else JUMP_SPEED
+		sp = 540.0 if (level and level.hop_physics()) else JUMP_SPEED
 	velocity.y = -sp
 	_buffer = 0
 	_coyote = 0
@@ -208,6 +235,8 @@ func _animate(on_floor: bool) -> void:
 	look.speed_scale = 1.0
 	if hurt_time > 0:
 		look.play("hurt")
+	elif slash_time > 0:
+		look.play("slash")
 	elif not on_floor:
 		if _jumping and _air_time < 0.11:
 			look.play("takeoff")
@@ -232,6 +261,11 @@ func _animate(on_floor: bool) -> void:
 func _process(delta: float) -> void:
 	_squash = _squash.lerp(Vector2.ONE, minf(1.0, 9.0 * delta))
 	look.scale = _squash
+	# the slash frames are wider than her other frames: her feet stay where they are, facing either way
+	if look.animation == "slash" and _slash_box.x > 0:
+		look.offset = Vector2(-(_slash_box.x - _slash_box.z) if look.flip_h else -_slash_box.z, -_slash_box.y)
+	else:
+		look.offset = _base_offset
 	var flashing := safe_time > 0 and star_time <= 0 and int(safe_time / 0.09) % 2 == 1
 	var on_rope := not hanging.is_empty()
 	var leaping := leap_time > 0 and not is_on_floor() and not frozen

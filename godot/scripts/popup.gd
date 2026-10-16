@@ -77,16 +77,26 @@ func add_row(icon: String, words: String, right: Control) -> void:
 
 ## The Music and Sounds switches (saved, and they take effect at once).
 func add_audio_switches(music_track := "title") -> void:
-	add_row("music", "Music", UI.switch(Game.save.get("music", true), func(on: bool) -> void:
-		Game.save.music = on
-		Game.write_save()
+	add_row("music", "Music", UI.switch(Game.settings.music, func(on: bool) -> void:
+		Game.set_setting("music", on)
 		if on:
 			Game.play_music(music_track)
 		else:
 			Game.stop_music()))
-	add_row("sound", "Sounds", UI.switch(Game.save.get("sound", true), func(on: bool) -> void:
-		Game.save.sound = on
-		Game.write_save()))
+	add_row("sound", "Sounds", UI.switch(Game.settings.sound, func(on: bool) -> void:
+		Game.set_setting("sound", on)))
+
+
+## The full settings: music and sound on/off with a volume slider each, and screen shake. All saved at once.
+func add_all_settings(music_track := "title") -> void:
+	add_audio_switches(music_track)
+	add_row("music", "Music volume", UI.slider(Game.settings.music_volume, func(v: float) -> void:
+		Game.set_setting("music_volume", v)))
+	add_row("sound", "Sound volume", UI.slider(Game.settings.sound_volume, func(v: float) -> void:
+		Game.set_setting("sound_volume", v)
+		Game.play_sfx("tick")))
+	add_row("settings", "Screen shake", UI.switch(Game.settings.shake, func(on: bool) -> void:
+		Game.set_setting("shake", on)))
 
 
 ## A wide button across the panel.

@@ -1,10 +1,10 @@
 extends Control
-## The phone's on-screen buttons: left and right on the left, jump on the right,
-## and the magic button beside jump while she has a fire power.
+## The phone's on-screen buttons: left, right, up and down on the left; jump and the sword on the right,
+## and the magic button above them while she has a fire power.
 ## Every finger is tracked, so she can run and jump at the same time; they press the same
 ## actions as the keyboard, so the rest of the game doesn't care which one is used.
 
-const BUTTONS := ["left", "right", "up", "down", "jump", "shoot"]
+const BUTTONS := ["left", "right", "up", "down", "jump", "attack", "shoot"]
 
 var radius := 70.0
 var _touches := {}       ## finger index -> where it is on screen
@@ -35,7 +35,8 @@ func centers() -> Dictionary:
 		"up": Vector2(radius * 2.2 + 35, size.y - radius * 2.85 - 30),
 		"down": Vector2(radius * 2.2 + 35, size.y - radius * 0.65 - 15),
 		"jump": Vector2(size.x - radius - 55, size.y - radius - 35),
-		"shoot": Vector2(size.x - radius * 3 - 85, size.y - radius - 15),
+		"attack": Vector2(size.x - radius * 3 - 85, size.y - radius - 15),
+		"shoot": Vector2(size.x - radius * 2.4 - 70, size.y - radius * 3.3 - 30),
 	}
 
 
@@ -94,11 +95,18 @@ func _draw() -> void:
 			draw_texture(shoot_icon, c - shoot_icon.get_size() / 2, Color(1, 1, 1, 1.0 if on else 0.75))
 			continue
 		var s := radius * 0.32
+		var ink := Color(1, 1, 1, 0.9 if on else 0.6)
+		if name == "attack": # a sword, point up and to the right
+			draw_line(c + Vector2(-s * 1.1, s * 1.1), c + Vector2(s * 1.2, -s * 1.2), ink, 6.0, true)
+			draw_line(c + Vector2(-s * 0.9, s * 0.1), c + Vector2(-s * 0.1, s * 0.9), ink, 5.0, true)
+			continue
+		if name == "jump": # (not the same as Up: an arrow springing off a line)
+			draw_line(c + Vector2(-s, s * 1.15), c + Vector2(s, s * 1.15), ink, 4.0, true)
 		var arrow: PackedVector2Array
 		match name:
 			"left": arrow = [c + Vector2(-s, 0), c + Vector2(s * 0.7, -s), c + Vector2(s * 0.7, s)]
 			"right": arrow = [c + Vector2(s, 0), c + Vector2(-s * 0.7, -s), c + Vector2(-s * 0.7, s)]
 			"up": arrow = [c + Vector2(0, -s), c + Vector2(-s, s * 0.7), c + Vector2(s, s * 0.7)]
 			"down": arrow = [c + Vector2(0, s), c + Vector2(-s, -s * 0.7), c + Vector2(s, -s * 0.7)]
-			"jump": arrow = [c + Vector2(0, -s), c + Vector2(-s, s * 0.7), c + Vector2(s, s * 0.7)]
-		draw_colored_polygon(arrow, Color(1, 1, 1, 0.9 if on else 0.6))
+			"jump": arrow = [c + Vector2(0, -s * 1.2), c + Vector2(-s, s * 0.5), c + Vector2(s, s * 0.5)]
+		draw_colored_polygon(arrow, ink)
