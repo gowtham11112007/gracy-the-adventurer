@@ -37,3 +37,6 @@
 *.app
 crashlytics-build.properties
 sysinfo.txt
+
+# build tool cache (IL2CPP)
+/.utmp/
