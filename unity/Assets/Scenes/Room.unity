@@ -240,7 +240,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb79ddcc13a6a41028d0a4901524ebaf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Gracy::Room
-  roomId: m2
+  roomId: level1
   entry: left
 --- !u!4 &1684146493
 Transform:

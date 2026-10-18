@@ -2,20 +2,19 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Janani's health along the top left (instead of hearts): her portrait in a gold-ringed medallion, and a glowing
-/// rose-gold bar in dark glass. After a hit a pale "trail" shows what was lost, then drains away; healing fills
-/// smoothly; when health is low the bar pulses. Her gems are counted underneath.
-/// Drawn in code (dark glass, thin gold lines: the game's cinematic look), on a 720-high canvas like the buttons.
+/// Janani's health along the top left (instead of hearts): her portrait in a gold-ringed medallion, and the red bar
+/// of the Bloodlines pack (Asset Store, Alebardium) in its dark carved frame. After a hit a pale "trail" shows what
+/// was lost, then drains away; healing fills smoothly; when health is low the bar pulses. Gems are counted below.
+/// On a 720-high canvas like the buttons.
 /// </summary>
 public class HealthBar : MonoBehaviour
 {
-    const float BarWide = 330, BarHigh = 26;
+    const float BarWide = 360, BarHigh = 50; // (the Bloodlines bar is 793 x 109)
     static readonly Color Gold = new(0.91f, 0.78f, 0.49f);
     static readonly Color Glass = new(0.03f, 0.05f, 0.09f, 0.72f);
 
     Janani janani;
-    RectTransform fillMask, trailMask;
-    Image fill, glow;
+    Image fill, trailBar, glow;
     Text gems;
     float shown = 1, trail = 1, trailWait;
 
@@ -72,25 +71,19 @@ public class HealthBar : MonoBehaviour
 
     void Build()
     {
-        // the bar: dark glass with a thin gold edge, the pale trail, then the glowing fill
-        var frame = Box(transform, "Bar", new Vector2(112, -40), new Vector2(BarWide, BarHigh));
-        Picture(frame, Shapes.Rounded(Glass, Gold), Color.white, true);
-        var inner = Fill(frame, "Inner", 4);
-        trailMask = Fill(inner, "Trail");
-        trailMask.gameObject.AddComponent<RectMask2D>();
-        Picture(Fill(trailMask, "Trail Colour"), Shapes.Solid(), new Color(1f, 0.92f, 0.8f, 0.85f));
-        fillMask = Fill(inner, "Health");
-        fillMask.gameObject.AddComponent<RectMask2D>();
-        var fillPic = Fill(fillMask, "Health Colour");
-        fillPic.anchorMax = new Vector2(0, 1); // (a fixed width: the colours stay put while the mask shrinks)
-        fillPic.pivot = new Vector2(0, 0.5f);
-        fillPic.anchoredPosition = Vector2.zero;
-        fillPic.sizeDelta = new Vector2(BarWide - 8, 0);
-        fill = Picture(fillPic, Shapes.HealthGradient(), Color.white);
-        // a soft glow behind the bar, brighter and redder when health is low
-        var glowRt = Box(frame, "Glow", new Vector2(-30, 26), new Vector2(BarWide + 60, BarHigh + 52));
-        glowRt.SetAsFirstSibling();
-        glow = Picture(glowRt, Shapes.Glow(), new Color(1f, 0.45f, 0.5f, 0.18f));
+        // the bar: the empty carved frame, the pale trail, then the red health filling it from the left
+        var frame = Box(transform, "Bar", new Vector2(98, -32), new Vector2(BarWide, BarHigh));
+        var glowRt = Box(transform, "Glow", new Vector2(70, -10), new Vector2(BarWide + 60, BarHigh + 44));
+        glow = Picture(glowRt, Shapes.Glow(), new Color(1f, 0.35f, 0.4f, 0.16f));
+        Picture(frame, Resources.Load<Sprite>("Art/UI/Progress_Bar_Rectangle_empty_v5"), Color.white);
+        trailBar = Picture(Fill(frame, "Trail"), Resources.Load<Sprite>("Art/UI/Progress_Bar_Rectangle_full_v5"), new Color(1f, 0.9f, 0.8f, 0.75f));
+        fill = Picture(Fill(frame, "Health"), Resources.Load<Sprite>("Art/UI/Progress_Bar_Rectangle_full_v5"), Color.white);
+        foreach (var bar in new[] { trailBar, fill })
+        {
+            bar.type = Image.Type.Filled;
+            bar.fillMethod = Image.FillMethod.Horizontal;
+            bar.fillOrigin = (int)Image.OriginHorizontal.Left;
+        }
 
         // the medallion: her portrait in a circle with a gold ring
         var medal = Box(transform, "Medallion", new Vector2(22, -14), new Vector2(92, 92));
@@ -104,8 +97,8 @@ public class HealthBar : MonoBehaviour
         // gems under the bar
         var gemArt = Art.Strip("Props/gem", 3, 32, 42, 16);
         if (gemArt.Length > 0)
-            Picture(Box(transform, "Gem", new Vector2(124, -74), new Vector2(18, 24)), gemArt[0], Color.white);
-        var label = Box(transform, "Gems", new Vector2(150, -72), new Vector2(120, 28));
+            Picture(Box(transform, "Gem", new Vector2(124, -88), new Vector2(18, 24)), gemArt[0], Color.white);
+        var label = Box(transform, "Gems", new Vector2(150, -86), new Vector2(120, 28));
         gems = label.gameObject.AddComponent<Text>();
         gems.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
         gems.fontSize = 22;
@@ -126,11 +119,11 @@ public class HealthBar : MonoBehaviour
         trailWait -= Time.deltaTime;
         if (trail < shown) trail = shown;
         else if (trailWait <= 0) trail = Mathf.MoveTowards(trail, shown, Time.deltaTime * 0.6f);
-        fillMask.anchorMax = new Vector2(shown, 1);
-        trailMask.anchorMax = new Vector2(trail, 1);
+        fill.fillAmount = shown;
+        trailBar.fillAmount = trail;
         // low health: the bar breathes brighter and the glow reddens
         float low = shown < 0.3f ? 0.5f + 0.5f * Mathf.Sin(Time.time * 6f) : 0;
-        fill.color = Color.Lerp(Color.white, new Color(1f, 0.75f, 0.75f), low);
+        fill.color = Color.Lerp(Color.white, new Color(1f, 0.6f, 0.6f), low);
         glow.color = new Color(1f, 0.35f, 0.4f, 0.16f + 0.3f * low);
         gems.text = janani.Gems.ToString();
     }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
@@ -35,6 +36,9 @@ public class Janani : MonoBehaviour
     bool jumping, wasGrounded, noGrab;
     Ladder ladder;
     Vector2 lastSafe;
+    AudioSource feet;
+    AudioClip[] steps;
+    float stepTime;
 
     [Serializable] class ClipData { public string name, file; public int frames, w, h; public float fps, ax; }
     [Serializable] class JananiData { public int cell; public ClipData[] clips; }
@@ -72,6 +76,12 @@ public class Janani : MonoBehaviour
         Look.Renderer.sortingOrder = 10;
         LoadClips();
         Look.Play("idle");
+
+        // footsteps (the Asset Store forest pack's grass and dirt steps)
+        feet = gameObject.AddComponent<AudioSource>();
+        feet.volume = 0.35f;
+        steps = new[] { "HeroFootStepGrass1", "HeroFootStepGrass2", "HeroFootStepDirt1", "HeroFootStepDirt2" }
+            .Select(n => Resources.Load<AudioClip>("Audio/" + n)).Where(c => c != null).ToArray();
 
         // a soft warm light around her (the Godot version's "light around Janani")
         var glow = new GameObject("Glow").AddComponent<Light2D>();
@@ -193,6 +203,18 @@ public class Janani : MonoBehaviour
                 Teleport(lastSafe);
         }
         Animate();
+        Footsteps(dt);
+    }
+
+    /// <summary>A step sound every stride while she runs on the ground.</summary>
+    void Footsteps(float dt)
+    {
+        stepTime -= dt;
+        if (!Grounded || Mathf.Abs(rb.linearVelocity.x) < 2f || stepTime > 0 || steps.Length == 0)
+            return;
+        stepTime = 0.3f;
+        feet.pitch = UnityEngine.Random.Range(0.9f, 1.1f);
+        feet.PlayOneShot(steps[UnityEngine.Random.Range(0, steps.Length)]);
     }
 
     bool OnGround()

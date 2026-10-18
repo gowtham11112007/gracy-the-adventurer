@@ -1,0 +1,29 @@
+{
+ "rooms": [
+  {
+   "id": "level1",
+   "name": "Lantern Village",
+   "area_name": "Level 1",
+   "area": "village",
+   "mood": "village",
+   "width": 72,
+   "start": 2,
+   "exits": [],
+   "benches": [],
+   "grid": [
+    "                                                                        ",
+    "                                                                        ",
+    "                                                                        ",
+    "                                                                        ",
+    "                                    oooooooooo                          ",
+    "                                  L============                         ",
+    "                                  L                                     ",
+    "                                  L                                     ",
+    "             ooo   ooo            L             ooo                     ",
+    "   s  p  w g  C  h  O  tg k  R u  L  c g    ^  p C fff gO b x gu p  E   ",
+    "########################################  ##############################",
+    "########################################  ##############################"
+   ]
+  }
+ ]
+}

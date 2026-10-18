@@ -33,7 +33,7 @@ public struct Ladder
 public class Room : MonoBehaviour
 {
     public const int Rows = 12;
-    public string roomId = "m2";
+    public string roomId = "level1";
     public string entry = "left";
 
     public RoomDef Def { get; private set; }
@@ -44,6 +44,7 @@ public class Room : MonoBehaviour
     static readonly Dictionary<string, string> SkinForMood = new()
     {
         { "day", "meadow" }, { "windy", "meadow" }, { "sky", "sky" }, { "golden", "desert" }, { "dusk", "graveyard" },
+        { "village", "village" }, // (Level 1: the Asset Store packs, see Village)
     };
     static readonly Dictionary<string, RoomDef> all = new();
     Transform art;
@@ -52,8 +53,13 @@ public class Room : MonoBehaviour
     public static RoomDef Find(string id)
     {
         if (all.Count == 0)
-            foreach (var r in JsonUtility.FromJson<RoomList>(Resources.Load<TextAsset>("Data/rooms").text).rooms)
-                all[r.id] = r;
+            foreach (var file in new[] { "Data/rooms", "Data/levels" }) // the world's rooms, and the hand-made levels
+            {
+                var text = Resources.Load<TextAsset>(file);
+                if (text != null)
+                    foreach (var r in JsonUtility.FromJson<RoomList>(text.text).rooms)
+                        all[r.id] = r;
+            }
         return all.TryGetValue(id, out var def) ? def : null;
     }
 
@@ -72,7 +78,7 @@ public class Room : MonoBehaviour
         i = Array.IndexOf(args, "-entry");
         if (i >= 0 && i + 1 < args.Length) entry = args[i + 1];
 
-        Def = Find(roomId) ?? Find("m1");
+        Def = Find(roomId) ?? Find("level1") ?? Find("m1");
         Skin = SkinForMood.TryGetValue(Def.mood, out var s) ? s : "meadow";
         if (FindAnyObjectByType<GameInput>() == null)
             new GameObject("Input").AddComponent<GameInput>();
@@ -97,6 +103,27 @@ public class Room : MonoBehaviour
         }
         if (TouchPad.Wanted())
             TouchPad.Create();
+        LevelUI.Create(Def.area_name, Def.name);
+        if (Village)
+            Ambience();
+    }
+
+    bool Village => Skin == "village";
+
+    /// <summary>The village's sound: birdsong and a light wind, soft music under them.</summary>
+    void Ambience()
+    {
+        void Loop(string clip, float volume)
+        {
+            var a = gameObject.AddComponent<AudioSource>();
+            a.clip = Resources.Load<AudioClip>("Audio/" + clip);
+            a.loop = true;
+            a.volume = volume;
+            a.Play();
+        }
+        Loop("BirdLoop", 0.45f);
+        Loop("WindWeakLoop", 0.25f);
+        Loop("SummerTension", 0.3f);
     }
 
     /// <summary>Where she came in (where she starts again if she runs out of health).</summary>
@@ -157,8 +184,16 @@ public class Room : MonoBehaviour
             for (int c = 0; c <= Def.width; c++)
             {
                 char ch = At(c, r);
-                if (c < Def.width && ch == '#')
+                if (c < Def.width && ch == '#' && Village)
+                    global::Village.Place(art, global::Village.Ground(GroundPiece(c, r) - 1), new Vector2(c, TopY(r) - 1), 0, "Ground", Vector2.zero);
+                else if (c < Def.width && ch == '#')
                     Picture(Art.Picture($"Skins/{Skin}/tile_{GroundPiece(c, r)}", Vector2.zero), new Vector2(c, TopY(r) - 1), 0, "Ground");
+                else if (c < Def.width && ch == '=' && Village)
+                {
+                    bool left = At(c - 1, r) == '=', right = At(c + 1, r) == '=';
+                    string piece = right && !left ? "Platform L 01" : left && !right ? "Platform R 01" : "Platform M 01";
+                    global::Village.Place(art, global::Village.Prop(piece), new Vector2(c, TopY(r)), 0, "Floor", new Vector2(0, 1));
+                }
                 else if (c < Def.width && ch == '=')
                 {
                     bool left = At(c - 1, r) == '=', right = At(c + 1, r) == '=';
@@ -170,7 +205,9 @@ public class Room : MonoBehaviour
                     run = c;
                 else if (!solid && run >= 0)
                 {
-                    Box(new Vector2((run + c) / 2f, TopY(r) - 0.5f), new Vector2(c - run, 1));
+                    // (the village's wooden platforms are thinner than a tile)
+                    float high = Village && At(run, r) == '=' ? 0.8f : 1f;
+                    Box(new Vector2((run + c) / 2f, TopY(r) - high / 2), new Vector2(c - run, high));
                     run = -1;
                 }
             }
@@ -186,7 +223,10 @@ public class Room : MonoBehaviour
                 {
                     if (top < 0) top = r;
                     bottom = r;
-                    Picture(ladderSprite, new Vector2(c, TopY(r) - 1), -5, "Ladder");
+                    if (Village)
+                        global::Village.Place(art, global::Village.Prop(r == top ? "Ladder 01 T" : At(c, r + 1) == 'L' ? "Ladder 01 M" : "Ladder 01 B"), new Vector2(c, TopY(r) - 1), -5, "Ladder", Vector2.zero);
+                    else
+                        Picture(ladderSprite, new Vector2(c, TopY(r) - 1), -5, "Ladder");
                 }
             if (top < 0)
                 continue;
@@ -201,8 +241,18 @@ public class Room : MonoBehaviour
                 char ch = At(c, r);
                 if ("CRO^".IndexOf(ch) < 0)
                     continue;
-                Box(new Vector2(c + 0.5f, TopY(r) - 0.5f), Vector2.one);
                 var foot = new Vector2(c + 0.5f, TopY(r) - 1);
+                if (Village) // the village's own crate, barrel, stump and spikes, each as solid as it looks
+                {
+                    string name = ch switch { 'C' => "Crate Small", 'O' => "Barrel", 'R' => "Stump", _ => "Spike Plate" };
+                    var pic = global::Village.Stand(art, name, foot, 1, name);
+                    var size = pic.sprite.bounds.size;
+                    Box(foot + new Vector2(0, size.y / 2), new Vector2(Mathf.Min(1, size.x), size.y));
+                    if (ch == '^')
+                        Hazard.Create(art, foot + new Vector2(0, 0.35f), new Vector2(0.8f, 0.7f));
+                    continue;
+                }
+                Box(new Vector2(c + 0.5f, TopY(r) - 0.5f), Vector2.one);
                 switch (ch)
                 {
                     case 'C': Picture(Art.Picture($"Skins/{Skin}/block", new Vector2(0.5f, 0)), foot, 1, "Crate"); break;
@@ -238,11 +288,18 @@ public class Room : MonoBehaviour
             for (int c = 0; c < Def.width; c++)
                 if (At(c, r) == 'o')
                     Gem.Create(art, new Vector2(c + 0.5f, TopY(r) - 0.85f));
+                else if (Village)
+                    global::Village.Scenery(At(c, r), art, new Vector2(c + 0.5f, TopY(r) - 1), c);
     }
 
     /// <summary>The area's painted background, in layers that drift slower the further away they are.</summary>
     void BuildBackground()
     {
+        if (Village)
+        {
+            global::Village.Background(transform);
+            return;
+        }
         for (int i = 0; i < 4; i++)
         {
             if (Resources.Load<Texture2D>($"Art/Skins/{Skin}/bg_{i}") == null)
@@ -257,13 +314,14 @@ public class Room : MonoBehaviour
         var light = new GameObject("Light").AddComponent<Light2D>();
         light.transform.SetParent(transform, false);
         light.lightType = Light2D.LightType.Global;
-        light.intensity = Def.mood == "dusk" ? 0.75f : 1f;
+        light.intensity = Def.mood == "dusk" ? 0.75f : Def.mood == "village" ? 0.8f : 1f; // (the village: evening, so its lamps glow)
         light.color = Def.mood switch
         {
             "day" => new Color(1f, 0.97f, 0.9f),
             "windy" => new Color(0.92f, 0.96f, 1f),
             "golden" => new Color(1f, 0.9f, 0.75f),
             "dusk" => new Color(0.75f, 0.8f, 1f),
+            "village" => new Color(1f, 0.88f, 0.74f),
             _ => Color.white,
         };
     }

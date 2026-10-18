@@ -11,6 +11,10 @@ public class ArtImport : AssetPostprocessor
     {
         if (!assetPath.StartsWith("Assets/Resources/Art/"))
             return;
+        // the Asset Store packs' sheets keep their own settings (cut into named pieces, crisp pixel art)
+        if (assetPath.StartsWith("Assets/Resources/Art/Village/") || assetPath.StartsWith("Assets/Resources/Art/Forest/") ||
+            assetPath.StartsWith("Assets/Resources/Art/UI/"))
+            return;
         var t = (TextureImporter)assetImporter;
         t.textureType = TextureImporterType.Sprite;
         t.spriteImportMode = SpriteImportMode.Single;

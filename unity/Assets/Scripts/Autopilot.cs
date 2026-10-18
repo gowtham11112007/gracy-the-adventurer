@@ -20,6 +20,7 @@ public class Autopilot : MonoBehaviour
         var args = Environment.GetCommandLineArgs();
         if (!args.Contains("-autorun") && !args.Contains("-shot"))
             return;
+        Application.runInBackground = true;
         var pilot = new GameObject("Autopilot").AddComponent<Autopilot>();
         pilot.run = args.Contains("-autorun");
         int i = Array.IndexOf(args, "-shot");
