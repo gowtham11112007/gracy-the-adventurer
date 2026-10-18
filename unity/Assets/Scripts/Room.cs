@@ -84,7 +84,9 @@ public class Room : MonoBehaviour
         BuildThings();
         BuildBackground();
         BuildLight();
-        Player = Janani.Create(this, StartFeet());
+        Entrance = StartFeet();
+        Player = Janani.Create(this, Entrance);
+        HealthBar.Create(Player);
         var cam = Camera.main;
         if (cam != null)
         {
@@ -96,6 +98,9 @@ public class Room : MonoBehaviour
         if (TouchPad.Wanted())
             TouchPad.Create();
     }
+
+    /// <summary>Where she came in (where she starts again if she runs out of health).</summary>
+    public Vector2 Entrance { get; private set; }
 
     /// <summary>Where she appears: beside the door she came in by, in a doorway, at the bench, or the start.</summary>
     Vector2 StartFeet()

@@ -22,6 +22,8 @@ public class Janani : MonoBehaviour
     public bool Grounded { get; private set; }
     public bool FacingLeft => Look.Renderer.flipX;
     public Vector2 Feet => rb.position;
+    public const float MaxHealth = 100;
+    public float Health { get; private set; } = MaxHealth;
     public int Gems;
     public int Hits;    // times she was hurt (spikes...)
 
@@ -186,8 +188,9 @@ public class Janani : MonoBehaviour
             lastSafe = rb.position;
         if (rb.position.y < -3) // fell into a gap: back to where she last stood
         {
-            Hurt(rb.position.x);
-            Teleport(lastSafe);
+            Hurt(rb.position.x, 15);
+            if (Health > 0)
+                Teleport(lastSafe);
         }
         Animate();
     }
@@ -284,12 +287,21 @@ public class Janani : MonoBehaviour
         Look.Speed = vy != 0 ? 1 : 0;
     }
 
-    /// <summary>Hurt by something at x: knocked away from it, then a moment of flashing safety.</summary>
-    public void Hurt(float fromX)
+    /// <summary>Hurt by something at x: loses health, is knocked away from it, then has a moment of flashing
+    /// safety. With no health left she starts again at the room's entrance, healed.</summary>
+    public void Hurt(float fromX, float damage = 20)
     {
         if (safeTime > 0)
             return;
         Hits++;
+        Health = Mathf.Max(0, Health - damage);
+        if (Health <= 0)
+        {
+            Teleport(Room.Entrance);
+            Health = MaxHealth;
+            safeTime = 2f;
+            return;
+        }
         hurtTime = 0.35f;
         safeTime = 2f;
         jumping = false;
