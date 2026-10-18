@@ -85,6 +85,13 @@ public class Room : MonoBehaviour
         if (FindAnyObjectByType<GameInput>() == null)
             new GameObject("Input").AddComponent<GameInput>();
         GameInput.Clear();
+        if (!Flow.Playing) // the title screen: mountains in the clouds, music and wind, the menu
+        {
+            GameInput.Blocked = true;
+            Ambience(title: true);
+            MenuUI.Title();
+            return;
+        }
         art = new GameObject("Art").transform;
         art.SetParent(transform, false);
 
@@ -105,13 +112,7 @@ public class Room : MonoBehaviour
         }
         if (Village)
             Ambience();
-        GameInput.Blocked = !Flow.Playing;
-        if (!Flow.Playing) // the title screen, over a quiet view of the level
-        {
-            if (follow != null) follow.Drift = true;
-            MenuUI.Title();
-            return;
-        }
+        GameInput.Blocked = false;
         HealthBar.Create(Player);
         if (TouchPad.Wanted())
             TouchPad.Create();
@@ -121,8 +122,8 @@ public class Room : MonoBehaviour
 
     bool Village => Skin == "village";
 
-    /// <summary>The village's sound: birdsong and a light wind, soft music under them.</summary>
-    void Ambience()
+    /// <summary>The village's sound: birdsong and a light wind, soft music under them (the title: wind and music).</summary>
+    void Ambience(bool title = false)
     {
         void Loop(string clip, float volume, bool isMusic)
         {
@@ -133,7 +134,8 @@ public class Room : MonoBehaviour
             a.Play();
             if (isMusic) Flow.Music(a); else Flow.Sound(a);
         }
-        Loop("BirdLoop", 0.45f, false);
+        if (!title)
+            Loop("BirdLoop", 0.45f, false);
         Loop("WindWeakLoop", 0.25f, false);
         Loop("SummerTension", 0.3f, true);
     }

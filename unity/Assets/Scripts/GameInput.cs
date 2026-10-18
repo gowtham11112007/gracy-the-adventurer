@@ -31,6 +31,12 @@ public class GameInput : MonoBehaviour
         return pressed;
     }
 
+    internal static void Fresh()
+    {
+        Clear();
+        Blocked = false;
+    }
+
     /// <summary>Let go of everything (a new room, the tests).</summary>
     public static void Clear()
     {

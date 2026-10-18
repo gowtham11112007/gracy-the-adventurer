@@ -10,6 +10,8 @@ public static class Art
     public const float PixelsPerUnit = 64f;
     static readonly Dictionary<string, Sprite> cache = new();
 
+    internal static void Fresh() => cache.Clear();
+
     /// <summary>A whole picture, its pivot as a fraction of its size (0,0 = bottom-left). Null if it's missing.</summary>
     public static Sprite Picture(string path, Vector2 pivot)
     {

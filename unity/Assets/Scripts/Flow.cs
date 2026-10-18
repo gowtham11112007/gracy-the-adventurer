@@ -11,6 +11,25 @@ public static class Flow
 {
     public static bool Playing;
 
+    /// <summary>
+    /// Every start begins fresh: the title screen, nothing held, no old pictures or menus remembered. (The Unity
+    /// editor is set to keep the game's memory between Play presses, to start faster; a phone always starts fresh.)
+    /// </summary>
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    static void FreshStart()
+    {
+        Playing = false;
+        music.Clear();
+        sounds.Clear();
+        GameInput.Fresh();
+        Art.Fresh();
+        Village.Fresh();
+        Shapes.Fresh();
+        Icons.Fresh();
+        MenuUI.Fresh();
+        LevelUI.Fresh();
+    }
+
     static readonly List<AudioSource> music = new(), sounds = new();
 
     public static bool MusicOn

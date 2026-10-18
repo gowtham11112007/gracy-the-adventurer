@@ -134,6 +134,8 @@ static class Shapes
 {
     static Sprite rounded, solid, gradient, glow, disc, ring;
 
+    internal static void Fresh() => rounded = solid = gradient = glow = disc = ring = null;
+
     static Texture2D Paint(int w, int h, System.Func<float, float, Color> paint)
     {
         var tex = new Texture2D(w, h, TextureFormat.RGBA32, false) { wrapMode = TextureWrapMode.Clamp, filterMode = FilterMode.Bilinear };

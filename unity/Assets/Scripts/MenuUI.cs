@@ -15,6 +15,7 @@ using UnityEngine.UI;
 public class MenuUI : MonoBehaviour
 {
     public static MenuUI Instance { get; private set; }
+    internal static void Fresh() => Instance = null;
 
     static readonly Color Gold = new(0.98f, 0.84f, 0.5f);
     static readonly Color Cream = new(1f, 0.95f, 0.86f);
@@ -151,6 +152,11 @@ public class MenuUI : MonoBehaviour
     {
         var ui = Create();
         ui.title = true;
+        // the picture behind it all: mountain peaks rising through clouds, drifting very slowly
+        var back = Rect(ui.root, "Mountains", new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(1280, 720));
+        var bg = Picture(back, Pic("MainBackground2"));
+        bg.preserveAspect = false;
+        back.gameObject.AddComponent<SlowDrift>();
         // a soft shade behind the words so they read over the scene
         var shade = Rect(ui.root, "Shade", new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(4000, 4000));
         shade.gameObject.AddComponent<Image>().color = new Color(0.08f, 0.04f, 0.14f, 0.35f);
@@ -236,6 +242,20 @@ public class MenuUI : MonoBehaviour
         }
         else if (paused) Resume();
         else if (popup == null) Pause();
+    }
+}
+
+/// <summary>The title picture: always covers the whole screen, and drifts and breathes very slowly.</summary>
+public class SlowDrift : MonoBehaviour
+{
+    void Update()
+    {
+        var rt = (RectTransform)transform;
+        var canvas = (RectTransform)rt.parent;
+        float cover = Mathf.Max(canvas.rect.width / 1280f, canvas.rect.height / 720f) * 1.12f;
+        float t = Time.unscaledTime;
+        rt.sizeDelta = new Vector2(1280, 720) * cover * (1 + 0.03f * Mathf.Sin(t * 0.12f));
+        rt.anchoredPosition = new Vector2(Mathf.Sin(t * 0.07f) * 40, Mathf.Cos(t * 0.05f) * 12);
     }
 }
 

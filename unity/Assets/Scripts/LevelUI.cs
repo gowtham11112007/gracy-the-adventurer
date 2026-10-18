@@ -9,6 +9,7 @@ using UnityEngine.UI;
 public class LevelUI : MonoBehaviour
 {
     public static LevelUI Instance { get; private set; }
+    internal static void Fresh() => Instance = null;
     public bool Done { get; private set; }
 
     static readonly Color Gold = new(0.95f, 0.82f, 0.52f);

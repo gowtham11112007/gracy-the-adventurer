@@ -13,6 +13,12 @@ public static class Village
     static Dictionary<string, Sprite> ground, props, forest;
     static readonly Dictionary<Sprite, Sprite> standing = new();
 
+    internal static void Fresh()
+    {
+        ground = props = forest = null;
+        standing.Clear();
+    }
+
     static Dictionary<string, Sprite> Load(string path)
     {
         var d = new Dictionary<string, Sprite>();

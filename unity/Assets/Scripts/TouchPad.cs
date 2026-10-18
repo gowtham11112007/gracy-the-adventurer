@@ -132,6 +132,8 @@ static class Icons
 {
     static Sprite disc, arrow, jump;
 
+    internal static void Fresh() => disc = arrow = jump = null;
+
     static Sprite Draw(int size, Func<float, float, Color> paint)
     {
         var tex = new Texture2D(size, size, TextureFormat.RGBA32, false) { filterMode = FilterMode.Bilinear, wrapMode = TextureWrapMode.Clamp };
