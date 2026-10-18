@@ -1,0 +1,12 @@
+# ninja log v5
+1	160	1792344235613420540	FramePacing/CMakeFiles/swappywrapper.dir/UnitySwappyWrapper.cpp.o	da0a8f55759020ae
+160	250	1792344235689744379	/Users/gowthamyuvaraj/Desktop/developer/gracy the adventurer/unity/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/o385r716/obj/arm64-v8a/libswappywrapper.so	9d6663e995fbea07
+1	737	1792344236187907188	GameActivity/CMakeFiles/game.dir/UGAInputKeyEvent.cpp.o	8facafd42ada9b36
+1	743	1792344236190326876	GameActivity/CMakeFiles/game.dir/UGAEntry.cpp.o	9f0cf4895b8be1af
+1	743	1792344236193641947	GameActivity/CMakeFiles/game.dir/UGAInputMotionEvent.cpp.o	b315d6de3767248e
+0	766	1792344236217504782	GameActivity/CMakeFiles/game.dir/UGAConfiguration.cpp.o	79aa5db23225baca
+0	825	1792344236276345217	GameActivity/CMakeFiles/game.dir/UGADebug.cpp.o	d45878eb58ad2f96
+1	867	1792344236318026626	GameActivity/CMakeFiles/game.dir/UGASoftKeyboard.cpp.o	ea44e1f337053b86
+1	958	1792344236408564716	GameActivity/CMakeFiles/game.dir/UGAInput.cpp.o	ba15738c9e7677a1
+0	1037	1792344236487683956	GameActivity/CMakeFiles/game.dir/UGAApplication.cpp.o	252944c021b35c91
+1037	1082	1792344236534025489	/Users/gowthamyuvaraj/Desktop/developer/gracy the adventurer/unity/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/o385r716/obj/arm64-v8a/libgame.so	72336d5cf43dd1d0
