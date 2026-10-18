@@ -1,0 +1,1481 @@
+{
+ "rooms": [
+  {
+   "id": "m1",
+   "name": "Birthday Glade",
+   "area_name": "Sunny Meadow",
+   "area": "meadow",
+   "room": true,
+   "hop": true,
+   "width": 34,
+   "start": 3,
+   "mood": "day",
+   "exits": [
+    {
+     "side": "right",
+     "to": "m2",
+     "arrive": "left",
+     "gate": ""
+    }
+   ],
+   "benches": [
+    8
+   ],
+   "powers": [],
+   "grid": [
+    "                                  ",
+    "                                  ",
+    "                                  ",
+    "                                  ",
+    "               ooX                ",
+    "             L=======             ",
+    "             L                    ",
+    "             L                    ",
+    "      oooooo L          o o       ",
+    "             L  O  n   R n        ",
+    "##################################",
+    "##################################"
+   ]
+  },
+  {
+   "id": "m2",
+   "name": "Windmill Road",
+   "area_name": "Sunny Meadow",
+   "area": "meadow",
+   "room": true,
+   "hop": true,
+   "width": 41,
+   "start": 3,
+   "mood": "day",
+   "exits": [
+    {
+     "side": "left",
+     "to": "m1",
+     "arrive": "right",
+     "gate": ""
+    },
+    {
+     "side": "right",
+     "to": "m3",
+     "arrive": "left",
+     "gate": ""
+    },
+    {
+     "side": "up",
+     "to": "m4",
+     "arrive": "down",
+     "gate": "",
+     "col": 29,
+     "row": 5
+    },
+    {
+     "side": "down",
+     "to": "m5",
+     "arrive": "up",
+     "gate": "",
+     "col": 8,
+     "row": 10
+    }
+   ],
+   "benches": [],
+   "powers": [],
+   "grid": [
+    "                                         ",
+    "                                         ",
+    "                                         ",
+    "                                         ",
+    "                      oooooo             ",
+    "                    L==========          ",
+    "                    L                    ",
+    "                    L                    ",
+    "             oooo o L    ooooo           ",
+    "               R m  L  m  R      R       ",
+    "#########################################",
+    "#########################################"
+   ]
+  },
+  {
+   "id": "m3",
+   "name": "Old Fence",
+   "area_name": "Sunny Meadow",
+   "area": "meadow",
+   "room": true,
+   "hop": true,
+   "width": 33,
+   "start": 3,
+   "mood": "day",
+   "exits": [
+    {
+     "side": "left",
+     "to": "m2",
+     "arrive": "right",
+     "gate": ""
+    },
+    {
+     "side": "right",
+     "to": "w1",
+     "arrive": "left",
+     "gate": ""
+    }
+   ],
+   "benches": [],
+   "powers": [],
+   "grid": [
+    "                                 ",
+    "                                 ",
+    "                                 ",
+    "                                 ",
+    "               ooooo             ",
+    "             L=========          ",
+    "             L                   ",
+    "             L                   ",
+    "        o oooLooooo              ",
+    "       C n   L     n R  n        ",
+    "#################################",
+    "#################################"
+   ]
+  },
+  {
+   "id": "m4",
+   "name": "Hilltop",
+   "area_name": "Sunny Meadow",
+   "area": "meadow",
+   "room": true,
+   "hop": true,
+   "width": 34,
+   "start": 3,
+   "mood": "day",
+   "exits": [
+    {
+     "side": "down",
+     "to": "m2",
+     "arrive": "up",
+     "gate": "",
+     "col": 8,
+     "row": 10
+    }
+   ],
+   "benches": [],
+   "powers": [],
+   "grid": [
+    "                                  ",
+    "                                  ",
+    "                                  ",
+    "                                  ",
+    "               ooooooc            ",
+    "             L===========         ",
+    "             L                    ",
+    "             L                    ",
+    "             L     oo oooo        ",
+    "             L  C m  m C          ",
+    "##################################",
+    "##################################"
+   ]
+  },
+  {
+   "id": "m5",
+   "name": "Creek Bank",
+   "area_name": "Sunny Meadow",
+   "area": "meadow",
+   "room": true,
+   "hop": true,
+   "width": 38,
+   "start": 3,
+   "mood": "day",
+   "exits": [
+    {
+     "side": "up",
+     "to": "m2",
+     "arrive": "down",
+     "gate": "",
+     "col": 20,
+     "row": 5
+    },
+    {
+     "side": "right",
+     "to": "m6",
+     "arrive": "left",
+     "gate": ""
+    }
+   ],
+   "benches": [],
+   "powers": [],
+   "grid": [
+    "                                      ",
+    "                                      ",
+    "                                      ",
+    "                                      ",
+    "            ooooooo                   ",
+    "          L===========                ",
+    "          L                           ",
+    "          L                           ",
+    "      ooooLo            ooooo         ",
+    "          L  n O m       C    m       ",
+    "######################################",
+    "######################################"
+   ]
+  },
+  {
+   "id": "m6",
+   "name": "Mossy Tunnel",
+   "area_name": "Sunny Meadow",
+   "area": "meadow",
+   "room": true,
+   "hop": true,
+   "width": 38,
+   "start": 3,
+   "mood": "day",
+   "exits": [
+    {
+     "side": "left",
+     "to": "m5",
+     "arrive": "right",
+     "gate": ""
+    },
+    {
+     "side": "right",
+     "to": "w8",
+     "arrive": "left",
+     "gate": ""
+    }
+   ],
+   "benches": [],
+   "powers": [],
+   "grid": [
+    "                                      ",
+    "                                      ",
+    "                                      ",
+    "                                      ",
+    "            oooooooX                  ",
+    "          L============               ",
+    "          L                           ",
+    "          L                           ",
+    "          L     ooooo    ooo          ",
+    "          L  m  C       C   n C       ",
+    "######################################",
+    "######################################"
+   ]
+  },
+  {
+   "id": "w1",
+   "name": "Wood Gate",
+   "area_name": "Whispering Wood",
+   "area": "wood",
+   "room": true,
+   "hop": true,
+   "width": 33,
+   "start": 3,
+   "mood": "windy",
+   "exits": [
+    {
+     "side": "left",
+     "to": "m3",
+     "arrive": "right",
+     "gate": ""
+    },
+    {
+     "side": "right",
+     "to": "w2",
+     "arrive": "left",
+     "gate": ""
+    },
+    {
+     "side": "down",
+     "to": "w8",
+     "arrive": "up",
+     "gate": "",
+     "col": 24,
+     "row": 10
+    }
+   ],
+   "benches": [],
+   "powers": [],
+   "grid": [
+    "                                 ",
+    "                                 ",
+    "                                 ",
+    "                                 ",
+    "             oooooooo            ",
+    "           L============         ",
+    "           L                     ",
+    "          bL                     ",
+    "         ooLoo ooo               ",
+    "           L  n  C  n            ",
+    "#################################",
+    "#################################"
+   ]
+  },
+  {
+   "id": "w2",
+   "name": "Lantern Crossroads",
+   "area_name": "Whispering Wood",
+   "area": "wood",
+   "room": true,
+   "hop": true,
+   "width": 33,
+   "start": 3,
+   "mood": "windy",
+   "exits": [
+    {
+     "side": "left",
+     "to": "w1",
+     "arrive": "right",
+     "gate": ""
+    },
+    {
+     "side": "down",
+     "to": "w4",
+     "arrive": "up",
+     "gate": "",
+     "col": 20,
+     "row": 10
+    },
+    {
+     "side": "up",
+     "to": "w3",
+     "arrive": "down",
+     "gate": "",
+     "col": 14,
+     "row": 5
+    },
+    {
+     "side": "right",
+     "to": "w6",
+     "arrive": "left",
+     "gate": ""
+    }
+   ],
+   "benches": [
+    13
+   ],
+   "powers": [],
+   "grid": [
+    "                                 ",
+    "                                 ",
+    "                                 ",
+    "                                 ",
+    "          ooX                    ",
+    "        L=======                 ",
+    "        L                        ",
+    "        L   b   b                ",
+    "       oLoo   ooo                ",
+    "        L        m     n ^       ",
+    "#################################",
+    "#################################"
+   ]
+  },
+  {
+   "id": "w3",
+   "name": "Fallen Oak",
+   "area_name": "Whispering Wood",
+   "area": "wood",
+   "room": true,
+   "hop": true,
+   "width": 34,
+   "start": 3,
+   "mood": "windy",
+   "exits": [
+    {
+     "side": "down",
+     "to": "w2",
+     "arrive": "up",
+     "gate": "",
+     "col": 23,
+     "row": 10
+    },
+    {
+     "side": "up",
+     "to": "s1",
+     "arrive": "down",
+     "gate": "dash",
+     "col": 22,
+     "row": 5
+    }
+   ],
+   "benches": [],
+   "powers": [],
+   "grid": [
+    "                                  ",
+    "                                  ",
+    "                                  ",
+    "                                  ",
+    "             oooooooX             ",
+    "           L============          ",
+    "           L                      ",
+    "           L                      ",
+    "           L      oooooooo        ",
+    "        C  L   n  C       m       ",
+    "##################################",
+    "##################################"
+   ]
+  },
+  {
+   "id": "w4",
+   "name": "Mushroom Hollow",
+   "area_name": "Whispering Wood",
+   "area": "wood",
+   "room": true,
+   "hop": true,
+   "width": 43,
+   "start": 3,
+   "mood": "windy",
+   "exits": [
+    {
+     "side": "left",
+     "to": "w8",
+     "arrive": "right",
+     "gate": ""
+    },
+    {
+     "side": "up",
+     "to": "w2",
+     "arrive": "down",
+     "gate": "",
+     "col": 29,
+     "row": 5
+    },
+    {
+     "side": "right",
+     "to": "w5",
+     "arrive": "left",
+     "gate": ""
+    },
+    {
+     "side": "down",
+     "to": "f1",
+     "arrive": "up",
+     "gate": "",
+     "col": 34,
+     "row": 10
+    }
+   ],
+   "benches": [
+    12
+   ],
+   "powers": [],
+   "grid": [
+    "                                           ",
+    "                                           ",
+    "                                           ",
+    "                                           ",
+    "                       ooooo               ",
+    "                     L=========            ",
+    "                     L                     ",
+    "                   b L     b               ",
+    "                oo   L      ooo            ",
+    "        C       C m  L  n                  ",
+    "###########################################",
+    "###########################################"
+   ]
+  },
+  {
+   "id": "w5",
+   "name": "Glowing Pond",
+   "area_name": "Whispering Wood",
+   "area": "wood",
+   "room": true,
+   "hop": true,
+   "width": 42,
+   "start": 3,
+   "mood": "windy",
+   "exits": [
+    {
+     "side": "left",
+     "to": "w4",
+     "arrive": "right",
+     "gate": ""
+    }
+   ],
+   "benches": [],
+   "powers": [],
+   "grid": [
+    "                                          ",
+    "                                          ",
+    "                                          ",
+    "                                          ",
+    "             oooooc                       ",
+    "           L==========                    ",
+    "           L                              ",
+    "           L   b                          ",
+    "           L        oooo     oooo         ",
+    "           L  ^  m  ^    C m   R          ",
+    "##########################################",
+    "##########################################"
+   ]
+  },
+  {
+   "id": "w6",
+   "name": "Dash Shrine",
+   "area_name": "Whispering Wood",
+   "area": "wood",
+   "room": true,
+   "hop": true,
+   "width": 40,
+   "start": 3,
+   "mood": "windy",
+   "exits": [
+    {
+     "side": "left",
+     "to": "w2",
+     "arrive": "right",
+     "gate": ""
+    },
+    {
+     "side": "right",
+     "to": "w7",
+     "arrive": "left",
+     "gate": "dash"
+    }
+   ],
+   "benches": [],
+   "powers": [],
+   "grid": [
+    "                                        ",
+    "                                        ",
+    "                                        ",
+    "                                        ",
+    "              ooooX                     ",
+    "            L=========                  ",
+    "            L                           ",
+    "            L          b                ",
+    "            L      oooooo     oooo      ",
+    "       C m  L  m          C  n  R       ",
+    "########################################",
+    "########################################"
+   ],
+   "shrine": {
+    "col": 20,
+    "ability": "dash"
+   }
+  },
+  {
+   "id": "w7",
+   "name": "Wide Gap",
+   "area_name": "Whispering Wood",
+   "area": "wood",
+   "room": true,
+   "hop": true,
+   "width": 41,
+   "start": 3,
+   "mood": "windy",
+   "exits": [
+    {
+     "side": "left",
+     "to": "w6",
+     "arrive": "right",
+     "gate": "dash"
+    },
+    {
+     "side": "right",
+     "to": "w9",
+     "arrive": "left",
+     "gate": ""
+    }
+   ],
+   "benches": [],
+   "powers": [],
+   "grid": [
+    "                                         ",
+    "                                         ",
+    "                                         ",
+    "                                         ",
+    "                       ooooo             ",
+    "                     L=========          ",
+    "                     L                   ",
+    "                b    L         b         ",
+    "                     L     oooooo        ",
+    "       C m  C  m C   L  C n     ^        ",
+    "#########################################",
+    "#########################################"
+   ]
+  },
+  {
+   "id": "w8",
+   "name": "Lower Path",
+   "area_name": "Whispering Wood",
+   "area": "wood",
+   "room": true,
+   "hop": true,
+   "width": 35,
+   "start": 3,
+   "mood": "windy",
+   "exits": [
+    {
+     "side": "up",
+     "to": "w1",
+     "arrive": "down",
+     "gate": "",
+     "col": 24,
+     "row": 5
+    },
+    {
+     "side": "left",
+     "to": "m6",
+     "arrive": "right",
+     "gate": ""
+    },
+    {
+     "side": "right",
+     "to": "w4",
+     "arrive": "left",
+     "gate": ""
+    }
+   ],
+   "benches": [],
+   "powers": [],
+   "grid": [
+    "                                   ",
+    "                                   ",
+    "                                   ",
+    "                                   ",
+    "               oooooooo            ",
+    "             L============         ",
+    "             L                     ",
+    "          b  L b                   ",
+    "            oLo    oo o            ",
+    "       C  m  L  m    m             ",
+    "###################################",
+    "###################################"
+   ]
+  },
+  {
+   "id": "w9",
+   "name": "Cliff Edge",
+   "area_name": "Whispering Wood",
+   "area": "wood",
+   "room": true,
+   "hop": true,
+   "width": 34,
+   "start": 3,
+   "mood": "windy",
+   "exits": [
+    {
+     "side": "left",
+     "to": "w7",
+     "arrive": "right",
+     "gate": ""
+    },
+    {
+     "side": "up",
+     "to": "h2",
+     "arrive": "down",
+     "gate": "",
+     "col": 19,
+     "row": 5
+    },
+    {
+     "side": "down",
+     "to": "h3",
+     "arrive": "up",
+     "gate": "",
+     "col": 25,
+     "row": 10
+    },
+    {
+     "side": "right",
+     "to": "y1",
+     "arrive": "left",
+     "gate": "double_jump"
+    }
+   ],
+   "benches": [],
+   "powers": [],
+   "grid": [
+    "                                  ",
+    "                                  ",
+    "                                  ",
+    "                                  ",
+    "            oooooo                ",
+    "          L==========             ",
+    "          L                       ",
+    "          L     b                 ",
+    "          Loooo        oooo       ",
+    "       ^  L    n      m           ",
+    "##################################",
+    "##################################"
+   ]
+  },
+  {
+   "id": "s1",
+   "name": "Ruin Steps",
+   "area_name": "Sky Ruins",
+   "area": "ruins",
+   "room": true,
+   "hop": true,
+   "width": 41,
+   "start": 3,
+   "mood": "sky",
+   "exits": [
+    {
+     "side": "down",
+     "to": "w3",
+     "arrive": "up",
+     "gate": "dash",
+     "col": 26,
+     "row": 10
+    },
+    {
+     "side": "right",
+     "to": "s2",
+     "arrive": "left",
+     "gate": ""
+    }
+   ],
+   "benches": [
+    13
+   ],
+   "powers": [],
+   "grid": [
+    "                                         ",
+    "                                         ",
+    "                                         ",
+    "                                         ",
+    "                     oooooooX            ",
+    "                   L============         ",
+    "                   L                     ",
+    "           b       L         b           ",
+    "       ooo    oooooL           ooo       ",
+    "       R           L   M      M  R       ",
+    "#########################################",
+    "#########################################"
+   ]
+  },
+  {
+   "id": "s2",
+   "name": "Floating Stones",
+   "area_name": "Sky Ruins",
+   "area": "ruins",
+   "room": true,
+   "hop": true,
+   "width": 41,
+   "start": 3,
+   "mood": "sky",
+   "exits": [
+    {
+     "side": "left",
+     "to": "s1",
+     "arrive": "right",
+     "gate": ""
+    },
+    {
+     "side": "up",
+     "to": "s3",
+     "arrive": "down",
+     "gate": "",
+     "col": 25,
+     "row": 5
+    },
+    {
+     "side": "right",
+     "to": "s5",
+     "arrive": "left",
+     "gate": ""
+    }
+   ],
+   "benches": [],
+   "powers": [],
+   "grid": [
+    "                                         ",
+    "                                         ",
+    "                                         ",
+    "                                         ",
+    "                  oooooX                 ",
+    "                L==========              ",
+    "                L                        ",
+    "              b L                        ",
+    "         o ooo  L             oo         ",
+    "       R  M  ^  L   R        M R M       ",
+    "#########################################",
+    "#########################################"
+   ]
+  },
+  {
+   "id": "s3",
+   "name": "Cloud Terrace",
+   "area_name": "Sky Ruins",
+   "area": "ruins",
+   "room": true,
+   "hop": true,
+   "width": 44,
+   "start": 3,
+   "mood": "sky",
+   "exits": [
+    {
+     "side": "down",
+     "to": "s2",
+     "arrive": "up",
+     "gate": "",
+     "col": 11,
+     "row": 10
+    },
+    {
+     "side": "right",
+     "to": "s4",
+     "arrive": "left",
+     "gate": "double_jump"
+    }
+   ],
+   "benches": [],
+   "powers": [],
+   "grid": [
+    "                                            ",
+    "                                            ",
+    "                                            ",
+    "                                            ",
+    "                                            ",
+    "                                            ",
+    "                                            ",
+    "                                            ",
+    "                    oooo   ooo              ",
+    "       R      M  M         ^  M R           ",
+    "############################################",
+    "############################################"
+   ],
+   "shrine": {
+    "col": 22,
+    "ability": "double_jump"
+   }
+  },
+  {
+   "id": "s4",
+   "name": "Candle Tower",
+   "area_name": "Sky Ruins",
+   "area": "ruins",
+   "room": true,
+   "hop": true,
+   "width": 43,
+   "start": 3,
+   "mood": "sky",
+   "exits": [
+    {
+     "side": "left",
+     "to": "s3",
+     "arrive": "right",
+     "gate": "double_jump"
+    }
+   ],
+   "benches": [],
+   "powers": [],
+   "grid": [
+    "                                           ",
+    "                                           ",
+    "                                           ",
+    "                                           ",
+    "                      ooooooc              ",
+    "                    L===========           ",
+    "                    L                      ",
+    "              b     L                      ",
+    "          ooo       L   ooooo              ",
+    "         R   M R    L      R  M ^ M        ",
+    "###########################################",
+    "###########################################"
+   ]
+  },
+  {
+   "id": "s5",
+   "name": "Sky Bridge",
+   "area_name": "Sky Ruins",
+   "area": "ruins",
+   "room": true,
+   "hop": true,
+   "width": 44,
+   "start": 3,
+   "mood": "sky",
+   "exits": [
+    {
+     "side": "left",
+     "to": "s2",
+     "arrive": "right",
+     "gate": ""
+    },
+    {
+     "side": "right",
+     "to": "h1",
+     "arrive": "left",
+     "gate": ""
+    }
+   ],
+   "benches": [],
+   "powers": [],
+   "grid": [
+    "                                            ",
+    "                                            ",
+    "                                            ",
+    "                                            ",
+    "                    ooooooX                 ",
+    "                  L===========              ",
+    "                  L                         ",
+    "             b    L                         ",
+    "          oo    ooL                         ",
+    "       R M  M  ^  L  R  M   ^     R         ",
+    "############################################",
+    "############################################"
+   ]
+  },
+  {
+   "id": "h1",
+   "name": "Windy Shaft",
+   "area_name": "The Long Shaft",
+   "area": "shaft",
+   "room": true,
+   "hop": true,
+   "width": 40,
+   "start": 3,
+   "mood": "sky",
+   "exits": [
+    {
+     "side": "left",
+     "to": "s5",
+     "arrive": "right",
+     "gate": ""
+    },
+    {
+     "side": "down",
+     "to": "h2",
+     "arrive": "up",
+     "gate": "",
+     "col": 11,
+     "row": 10
+    }
+   ],
+   "benches": [],
+   "powers": [],
+   "grid": [
+    "                                        ",
+    "                                        ",
+    "                                        ",
+    "                                        ",
+    "                                        ",
+    "                                        ",
+    "                                        ",
+    "                      b   b             ",
+    "            oooo    oooooo o            ",
+    "       ^      ^   n   C   n  ^  n       ",
+    "########################################",
+    "########################################"
+   ]
+  },
+  {
+   "id": "h2",
+   "name": "Shaft Middle",
+   "area_name": "The Long Shaft",
+   "area": "shaft",
+   "room": true,
+   "hop": true,
+   "width": 39,
+   "start": 3,
+   "mood": "sky",
+   "exits": [
+    {
+     "side": "up",
+     "to": "h1",
+     "arrive": "down",
+     "gate": "",
+     "col": 25,
+     "row": 5
+    },
+    {
+     "side": "down",
+     "to": "w9",
+     "arrive": "up",
+     "gate": "",
+     "col": 19,
+     "row": 10
+    }
+   ],
+   "benches": [],
+   "powers": [],
+   "grid": [
+    "                                       ",
+    "                                       ",
+    "                                       ",
+    "                                       ",
+    "                oooooooX               ",
+    "              L============            ",
+    "              L                        ",
+    "              L         b    b         ",
+    "      ooooo ooL                        ",
+    "        C  n  L       n     n C        ",
+    "#######################################",
+    "#######################################"
+   ]
+  },
+  {
+   "id": "h3",
+   "name": "Shaft Bottom",
+   "area_name": "The Long Shaft",
+   "area": "shaft",
+   "room": true,
+   "hop": true,
+   "width": 44,
+   "start": 3,
+   "mood": "sky",
+   "exits": [
+    {
+     "side": "up",
+     "to": "w9",
+     "arrive": "down",
+     "gate": "",
+     "col": 27,
+     "row": 5
+    },
+    {
+     "side": "down",
+     "to": "h4",
+     "arrive": "up",
+     "gate": "",
+     "col": 8,
+     "row": 10
+    }
+   ],
+   "benches": [],
+   "powers": [],
+   "grid": [
+    "                                            ",
+    "                                            ",
+    "                                            ",
+    "                                            ",
+    "                   ooooooX                  ",
+    "                 L===========               ",
+    "                 L                          ",
+    "                 L          b               ",
+    "       ooooooo ooL                          ",
+    "              n  L      C     n ^           ",
+    "############################################",
+    "############################################"
+   ]
+  },
+  {
+   "id": "h4",
+   "name": "Drowned Ledge",
+   "area_name": "The Long Shaft",
+   "area": "shaft",
+   "room": true,
+   "hop": true,
+   "width": 32,
+   "start": 3,
+   "mood": "sky",
+   "exits": [
+    {
+     "side": "up",
+     "to": "h3",
+     "arrive": "down",
+     "gate": "",
+     "col": 20,
+     "row": 5
+    },
+    {
+     "side": "left",
+     "to": "f5",
+     "arrive": "right",
+     "gate": "wall_jump"
+    }
+   ],
+   "benches": [],
+   "powers": [],
+   "grid": [
+    "                                ",
+    "                                ",
+    "                                ",
+    "                                ",
+    "           oooooooo             ",
+    "         L============          ",
+    "         L                      ",
+    "         L                      ",
+    "         L  o ooooooo           ",
+    "         L   n  C      ^        ",
+    "################################",
+    "################################"
+   ]
+  },
+  {
+   "id": "f1",
+   "name": "Sunken Gate",
+   "area_name": "Sunken Fortress",
+   "area": "fortress",
+   "room": true,
+   "hop": true,
+   "width": 44,
+   "start": 3,
+   "mood": "golden",
+   "exits": [
+    {
+     "side": "up",
+     "to": "w4",
+     "arrive": "down",
+     "gate": "",
+     "col": 26,
+     "row": 5
+    },
+    {
+     "side": "right",
+     "to": "f2",
+     "arrive": "left",
+     "gate": ""
+    }
+   ],
+   "benches": [],
+   "powers": [],
+   "grid": [
+    "                                            ",
+    "                                            ",
+    "                                            ",
+    "                                            ",
+    "                 oooooooo                   ",
+    "               L============                ",
+    "               L                            ",
+    "               L        d                   ",
+    "        oooo o L    ooo o                   ",
+    "         ^  n  L    O  n      M  O          ",
+    "############################################",
+    "############################################"
+   ]
+  },
+  {
+   "id": "f2",
+   "name": "Flooded Hall",
+   "area_name": "Sunken Fortress",
+   "area": "fortress",
+   "room": true,
+   "hop": true,
+   "width": 41,
+   "start": 3,
+   "mood": "golden",
+   "exits": [
+    {
+     "side": "right",
+     "to": "f5",
+     "arrive": "left",
+     "gate": ""
+    },
+    {
+     "side": "left",
+     "to": "f1",
+     "arrive": "right",
+     "gate": ""
+    },
+    {
+     "side": "down",
+     "to": "f3",
+     "arrive": "up",
+     "gate": "",
+     "col": 10,
+     "row": 10
+    }
+   ],
+   "benches": [],
+   "powers": [],
+   "grid": [
+    "                                         ",
+    "                                         ",
+    "                                         ",
+    "                                         ",
+    "                  ooooX                  ",
+    "                L=========               ",
+    "                L                        ",
+    "            d   Ld                       ",
+    "                Looo      ooo   ooo      ",
+    "       C     n  L   O n   ^              ",
+    "##############################  #########",
+    "##############################  #########"
+   ]
+  },
+  {
+   "id": "f3",
+   "name": "Climbing Wall",
+   "area_name": "Sunken Fortress",
+   "area": "fortress",
+   "room": true,
+   "hop": true,
+   "width": 35,
+   "start": 3,
+   "mood": "golden",
+   "exits": [
+    {
+     "side": "up",
+     "to": "f2",
+     "arrive": "down",
+     "gate": "",
+     "col": 18,
+     "row": 5
+    },
+    {
+     "side": "left",
+     "to": "f4",
+     "arrive": "right",
+     "gate": "wall_jump"
+    }
+   ],
+   "benches": [],
+   "powers": [],
+   "grid": [
+    "                                   ",
+    "                                   ",
+    "                                   ",
+    "                                   ",
+    "           oooooX                  ",
+    "         L==========               ",
+    "         L                         ",
+    "         L                         ",
+    "         L    oooo      oo         ",
+    "         L  C          M O M       ",
+    "###################################",
+    "###################################"
+   ],
+   "shrine": {
+    "col": 17,
+    "ability": "wall_jump"
+   }
+  },
+  {
+   "id": "f4",
+   "name": "Deep Vault",
+   "area_name": "Sunken Fortress",
+   "area": "fortress",
+   "room": true,
+   "hop": true,
+   "width": 34,
+   "start": 3,
+   "mood": "golden",
+   "exits": [
+    {
+     "side": "right",
+     "to": "f3",
+     "arrive": "left",
+     "gate": "wall_jump"
+    }
+   ],
+   "benches": [
+    13
+   ],
+   "powers": [],
+   "grid": [
+    "                                  ",
+    "                                  ",
+    "                                  ",
+    "                                  ",
+    "          ooc                     ",
+    "        L=======                  ",
+    "        L                         ",
+    "        L               d         ",
+    "       oLoo       oo   oooo       ",
+    "        L        n O  M   ^       ",
+    "##################################",
+    "##################################"
+   ]
+  },
+  {
+   "id": "f5",
+   "name": "Rusty Pipe",
+   "area_name": "Sunken Fortress",
+   "area": "fortress",
+   "room": true,
+   "hop": true,
+   "width": 36,
+   "start": 3,
+   "mood": "golden",
+   "exits": [
+    {
+     "side": "right",
+     "to": "h4",
+     "arrive": "left",
+     "gate": "wall_jump"
+    },
+    {
+     "side": "left",
+     "to": "f2",
+     "arrive": "right",
+     "gate": ""
+    }
+   ],
+   "benches": [],
+   "powers": [],
+   "grid": [
+    "                                    ",
+    "                                    ",
+    "                                    ",
+    "                                    ",
+    "                oooooo              ",
+    "              L==========           ",
+    "              L                     ",
+    "              L d         d         ",
+    "          ooooL   ooooo             ",
+    "       C      L     O  M  n ^       ",
+    "####################################",
+    "####################################"
+   ]
+  },
+  {
+   "id": "y1",
+   "name": "Dark Slope",
+   "area_name": "Yuva's Hill",
+   "area": "hill",
+   "room": true,
+   "hop": true,
+   "width": 33,
+   "start": 3,
+   "mood": "dusk",
+   "exits": [
+    {
+     "side": "left",
+     "to": "w9",
+     "arrive": "right",
+     "gate": "double_jump"
+    },
+    {
+     "side": "right",
+     "to": "y2",
+     "arrive": "left",
+     "gate": ""
+    }
+   ],
+   "benches": [],
+   "powers": [],
+   "grid": [
+    "                                 ",
+    "                                 ",
+    "                                 ",
+    "                                 ",
+    "                                 ",
+    "                                 ",
+    "                                 ",
+    "                       b         ",
+    "           oooo    ooo           ",
+    "        O m  O m  R              ",
+    "######################  #########",
+    "######################  #########"
+   ]
+  },
+  {
+   "id": "y2",
+   "name": "Graveyard",
+   "area_name": "Yuva's Hill",
+   "area": "hill",
+   "room": true,
+   "hop": true,
+   "width": 32,
+   "start": 3,
+   "mood": "dusk",
+   "exits": [
+    {
+     "side": "left",
+     "to": "y1",
+     "arrive": "right",
+     "gate": ""
+    },
+    {
+     "side": "up",
+     "to": "y3",
+     "arrive": "down",
+     "gate": "candles:3",
+     "col": 20,
+     "row": 5
+    }
+   ],
+   "benches": [
+    9
+   ],
+   "powers": [],
+   "grid": [
+    "                                ",
+    "                                ",
+    "                                ",
+    "                                ",
+    "                ooc             ",
+    "              L=======          ",
+    "              L                 ",
+    "              L d b             ",
+    "        ooooo Loo oo  o ooo     ",
+    "              L  m     m        ",
+    "################################",
+    "################################"
+   ]
+  },
+  {
+   "id": "y3",
+   "name": "Yuva's Gate",
+   "area_name": "Yuva's Hill",
+   "area": "hill",
+   "room": true,
+   "hop": true,
+   "width": 41,
+   "start": 3,
+   "mood": "dusk",
+   "exits": [
+    {
+     "side": "down",
+     "to": "y2",
+     "arrive": "up",
+     "gate": "candles:3",
+     "col": 30,
+     "row": 10
+    },
+    {
+     "side": "up",
+     "to": "y4",
+     "arrive": "down",
+     "gate": "",
+     "col": 29,
+     "row": 5
+    }
+   ],
+   "benches": [],
+   "powers": [],
+   "grid": [
+    "                                         ",
+    "                                         ",
+    "                                         ",
+    "                                         ",
+    "                      oooooX             ",
+    "                    L==========          ",
+    "                    L                    ",
+    "          d         L                    ",
+    "            oooo  ooLo                   ",
+    "        ^    O   M  L   m        m       ",
+    "#########################################",
+    "#########################################"
+   ]
+  },
+  {
+   "id": "y4",
+   "name": "Yuva's Arena",
+   "area_name": "Yuva's Hill",
+   "area": "hill",
+   "room": true,
+   "hop": true,
+   "width": 34,
+   "start": 3,
+   "mood": "dusk",
+   "exits": [
+    {
+     "side": "down",
+     "to": "y3",
+     "arrive": "up",
+     "gate": "",
+     "col": 3,
+     "row": 10
+    }
+   ],
+   "benches": [],
+   "powers": [],
+   "grid": [
+    "                                  ",
+    "                                  ",
+    "                                  ",
+    "                                  ",
+    "                                  ",
+    "                                  ",
+    "                                  ",
+    "                                  ",
+    "                                  ",
+    "                                  ",
+    "##################################",
+    "##################################"
+   ],
+   "boss": [
+    5,
+    31
+   ]
+  }
+ ]
+}

@@ -1,0 +1,59 @@
+{
+ "cell": 210,
+ "clips": [
+  {
+   "name": "run",
+   "file": "beta7_run",
+   "frames": 16,
+   "fps": 24,
+   "w": 210,
+   "h": 210,
+   "ax": 105
+  },
+  {
+   "name": "jump",
+   "file": "beta7_jump",
+   "frames": 25,
+   "fps": 24,
+   "w": 210,
+   "h": 210,
+   "ax": 105
+  },
+  {
+   "name": "hurt",
+   "file": "beta7_hurt",
+   "frames": 25,
+   "fps": 24,
+   "w": 210,
+   "h": 210,
+   "ax": 105
+  },
+  {
+   "name": "idle",
+   "file": "beta7_idle",
+   "frames": 10,
+   "fps": 6,
+   "w": 210,
+   "h": 210,
+   "ax": 105
+  },
+  {
+   "name": "climb",
+   "file": "janani25_climb",
+   "frames": 25,
+   "fps": 11,
+   "w": 210,
+   "h": 210,
+   "ax": 105
+  },
+  {
+   "name": "slash",
+   "file": "janani25_slash",
+   "frames": 22,
+   "fps": 24,
+   "w": 300,
+   "h": 250,
+   "ax": 70
+  }
+ ]
+}

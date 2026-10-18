@@ -38,6 +38,45 @@ public static class ProjectSetup
         Debug.Log("ProjectSetup: settings applied (" + AppId + ", landscape, ARM64, Android)");
     }
 
+    const string RoomScene = "Assets/Scenes/Room.unity";
+
+    /// <summary>
+    /// The room scene, and the only one in the build: just a camera and a Room (Room builds everything else from
+    /// the room data when it starts).
+    /// </summary>
+    public static void MakeRoomScene()
+    {
+        var scene = UnityEditor.SceneManagement.EditorSceneManager.NewScene(
+            UnityEditor.SceneManagement.NewSceneSetup.EmptyScene, UnityEditor.SceneManagement.NewSceneMode.Single);
+        var cam = new GameObject("Main Camera", typeof(Camera), typeof(AudioListener));
+        cam.tag = "MainCamera";
+        cam.transform.position = new Vector3(0, 6, -10);
+        var c = cam.GetComponent<Camera>();
+        c.orthographic = true;
+        c.orthographicSize = 720f / 64f / 2f;
+        c.clearFlags = CameraClearFlags.SolidColor;
+        c.backgroundColor = new Color(0.04f, 0.07f, 0.12f);
+        new GameObject("Room").AddComponent<Room>();
+        UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene, RoomScene);
+        EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(RoomScene, true) };
+        Debug.Log("ProjectSetup: made " + RoomScene);
+    }
+
+    /// <summary>A Mac version (Builds/Gracy.app) to try on this computer and take pictures with the autopilot.</summary>
+    public static void BuildMac()
+    {
+        var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
+        {
+            scenes = new[] { RoomScene },
+            locationPathName = "Builds/Gracy.app",
+            target = BuildTarget.StandaloneOSX,
+            options = BuildOptions.None,
+        });
+        Debug.Log($"ProjectSetup: Mac build {report.summary.result}, {report.summary.totalTime}");
+        if (report.summary.result != BuildResult.Succeeded)
+            EditorApplication.Exit(1);
+    }
+
     /// <summary>Builds the scenes in the build list into Builds/Gracy-Unity.apk. Exits with 1 if it fails.</summary>
     public static void BuildAndroid()
     {
