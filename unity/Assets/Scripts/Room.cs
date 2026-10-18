@@ -78,6 +78,8 @@ public class Room : MonoBehaviour
         i = Array.IndexOf(args, "-entry");
         if (i >= 0 && i + 1 < args.Length) entry = args[i + 1];
 
+        if (Array.IndexOf(args, "-room") >= 0 || Array.IndexOf(args, "-autorun") >= 0)
+            Flow.Playing = true; // (test runs go straight into the level)
         Def = Find(roomId) ?? Find("level1") ?? Find("m1");
         Skin = SkinForMood.TryGetValue(Def.mood, out var s) ? s : "meadow";
         if (FindAnyObjectByType<GameInput>() == null)
@@ -92,20 +94,29 @@ public class Room : MonoBehaviour
         BuildLight();
         Entrance = StartFeet();
         Player = Janani.Create(this, Entrance);
-        HealthBar.Create(Player);
         var cam = Camera.main;
+        CameraFollow follow = null;
         if (cam != null)
         {
-            var follow = cam.GetComponent<CameraFollow>();
+            follow = cam.GetComponent<CameraFollow>();
             if (follow == null)
                 follow = cam.gameObject.AddComponent<CameraFollow>();
             follow.Follow(Player, Def.width);
         }
+        if (Village)
+            Ambience();
+        GameInput.Blocked = !Flow.Playing;
+        if (!Flow.Playing) // the title screen, over a quiet view of the level
+        {
+            if (follow != null) follow.Drift = true;
+            MenuUI.Title();
+            return;
+        }
+        HealthBar.Create(Player);
         if (TouchPad.Wanted())
             TouchPad.Create();
         LevelUI.Create(Def.area_name, Def.name);
-        if (Village)
-            Ambience();
+        MenuUI.InGame();
     }
 
     bool Village => Skin == "village";
@@ -113,17 +124,18 @@ public class Room : MonoBehaviour
     /// <summary>The village's sound: birdsong and a light wind, soft music under them.</summary>
     void Ambience()
     {
-        void Loop(string clip, float volume)
+        void Loop(string clip, float volume, bool isMusic)
         {
             var a = gameObject.AddComponent<AudioSource>();
             a.clip = Resources.Load<AudioClip>("Audio/" + clip);
             a.loop = true;
             a.volume = volume;
             a.Play();
+            if (isMusic) Flow.Music(a); else Flow.Sound(a);
         }
-        Loop("BirdLoop", 0.45f);
-        Loop("WindWeakLoop", 0.25f);
-        Loop("SummerTension", 0.3f);
+        Loop("BirdLoop", 0.45f, false);
+        Loop("WindWeakLoop", 0.25f, false);
+        Loop("SummerTension", 0.3f, true);
     }
 
     /// <summary>Where she came in (where she starts again if she runs out of health).</summary>

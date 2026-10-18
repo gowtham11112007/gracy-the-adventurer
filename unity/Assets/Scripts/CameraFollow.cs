@@ -12,6 +12,8 @@ public class CameraFollow : MonoBehaviour
     float lean = Lean;
     Vector3 velocity;
     Camera cam;
+    /// <summary>The title screen: the camera drifts slowly along the level instead of following her.</summary>
+    public bool Drift;
 
     public void Follow(Janani j, float roomWidth)
     {
@@ -36,6 +38,13 @@ public class CameraFollow : MonoBehaviour
     {
         if (target == null)
             return;
+        if (Drift)
+        {
+            float half = cam.orthographicSize, halfWide = half * cam.aspect;
+            float span = Mathf.Max(0, width - 2 * halfWide);
+            transform.position = new Vector3(halfWide + Mathf.PingPong(Time.time * 0.8f, span), half + 0.4f, -10);
+            return;
+        }
         lean = Mathf.MoveTowards(lean, target.FacingLeft ? -Lean : Lean, 3f * Time.deltaTime);
         transform.position = Vector3.SmoothDamp(transform.position, Wanted(), ref velocity, 0.12f);
     }

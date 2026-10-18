@@ -80,6 +80,7 @@ public class Janani : MonoBehaviour
         // footsteps (the Asset Store forest pack's grass and dirt steps)
         feet = gameObject.AddComponent<AudioSource>();
         feet.volume = 0.35f;
+        Flow.Sound(feet);
         steps = new[] { "HeroFootStepGrass1", "HeroFootStepGrass2", "HeroFootStepDirt1", "HeroFootStepDirt2" }
             .Select(n => Resources.Load<AudioClip>("Audio/" + n)).Where(c => c != null).ToArray();
 

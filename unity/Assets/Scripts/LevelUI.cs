@@ -93,13 +93,25 @@ public class LevelUI : MonoBehaviour
         group.alpha = 0;
     }
 
+    /// <summary>After a moment, the "Level Complete" panel with its stars (and the words above make way).</summary>
+    IEnumerator ShowStars()
+    {
+        yield return new WaitForSeconds(1.6f);
+        group.alpha = 0;
+        var room = FindAnyObjectByType<Room>();
+        if (MenuUI.Instance != null)
+            MenuUI.Instance.Complete(room != null && room.Player != null ? room.Player.Gems : 0);
+    }
+
     /// <summary>She reached the end of the level.</summary>
     public void Finished()
     {
         if (Done)
             return;
         Done = true;
+        GameInput.Blocked = true; // (she stops at the stone)
         StopAllCoroutines();
         StartCoroutine(Show(levelName.ToUpper(), "Level Complete", 0));
+        StartCoroutine(ShowStars());
     }
 }

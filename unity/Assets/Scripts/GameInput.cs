@@ -15,6 +15,7 @@ public class GameInput : MonoBehaviour
 {
     public static readonly HashSet<Act> Simulate = new(); // (tests and the autopilot)
     public static readonly HashSet<Act> Touch = new();    // (the phone's buttons)
+    public static bool Blocked;                            // (the title screen, the end of a level: she stands still)
     const int Count = 6;
     static readonly bool[] held = new bool[Count];
     static readonly bool[] latched = new bool[Count];
@@ -48,7 +49,7 @@ public class GameInput : MonoBehaviour
         for (int i = 0; i < Count; i++)
         {
             var a = (Act)i;
-            bool on = Simulate.Contains(a) || Touch.Contains(a) || (k != null && OnKeyboard(k, a));
+            bool on = !Blocked && (Simulate.Contains(a) || Touch.Contains(a) || (k != null && OnKeyboard(k, a)));
             if (on && !held[i])
                 latched[i] = true;
             held[i] = on;

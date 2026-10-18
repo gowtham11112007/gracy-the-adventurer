@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 /// <summary>
 /// The phone's on-screen buttons (the owner's layout): left and right under the left thumb; under the right thumb
-/// up, jump and down in a column, with the magic button up beside them. Every finger is tracked, so she can run
+/// up, jump and down in a column. Every finger is tracked, so she can run
 /// and jump at once; each finger presses only the button it is nearest to, with a generous reach because thumbs
 /// aren't precise. The buttons press the same actions as the keyboard (GameInput.Touch).
 /// Laid out on a 720-high canvas measured from the bottom corners, so wider phones just spread them further apart.
@@ -58,7 +58,7 @@ public class TouchPad : MonoBehaviour
         Add(Act.Jump, true, column, 68, Icons.Jump(), 0);
         Add(Act.Up, true, column + new Vector2(0, 118), 52, Icons.Arrow(), 90);
         Add(Act.Down, true, column + new Vector2(0, -118), 52, Icons.Arrow(), 270);
-        Add(Act.Shoot, true, column + new Vector2(-125, 100), 52, Art.Picture("Props/icon_fire", new Vector2(0.5f, 0.5f)), 0);
+        // (the magic button comes back when there's magic to throw)
     }
 
     void Add(Act act, bool rightSide, Vector2 offset, float radius, Sprite icon, float turn)
@@ -106,6 +106,7 @@ public class TouchPad : MonoBehaviour
 
     void Update()
     {
+        canvas.enabled = !GameInput.Blocked && Time.timeScale > 0; // (hidden under the pause menu and at the end)
         GameInput.Touch.Clear();
         var points = new List<Vector2>();
         if (Touchscreen.current != null)

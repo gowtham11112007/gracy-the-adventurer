@@ -4,8 +4,8 @@ using UnityEngine.Rendering.Universal;
 
 /// <summary>
 /// Level 1's look, from the Asset Store packs: Cainos "Pixel Art Platformer - Village Props" (ground tiles and the
-/// village's props, Resources/Art/Village) and "2D Pixel Art Platformer Biome - American Forest" (the drifting sky
-/// and hills, Resources/Art/Forest). Room asks it for each piece when a level's mood is "village".
+/// village's props, Resources/Art/Village) and "Free Pixel Art Hills" (the sunset behind it, Resources/Art/Hills).
+/// Room asks it for each piece when a level's mood is "village".
 /// The pieces are pixel art at 32 pixels a tile (the forest at 16), drawn crisp.
 /// </summary>
 public static class Village
@@ -123,15 +123,16 @@ public static class Village
         return false;
     }
 
-    /// <summary>The forest behind the village: sky, clouds, hills and two rows of pines, each drifting at its own pace.</summary>
+    /// <summary>The evening sky behind the village (Asset Store "Free Pixel Art Hills", Resources/Art/Hills): a
+    /// sunset with peach hills, then far trees, the green forest and the nearer forest, each drifting at its own pace.</summary>
     public static void Background(Transform parent)
     {
-        string[] far = { "Background5", "Background4", "Background3", "Background2", "Background1" };
-        for (int i = 0; i < far.Length; i++)
+        string[] farToNear = { "Hills Layer 01", "Hills Layer 02", "Hills Layer 03", "Hills Layer 04" };
+        for (int i = 0; i < farToNear.Length; i++)
         {
-            var s = Forest(far[i]);
+            var s = Resources.Load<Sprite>("Art/Hills/" + farToNear[i]);
             if (s != null)
-                Parallax.Create(parent, s, 0.04f + i * 0.08f, -100 + i);
+                Parallax.Create(parent, s, 0.03f + i * 0.1f, -100 + i);
         }
     }
 }
