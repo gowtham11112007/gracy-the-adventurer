@@ -161,7 +161,7 @@ public class MenuUI : MonoBehaviour
         TitleFx.Scenery(ui.root);
         // the logo and the buttons, a little right of the middle (Janani stands on the left)
         TitleFx.Logo(ui.root, Medieval, new Vector2(150, -175));
-        var play = ui.Press(ui.root, "btn_play", new Vector2(0.5f, 0), new Vector2(150, 285), 96, Flow.Play);
+        var play = ui.Press(ui.root, "btn_play", new Vector2(0.5f, 0), new Vector2(150, 285), 96, Flow.ToMap);
         var options = ui.Press(ui.root, "btn_options", new Vector2(0.5f, 0), new Vector2(150, 180), 70, ui.Options);
         var quit = ui.Press(ui.root, "btn_quit", new Vector2(0.5f, 0), new Vector2(150, 98), 70, Application.Quit);
         float delay = 0.5f;
@@ -212,7 +212,7 @@ public class MenuUI : MonoBehaviour
         Press(sheet, "btn_resume", new Vector2(0.5f, 1), new Vector2(0, -150), 66, Resume);
         Press(sheet, "btn_restart", new Vector2(0.5f, 1), new Vector2(0, -230), 66, Flow.Restart);
         Press(sheet, "btn_options", new Vector2(0.5f, 1), new Vector2(0, -310), 66, Options);
-        Press(sheet, "btn_exit", new Vector2(0.5f, 1), new Vector2(0, -390), 66, Flow.ToTitle);
+        Press(sheet, "btn_exit", new Vector2(0.5f, 1), new Vector2(0, -390), 66, Flow.ToMap);
     }
 
     void Resume()
@@ -231,7 +231,7 @@ public class MenuUI : MonoBehaviour
         Words(sheet, "Level Complete", new Vector2(0.5f, 0.5f), new Vector2(0, 40), 40, Gold, 380);
         Words(sheet, $"Gems  {gems}", new Vector2(0.5f, 0.5f), new Vector2(0, -20), 30, Cream, 380);
         Press(sheet, "icon_replay", new Vector2(0.5f, 0), new Vector2(-60, 60), 74, Flow.Restart);
-        Press(sheet, "icon_home", new Vector2(0.5f, 0), new Vector2(60, 60), 74, Flow.ToTitle);
+        Press(sheet, "icon_home", new Vector2(0.5f, 0), new Vector2(60, 60), 74, Flow.ToMap); // (back to the island)
     }
 
     void Update()

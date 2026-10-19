@@ -100,6 +100,8 @@ public class LevelUI : MonoBehaviour
         yield return new WaitForSeconds(1.6f);
         group.alpha = 0;
         var room = FindAnyObjectByType<Room>();
+        if (room != null && room.Player != null)
+            Flow.Finish(room.Def.id, room.Player.Gems); // (the map shows it finished, and opens the next)
         if (MenuUI.Instance != null)
             MenuUI.Instance.Complete(room != null && room.Player != null ? room.Player.Gems : 0);
     }

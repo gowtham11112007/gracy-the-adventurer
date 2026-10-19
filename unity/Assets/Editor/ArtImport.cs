@@ -26,5 +26,7 @@ public class ArtImport : AssetPostprocessor
         t.maxTextureSize = 8192;
         t.npotScale = TextureImporterNPOTScale.None;
         t.textureCompression = TextureImporterCompression.CompressedHQ;
+        if (assetPath.StartsWith("Assets/Resources/Art/Map/")) // (the world maps are pixel art: crisp)
+            t.filterMode = FilterMode.Point;
     }
 }

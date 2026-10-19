@@ -3,13 +3,27 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// What the game is doing: the title screen (over a quiet view of Level 1) or playing; and the player's settings,
-/// music and sound on or off (kept between games in PlayerPrefs "music" and "sound": 1 on, 0 off).
-/// Starting, restarting and going back to the title reload the one scene with the right flag set.
+/// What the game is showing: the title screen, the world map, or a level (and which); the levels finished
+/// (PlayerPrefs "done_level1"... 1 when finished, "gems_level1"... the most gems found there); and the player's
+/// settings, music and sound on or off (PlayerPrefs "music" and "sound": 1 on, 0 off).
+/// Moving between screens reloads the one scene with the right flag set.
 /// </summary>
 public static class Flow
 {
-    public static bool Playing;
+    public enum Screen { Title, Map, Level }
+    public static Screen Showing = Screen.Title;
+    public static bool Playing => Showing == Screen.Level;
+    public static string LevelId = "level1";
+
+    public static bool Done(string id) => PlayerPrefs.GetInt("done_" + id, 0) == 1;
+
+    /// <summary>A level finished: remembered, with the most gems found there.</summary>
+    public static void Finish(string id, int gems)
+    {
+        PlayerPrefs.SetInt("done_" + id, 1);
+        PlayerPrefs.SetInt("gems_" + id, Mathf.Max(gems, PlayerPrefs.GetInt("gems_" + id, 0)));
+        PlayerPrefs.Save();
+    }
 
     /// <summary>
     /// Every start begins fresh: the title screen, nothing held, no old pictures or menus remembered. (The Unity
@@ -18,7 +32,7 @@ public static class Flow
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     static void FreshStart()
     {
-        Playing = false;
+        Showing = Screen.Title;
         music.Clear();
         sounds.Clear();
         GameInput.Fresh();
@@ -58,15 +72,22 @@ public static class Flow
         foreach (var a in sounds) a.mute = !SoundOn;
     }
 
-    public static void Play()
+    public static void Play(string id)
     {
-        Playing = true;
+        LevelId = id;
+        Showing = Screen.Level;
+        Reload();
+    }
+
+    public static void ToMap()
+    {
+        Showing = Screen.Map;
         Reload();
     }
 
     public static void ToTitle()
     {
-        Playing = false;
+        Showing = Screen.Title;
         Reload();
     }
 

@@ -79,17 +79,22 @@ public class Room : MonoBehaviour
         if (i >= 0 && i + 1 < args.Length) entry = args[i + 1];
 
         if (Array.IndexOf(args, "-room") >= 0 || Array.IndexOf(args, "-autorun") >= 0)
-            Flow.Playing = true; // (test runs go straight into the level)
+            Flow.Showing = Flow.Screen.Level; // (test runs go straight into the level)
+        else if (Array.IndexOf(args, "-map") >= 0)
+            Flow.Showing = Flow.Screen.Map; // (test runs: the world map)
+        else if (Flow.Playing)
+            roomId = Flow.LevelId; // (the level chosen on the world map)
         Def = Find(roomId) ?? Find("level1") ?? Find("m1");
         Skin = SkinForMood.TryGetValue(Def.mood, out var s) ? s : "meadow";
         if (FindAnyObjectByType<GameInput>() == null)
             new GameObject("Input").AddComponent<GameInput>();
         GameInput.Clear();
-        if (!Flow.Playing) // the title screen: mountains in the clouds, music and wind, the menu
+        if (!Flow.Playing) // the title screen (mountains in the clouds) or the world map: music, wind, the menu
         {
             GameInput.Blocked = true;
             Ambience(title: true);
-            MenuUI.Title();
+            if (Flow.Showing == Flow.Screen.Map) MapUI.Show();
+            else MenuUI.Title();
             return;
         }
         art = new GameObject("Art").transform;

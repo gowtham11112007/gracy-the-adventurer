@@ -1,0 +1,34 @@
+{
+ "levels": [
+  {
+   "id": "level1",
+   "name": "Lantern Village",
+   "x": 0.2447,
+   "y": 0.2243
+  },
+  {
+   "id": "level2",
+   "name": "Sunflower Meadow",
+   "x": 0.3894,
+   "y": 0.3613
+  },
+  {
+   "id": "level3",
+   "name": "Whispering Wood",
+   "x": 0.5255,
+   "y": 0.4612
+  },
+  {
+   "id": "level4",
+   "name": "River Cliffs",
+   "x": 0.6447,
+   "y": 0.589
+  },
+  {
+   "id": "level5",
+   "name": "Yuva's Castle",
+   "x": 0.7383,
+   "y": 0.7826
+  }
+ ]
+}
