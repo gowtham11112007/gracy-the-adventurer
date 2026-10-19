@@ -34,13 +34,8 @@ public class CountdownWidget extends AppWidgetProvider {
     static RemoteViews views(Context context) {
         int days = Countdown.daysLeft();
         RemoteViews v = new RemoteViews(context.getPackageName(), R.layout.widget);
-        if (days == 0) {
-            v.setTextViewText(R.id.days, "🎂");
-            v.setTextViewText(R.id.label, "Happy Birthday!");
-        } else {
-            v.setTextViewText(R.id.days, String.valueOf(days));
-            v.setTextViewText(R.id.label, Countdown.label(days));
-        }
+        // just the number of days (a cake on the day itself)
+        v.setTextViewText(R.id.days, days == 0 ? "\uD83C\uDF82" : String.valueOf(days));
         // tapping the widget opens the app
         Intent open = new Intent(context, MainActivity.class);
         v.setOnClickPendingIntent(R.id.root, PendingIntent.getActivity(context, 0, open,
