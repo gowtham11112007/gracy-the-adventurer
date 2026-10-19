@@ -16,12 +16,13 @@ power-ups, story) is in `game-plan.md`; read it.
 - **Kitty** (a cat who follows Janani, gives hints, and becomes "Super Kitty" in the boss fight)
 - **Yuva** (the playful boss, with devil horns; needs 3 stomps)
 
-There are **two versions** of the game. Don't mix them up:
+There are **three versions** of the game. Don't mix them up:
 
 | Folder | Engine | Status |
 |---|---|---|
 | `game/` | Phaser 4 + Vite + Capacitor (JavaScript) | **The birthday backup. Finished and installed on the twins' phones.** Leave it alone unless asked. |
-| `godot/` | **Godot 4.7.2**, GDScript, GL Compatibility renderer | **The active work.** A rebuild meant to look and feel like a real game. |
+| `godot/` | **Godot 4.7.2**, GDScript, GL Compatibility renderer | Earlier rebuild, now paused. |
+| `unity/` | **Unity 6.6**, C# | **The active work (since 17 Oct).** See `UNITY_GUIDE.md`. |
 
 ## Where things are
 
