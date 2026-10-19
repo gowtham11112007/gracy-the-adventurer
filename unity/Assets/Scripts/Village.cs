@@ -116,6 +116,7 @@ public static class Village
             case 'c': // a campfire, flickering
                 Stand(parent, "Campfire", foot, Behind, "Campfire");
                 Glow(parent, foot + new Vector2(0, 0.4f), new Color(1f, 0.55f, 0.25f), 6f, 1.3f, true);
+                NearSound.Create(parent, foot + new Vector2(0, 0.4f), "FireLoop", 7f);
                 return true;
             case 'E': // the Stone of Recall: the end of the level
             {

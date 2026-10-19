@@ -95,14 +95,20 @@ public class HealthBar : MonoBehaviour
         Picture(Fill(medal, "Ring"), Shapes.Ring(), Gold);
 
         // gems under the bar
-        var gemArt = Art.Strip("Props/gem", 3, 32, 42, 16);
+        var gemArt = Art.Strip("Props/gem_pixel", 8, 32, 36, 16);
         if (gemArt.Length > 0)
-            Picture(Box(transform, "Gem", new Vector2(124, -88), new Vector2(18, 24)), gemArt[0], Color.white);
-        var label = Box(transform, "Gems", new Vector2(150, -86), new Vector2(120, 28));
+        {
+            var g = Box(transform, "Gem", new Vector2(126, -88), new Vector2(26, 29));
+            Picture(g, gemArt[0], Color.white);
+            g.gameObject.AddComponent<UIFlip>().frames = new[] { gemArt[0], gemArt[0], gemArt[0], gemArt[0], gemArt[1], gemArt[2], gemArt[3], gemArt[4], gemArt[5], gemArt[6], gemArt[7] };
+        }
+        var label = Box(transform, "Gems", new Vector2(156, -82), new Vector2(120, 40));
         gems = label.gameObject.AddComponent<Text>();
-        gems.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        gems.fontSize = 22;
-        gems.fontStyle = FontStyle.Bold;
+        gems.font = MenuUI.Medieval;
+        gems.fontSize = 26;
+        gems.verticalOverflow = VerticalWrapMode.Overflow;
+        gems.alignment = TextAnchor.MiddleLeft;
+        gems.gameObject.AddComponent<Outline>().effectColor = new Color(0.12f, 0.05f, 0.18f, 0.9f);
         gems.color = new Color(1f, 0.96f, 0.88f);
         gems.raycastTarget = false;
     }

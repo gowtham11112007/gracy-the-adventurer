@@ -104,6 +104,8 @@ public class Room : MonoBehaviour
         BuildThings();
         BuildBackground();
         BuildLight();
+        if (Village)
+            Fireflies.Create(art, Def.width, Def.width / 3);
         Entrance = StartFeet();
         Player = Janani.Create(this, Entrance);
         var cam = Camera.main;
@@ -309,6 +311,8 @@ public class Room : MonoBehaviour
                     Gem.Create(art, new Vector2(c + 0.5f, TopY(r) - 0.85f));
                 else if (Village && (At(c, r) == 'm' || At(c, r) == 'W'))
                     Creature.Create(this, art, At(c, r), c, r);
+                else if (At(c, r) == 'T')
+                    Chest.Create(art, new Vector2(c + 0.5f, TopY(r) - 1));
                 else if (Village)
                     global::Village.Scenery(At(c, r), art, new Vector2(c + 0.5f, TopY(r) - 1), c);
     }
@@ -348,35 +352,248 @@ public class Room : MonoBehaviour
     }
 }
 
-/// <summary>A gem: turns gently, and is collected when she touches it.</summary>
+/// <summary>
+/// A gem: a sparkling pixel crystal (tools/make_pixel_gem.py) that bobs in a soft glow and chimes when she touches
+/// it. Gems from a chest pop out, fall, and then fly to her.
+/// </summary>
 public class Gem : MonoBehaviour
 {
-    public static void Create(Transform parent, Vector2 at)
+    Vector2 velocity, home;
+    float age, seed;
+    bool popped, taken;
+    Transform look;
+
+    public static Gem Create(Transform parent, Vector2 at)
     {
         var go = new GameObject("Gem");
         go.transform.SetParent(parent, false);
         go.transform.localPosition = at;
-        var look = go.AddComponent<Flipbook>();
-        var f = Art.Strip("Props/gem", 3, 32, 42, 16);
-        if (f.Length == 3)
-            look.Add("turn", new[] { f[0], f[1], f[2], f[1] }, 6, true);
-        look.Play("turn");
-        look.Renderer.sortingOrder = 2;
+        var g = go.AddComponent<Gem>();
+        g.home = at;
+        g.seed = at.x * 0.7f;
+        var glow = new GameObject("Glow").AddComponent<SpriteRenderer>();
+        glow.transform.SetParent(go.transform, false);
+        glow.transform.localPosition = new Vector3(0, 0.3f, 0);
+        glow.transform.localScale = new Vector3(0.9f, 1.4f, 1);
+        glow.sprite = Art.Glow;
+        glow.color = new Color(0.55f, 0.85f, 1f, 0.45f);
+        glow.sortingOrder = 1;
+        var pic = new GameObject("Look");
+        pic.transform.SetParent(go.transform, false);
+        g.look = pic.transform;
+        var book = pic.AddComponent<Flipbook>();
+        var f = Art.Strip("Props/gem_pixel", 8, 32, 36, 16);
+        // (the glint sweeps across, then it rests a moment)
+        if (f.Length == 8)
+            book.Add("shine", new[] { f[0], f[0], f[0], f[0], f[1], f[2], f[3], f[4], f[5], f[6], f[7] }, 10, true);
+        book.Play("shine");
+        book.Renderer.sortingOrder = 2;
         var touch = go.AddComponent<CircleCollider2D>();
         touch.isTrigger = true;
         touch.radius = 0.35f;
-        touch.offset = new Vector2(0, 0.33f);
-        go.AddComponent<Gem>();
+        touch.offset = new Vector2(0, 0.3f);
+        return g;
+    }
+
+    /// <summary>A gem thrown out of an opened chest.</summary>
+    public static void Pop(Transform parent, Vector2 from, Vector2 velocity)
+    {
+        var g = Create(parent, from);
+        g.popped = true;
+        g.velocity = velocity;
+    }
+
+    void Update()
+    {
+        age += Time.deltaTime;
+        if (!popped)
+        {
+            look.localPosition = new Vector3(0, Mathf.Sin(Time.time * 2.4f + seed) * 0.07f, 0);
+            return;
+        }
+        // out of the chest: up, down, then off to her
+        var p = (Vector2)transform.localPosition;
+        var j = FindAnyObjectByType<Janani>();
+        if (age > 0.55f && j != null)
+        {
+            var target = j.Feet + Vector2.up * 0.9f;
+            p = Vector2.MoveTowards(p, target, (4 + age * 10) * Time.deltaTime);
+        }
+        else
+        {
+            velocity.y -= 18 * Time.deltaTime;
+            p += velocity * Time.deltaTime;
+        }
+        transform.localPosition = p;
     }
 
     void OnTriggerEnter2D(Collider2D other)
     {
         var j = other.GetComponentInParent<Janani>();
+        if (j == null || taken || (popped && age < 0.4f))
+            return;
+        taken = true;
+        j.Gems++;
+        j.PlaySound(Resources.Load<AudioClip>("Audio/GemChime"), 0.45f);
+        Sparkle.Burst(transform.position + Vector3.up * 0.35f, new Color(0.7f, 0.92f, 1f), 7);
+        Destroy(gameObject);
+    }
+}
+
+/// <summary>A golden treasure chest ('T'): touching it opens it, and five gems spill out.</summary>
+public class Chest : MonoBehaviour
+{
+    Flipbook look;
+    bool open;
+
+    public static void Create(Transform parent, Vector2 foot)
+    {
+        var go = new GameObject("Chest");
+        go.transform.SetParent(parent, false);
+        go.transform.localPosition = foot;
+        var c = go.AddComponent<Chest>();
+        var frames = new Sprite[7];
+        var sheet = new System.Collections.Generic.Dictionary<string, Sprite>();
+        foreach (var s in Resources.LoadAll<Sprite>("Art/Village/TX Chest Animation"))
+            sheet[s.name] = s;
+        for (int i = 0; i < 7; i++)
+            sheet.TryGetValue("TX Chest Animation Golden " + i, out frames[i]);
+        var pic = new GameObject("Look");
+        pic.transform.SetParent(go.transform, false);
+        c.look = pic.AddComponent<Flipbook>();
+        c.look.Add("shut", new[] { frames[0] }, 1, true);
+        c.look.Add("open", frames, 14, false);
+        c.look.Play("shut");
+        c.look.Renderer.sortingOrder = 1;
+        if (frames[0] != null) // (stand it on the floor)
+            pic.transform.localPosition = new Vector3(-frames[0].bounds.center.x, -frames[0].bounds.min.y, 0);
+        var glow = new GameObject("Glow").AddComponent<UnityEngine.Rendering.Universal.Light2D>();
+        glow.transform.SetParent(go.transform, false);
+        glow.transform.localPosition = new Vector3(0, 0.5f, 0);
+        glow.lightType = UnityEngine.Rendering.Universal.Light2D.LightType.Point;
+        glow.pointLightOuterRadius = 2.2f;
+        glow.intensity = 0.8f;
+        glow.color = new Color(1f, 0.8f, 0.4f);
+        glow.gameObject.AddComponent<Flicker>();
+        var box = go.AddComponent<BoxCollider2D>();
+        box.isTrigger = true;
+        box.size = new Vector2(1.2f, 1.2f);
+        box.offset = new Vector2(0, 0.6f);
+    }
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        var j = other.GetComponentInParent<Janani>();
+        if (j == null || open)
+            return;
+        open = true;
+        look.Play("open");
+        j.PlaySound(Resources.Load<AudioClip>("Audio/HeroOpenBag"), 0.8f);
+        j.PlaySound(Resources.Load<AudioClip>("Audio/ChestSparkle"), 0.4f);
+        Sparkle.Burst(transform.position + Vector3.up * 0.8f, new Color(1f, 0.85f, 0.45f), 12);
+        for (int i = 0; i < 5; i++)
+            Gem.Pop(transform.parent, (Vector2)transform.localPosition + Vector2.up * 0.8f, new Vector2(-2f + i, 6f + (i % 2) * 1.5f));
+    }
+}
+
+/// <summary>A little puff of dust (her jumps and landings).</summary>
+public class Puff : MonoBehaviour
+{
+    Vector2 velocity;
+    float age, life = 0.45f;
+    SpriteRenderer sr;
+
+    public static void At(Vector2 feet, int count)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            var go = new GameObject("Puff");
+            go.transform.position = feet + new Vector2(UnityEngine.Random.Range(-0.2f, 0.2f), 0.05f);
+            var p = go.AddComponent<Puff>();
+            p.sr = go.AddComponent<SpriteRenderer>();
+            p.sr.sprite = Art.Glow;
+            p.sr.sortingOrder = 11;
+            p.sr.color = new Color(0.95f, 0.85f, 0.72f, 0.7f);
+            float side = i % 2 == 0 ? -1 : 1;
+            p.velocity = new Vector2(side * UnityEngine.Random.Range(0.6f, 1.6f), UnityEngine.Random.Range(0.2f, 0.6f));
+        }
+    }
+
+    void Update()
+    {
+        age += Time.deltaTime;
+        transform.position += (Vector3)(velocity * Time.deltaTime);
+        velocity *= 0.9f;
+        float k = age / life;
+        transform.localScale = Vector3.one * (0.25f + k * 0.35f);
+        sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, 0.7f * (1 - k));
+        if (age >= life)
+            Destroy(gameObject);
+    }
+}
+
+/// <summary>Fireflies drifting over the whole level, glowing on and off.</summary>
+public class Fireflies : MonoBehaviour
+{
+    class Fly { public Transform t; public SpriteRenderer sr; public Vector2 home; public float seed; }
+    readonly System.Collections.Generic.List<Fly> flies = new();
+
+    public static void Create(Transform parent, float width, int count)
+    {
+        var go = new GameObject("Fireflies");
+        go.transform.SetParent(parent, false);
+        var f = go.AddComponent<Fireflies>();
+        for (int i = 0; i < count; i++)
+        {
+            var dot = new GameObject("Firefly").AddComponent<SpriteRenderer>();
+            dot.transform.SetParent(go.transform, false);
+            dot.sprite = Art.Glow;
+            dot.sortingOrder = 9;
+            dot.transform.localScale = Vector3.one * UnityEngine.Random.Range(0.12f, 0.22f);
+            f.flies.Add(new Fly { t = dot.transform, sr = dot, home = new Vector2(UnityEngine.Random.Range(1f, width - 1), UnityEngine.Random.Range(2.6f, 8.5f)), seed = UnityEngine.Random.value * 50 });
+        }
+    }
+
+    void Update()
+    {
+        float t = Time.time;
+        foreach (var f in flies)
+        {
+            f.t.localPosition = f.home + new Vector2(Mathf.Sin(t * 0.4f + f.seed) * 1.2f, Mathf.Sin(t * 0.7f + f.seed * 1.3f) * 0.5f);
+            float glow = Mathf.Clamp01(Mathf.Sin(t * 1.6f + f.seed) * 0.8f + 0.4f);
+            f.sr.color = new Color(1f, 0.92f, 0.5f, glow * 0.9f);
+        }
+    }
+}
+
+/// <summary>A looping sound (the campfire's crackle) that grows louder as she comes near.</summary>
+public class NearSound : MonoBehaviour
+{
+    AudioSource src;
+    float range;
+
+    public static void Create(Transform parent, Vector2 at, string clip, float range)
+    {
+        var go = new GameObject("Sound " + clip);
+        go.transform.SetParent(parent, false);
+        go.transform.localPosition = at;
+        var n = go.AddComponent<NearSound>();
+        n.range = range;
+        n.src = go.AddComponent<AudioSource>();
+        n.src.clip = Resources.Load<AudioClip>("Audio/" + clip);
+        n.src.loop = true;
+        n.src.volume = 0;
+        Flow.Sound(n.src);
+        n.src.Play();
+    }
+
+    void Update()
+    {
+        var j = FindAnyObjectByType<Janani>();
         if (j == null)
             return;
-        j.Gems++;
-        Sparkle.Burst(transform.position + Vector3.up * 0.35f, new Color(0.8f, 0.6f, 1f), 6);
-        Destroy(gameObject);
+        float d = Vector2.Distance(j.Feet, transform.position);
+        src.volume = Mathf.Clamp01(1 - d / range) * 0.6f;
     }
 }
 

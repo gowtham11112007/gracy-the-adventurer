@@ -10,7 +10,33 @@ public static class Art
     public const float PixelsPerUnit = 64f;
     static readonly Dictionary<string, Sprite> cache = new();
 
-    internal static void Fresh() => cache.Clear();
+    static Sprite glow;
+
+    internal static void Fresh()
+    {
+        cache.Clear();
+        glow = null;
+    }
+
+    /// <summary>A soft round glow, one unit across (gems, fireflies, dust).</summary>
+    public static Sprite Glow
+    {
+        get
+        {
+            if (glow != null)
+                return glow;
+            var tex = new Texture2D(64, 64, TextureFormat.RGBA32, false) { wrapMode = TextureWrapMode.Clamp };
+            for (int y = 0; y < 64; y++)
+                for (int x = 0; x < 64; x++)
+                {
+                    float d = new Vector2(x - 31.5f, y - 31.5f).magnitude / 32f;
+                    float a = Mathf.Clamp01(1 - d);
+                    tex.SetPixel(x, y, new Color(1, 1, 1, a * a));
+                }
+            tex.Apply();
+            return glow = Sprite.Create(tex, new Rect(0, 0, 64, 64), new Vector2(0.5f, 0.5f), 64);
+        }
+    }
 
     /// <summary>A whole picture, its pivot as a fraction of its size (0,0 = bottom-left). Null if it's missing.</summary>
     public static Sprite Picture(string path, Vector2 pivot)

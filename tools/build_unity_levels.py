@@ -8,6 +8,7 @@ Same grid as the rooms (12 rows, row 10 and 11 are ground, one character = one t
   w well   k scarecrow   p lamp post (glows)   c campfire (glows)   s sign   h hay   u sunflowers
   b bush   t tree   g grass   f fence   x wheelbarrow
   E  the Stone of Recall: touching it finishes the level
+  T  a golden treasure chest (five gems inside)
   m  a mushroom creature    W  a wolf            (landing on their heads defeats them; touching them hurts)
 """
 import json
@@ -33,9 +34,12 @@ def level1():
     # creatures: mushrooms in the village and on the upper floor, a wolf near the end (stomp them!)
     for c, r, ch in ((12, 9, "m"), (46, 9, "m"), (41, 4, "m"), (61, 9, "W")):
         g[r][c] = ch
-    for cols, r in ((range(13, 16), 8), (range(19, 22), 8), (range(48, 51), 8), (range(36, 46), 4)):
+    # gems: arcs over the things to hop, a row on the upper floor, a line over the spikes
+    for cols, r in ((range(13, 16), 8), (range(19, 22), 8), (range(28, 31), 7), (range(43, 46), 7), (range(48, 51), 8),
+                    (range(55, 58), 8), (range(36, 41), 4)):
         for c in cols:
             g[r][c] = "o"
+    g[4][45] = "T"  # the reward at the end of the upper floor
     return {"id": "level1", "name": "Lantern Village", "area_name": "World 1 · Level 1", "area": "village", "mood": "village",
             "width": WIDE, "start": 2, "exits": [], "benches": [], "grid": ["".join(row) for row in g]}
 

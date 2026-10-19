@@ -13,7 +13,7 @@ using UnityEngine.Rendering.Universal;
 public class Janani : MonoBehaviour
 {
     const float Px = 1f / 64f;
-    const float Gravity = 1800 * Px, RunSpeed = 300 * Px, HopSpeed = 540 * Px, HopCut = 240 * Px;
+    const float Gravity = 1800 * Px, RunSpeed = 300 * Px, HopSpeed = 640 * Px, HopCut = 330 * Px; // (a full hop: almost 2 tiles)
     const float MaxFall = 1100 * Px, FallPull = 1.25f, Coyote = 0.14f, JumpBuffer = 0.18f;
     const float ClimbSpeed = 200 * Px;
 
@@ -42,11 +42,12 @@ public class Janani : MonoBehaviour
     ContactFilter2D solid;
     readonly RaycastHit2D[] hits = new RaycastHit2D[8];
     float coyote, buffer, airTime, landTime, hurtTime, safeTime, fallSpeed;
-    bool jumping, wasGrounded, noGrab;
+    bool jumping, wasGrounded, noGrab, fullHop;
     Ladder ladder;
     Vector2 lastSafe;
     AudioSource feet;
     AudioClip[] steps;
+    AudioClip jumpSound;
     float stepTime;
 
     [Serializable] class ClipData { public string name, file; public int frames, w, h; public float fps, ax; }
@@ -92,6 +93,7 @@ public class Janani : MonoBehaviour
         Flow.Sound(feet);
         steps = new[] { "HeroFootStepGrass1", "HeroFootStepGrass2", "HeroFootStepDirt1", "HeroFootStepDirt2" }
             .Select(n => Resources.Load<AudioClip>("Audio/" + n)).Where(c => c != null).ToArray();
+        jumpSound = Resources.Load<AudioClip>("Audio/HeroSmallBodyMovement1");
 
         // a soft warm light around her (the Godot version's "light around Janani")
         var glow = new GameObject("Glow").AddComponent<Light2D>();
@@ -176,6 +178,8 @@ public class Janani : MonoBehaviour
         var v = rb.linearVelocity;
         if (Grounded && !wasGrounded && fallSpeed > 420 * Px && Mathf.Abs(v.x) < 160 * Px)
             landTime = 0.09f; // a quick crouch after a big drop
+        if (Grounded && !wasGrounded && fallSpeed > 300 * Px)
+            Puff.At(rb.position, 6);
         wasGrounded = Grounded;
         fallSpeed = -v.y;
         coyote = Grounded ? Coyote : coyote - dt;
@@ -191,14 +195,20 @@ public class Janani : MonoBehaviour
             v.y = HopSpeed;
             buffer = coyote = 0;
             jumping = true;
+            fullHop = SomethingAhead(dir != 0 ? dir : (FacingLeft ? -1 : 1));
             airTime = 0;
             Grounded = false;
+            Puff.At(rb.position, 4);
+            PlaySound(jumpSound, 0.5f);
         }
         // a tap gives a short hop; holding gives the full hop that clears a one-tile obstacle
-        if (jumping && !GameInput.Held(Act.Jump) && v.y > HopCut)
+        // (right next to a crate or barrel, even a tap gives the full hop over it)
+        if (jumping && !fullHop && !GameInput.Held(Act.Jump) && v.y > HopCut)
             v.y = HopCut;
         if (v.y <= 0)
             jumping = false;
+        if (!Grounded && dir != 0 && LedgeAssist(dir))
+            v.y = Mathf.Max(v.y, 0);
         v.y = Mathf.Max(v.y - Gravity * (v.y < 0 ? FallPull : 1) * dt, -MaxFall);
         if (dir != 0)
             Look.Renderer.flipX = dir < 0;
@@ -225,6 +235,65 @@ public class Janani : MonoBehaviour
         stepTime = 0.3f;
         feet.pitch = UnityEngine.Random.Range(0.9f, 1.1f);
         feet.PlayOneShot(steps[UnityEngine.Random.Range(0, steps.Length)]);
+    }
+
+    /// <summary>
+    /// In the air, pushing against something whose top is just below her feet (she jumped right next to a crate and
+    /// almost cleared it): lift her onto it instead of letting her slide down its side.
+    /// </summary>
+    bool LedgeAssist(float dir)
+    {
+        int n = rb.Cast(new Vector2(dir, 0), solid, hits, 0.06f);
+        for (int i = 0; i < n; i++)
+        {
+            if (Mathf.Abs(hits[i].normal.x) < 0.6f)
+                continue;
+            float top = TopAt(hits[i].point.x + dir * 0.05f), lift = top - rb.position.y;
+            if (lift <= 0 || lift > 0.5f)
+                continue;
+            var to = new Vector2(rb.position.x + dir * 0.12f, top + 0.02f);
+            bool free = true;
+            foreach (var other in Physics2D.OverlapBoxAll(to + body.offset, body.size, 0))
+                free &= other.isTrigger || other == body;
+            if (!free)
+                continue;
+            rb.position = to;
+            return true;
+        }
+        return false;
+    }
+
+    /// <summary>Something solid just ahead of her, low enough to hop over (a crate, a barrel, a stump), or a gap.</summary>
+    bool SomethingAhead(float dir)
+    {
+        if (TopAt(rb.position.x + dir * 1.1f) < rb.position.y - 0.5f) // (the ground ends just ahead)
+            return true;
+        int n = rb.Cast(new Vector2(dir, 0), solid, hits, 1.1f);
+        for (int i = 0; i < n; i++)
+            if (Mathf.Abs(hits[i].normal.x) > 0.6f && TopAt(hits[i].point.x + dir * 0.05f) - rb.position.y < 1.6f)
+                return true;
+        return false;
+    }
+
+    readonly RaycastHit2D[] probe = new RaycastHit2D[4];
+
+    /// <summary>The height of the top of whatever solid is at x (looking down from a little above her head).
+    /// (The level's solids are merged into one shape, so its bounds can't tell one crate's top.)</summary>
+    float TopAt(float x)
+    {
+        float from = rb.position.y + 2.2f;
+        int n = Physics2D.Raycast(new Vector2(x, from), Vector2.down, solid, probe, 3.5f);
+        for (int i = 0; i < n; i++)
+            if (probe[i].collider != body)
+                return probe[i].fraction == 0 ? from : probe[i].point.y;
+        return float.NegativeInfinity; // (nothing there: a gap)
+    }
+
+    /// <summary>A sound from where she is (pickups, jumps), if sounds are on.</summary>
+    public void PlaySound(AudioClip clip, float volume = 1)
+    {
+        if (clip != null && feet != null)
+            feet.PlayOneShot(clip, volume / Mathf.Max(0.01f, feet.volume));
     }
 
     bool OnGround()

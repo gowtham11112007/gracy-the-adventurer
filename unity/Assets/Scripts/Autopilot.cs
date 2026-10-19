@@ -7,10 +7,12 @@ using UnityEngine;
 ///   -autorun          she runs right, hopping over whatever is ahead
 ///   -shot file.png    takes a screenshot after -shotAt seconds (default 4), then quits
 ///   -at 60            starts her at that column        -pause   opens the pause menu after 2 seconds
+///   -tap              (with -autorun) only taps Jump, and only right next to things: the hardest way to hop
+/// On quitting it writes where she got to (the Player.log), so tests can check it.
 /// </summary>
 public class Autopilot : MonoBehaviour
 {
-    bool run, pause, placed;
+    bool run, pause, placed, tap, high, trace;
     int at = -1;
     string shot;
     float shotAt = 4, age;
@@ -26,6 +28,9 @@ public class Autopilot : MonoBehaviour
         var pilot = new GameObject("Autopilot").AddComponent<Autopilot>();
         pilot.run = args.Contains("-autorun");
         pilot.pause = args.Contains("-pause");
+        pilot.tap = args.Contains("-tap");
+        pilot.trace = args.Contains("-trace");
+        pilot.high = args.Contains("-high"); // (-at on the upper floor)
         int a = Array.IndexOf(args, "-at");
         if (a >= 0 && a + 1 < args.Length) int.TryParse(args[a + 1], out pilot.at);
         int i = Array.IndexOf(args, "-shot");
@@ -42,7 +47,7 @@ public class Autopilot : MonoBehaviour
         if (j != null && at >= 0 && !placed)
         {
             placed = true;
-            j.Teleport(new Vector2(at + 0.5f, 2));
+            j.Teleport(new Vector2(at + 0.5f, high ? 7.05f : 2));
         }
         if (pause && age > 2 && MenuUI.Instance != null)
         {
@@ -53,11 +58,18 @@ public class Autopilot : MonoBehaviour
         {
             GameInput.Simulate.Add(Act.Right);
             // hop when there's an obstacle or a gap just ahead
-            int c = Mathf.FloorToInt(j.Feet.x + 0.95f), floor = Mathf.RoundToInt(Room.Rows - j.Feet.y);
+            int c = Mathf.FloorToInt(j.Feet.x + (tap ? 0.6f : 0.95f)), floor = Mathf.RoundToInt(Room.Rows - j.Feet.y);
             bool ahead = "CRO^".IndexOf(room.At(c, floor - 1)) >= 0 || room.At(c, floor) == ' ';
-            if (ahead && j.Grounded) GameInput.Simulate.Add(Act.Jump);
+            if (tap)
+            {
+                GameInput.Simulate.Remove(Act.Jump); // (held for one frame only)
+                if (ahead && j.Grounded) GameInput.Simulate.Add(Act.Jump);
+            }
+            else if (ahead && j.Grounded) GameInput.Simulate.Add(Act.Jump);
             else if (j.Grounded) GameInput.Simulate.Remove(Act.Jump);
         }
+        if (j != null && trace && Time.frameCount % 6 == 0)
+            Debug.Log($"Trace {age:F2}: {j.Feet.x:F2},{j.Feet.y:F2} grounded {j.Grounded} jump {GameInput.Held(Act.Jump)}");
         if (shot != null && !shotTaken && age >= shotAt)
         {
             shotTaken = true;
@@ -66,5 +78,11 @@ public class Autopilot : MonoBehaviour
         }
     }
 
-    void Quit() => Application.Quit();
+    void Quit()
+    {
+        var room = FindAnyObjectByType<Room>();
+        if (room != null && room.Player != null)
+            Debug.Log($"Autopilot: column {room.Player.Feet.x:F1}, height {room.Player.Feet.y:F1}, gems {room.Player.Gems}, hits {room.Player.Hits}, health {room.Player.Health}");
+        Application.Quit();
+    }
 }
