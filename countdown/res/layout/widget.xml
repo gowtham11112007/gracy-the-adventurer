@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical" android:gravity="center"
+    android:background="@drawable/widget_bg" android:padding="12dp">
+    <TextView android:id="@+id/names" android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="✦  Janani &amp; Janika  ✦" android:textColor="#F4D58D" android:textSize="15sp"
+        android:fontFamily="serif" android:letterSpacing="0.05" />
+    <TextView android:id="@+id/days" android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="33" android:textColor="#FFF6E3" android:textSize="52sp" android:textStyle="bold"
+        android:fontFamily="serif" android:includeFontPadding="false"
+        android:shadowColor="#AAE8B04A" android:shadowRadius="18" />
+    <TextView android:id="@+id/label" android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="days to go" android:textColor="#E8DCC4" android:textSize="15sp" android:fontFamily="serif" />
+    <TextView android:id="@+id/date" android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:layout_marginTop="4dp" android:text="21 November" android:textColor="#B89A5A" android:textSize="12sp"
+        android:fontFamily="serif" android:letterSpacing="0.15" />
+</LinearLayout>

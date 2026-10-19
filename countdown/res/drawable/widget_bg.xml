@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- night blue to deep violet glass, with a thin gold line (the game's look) -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <corners android:radius="24dp" />
+    <gradient android:angle="270" android:startColor="#F01B1638" android:centerColor="#F0141230" android:endColor="#F00A0A1E" />
+    <stroke android:width="1.5dp" android:color="#C9A75E" />
+</shape>
