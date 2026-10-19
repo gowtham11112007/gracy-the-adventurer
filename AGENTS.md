@@ -2,6 +2,9 @@
 
 Read this whole file before changing anything. Last updated 15 Oct 2026.
 
+## The Unity game (newest work)
+The active game is now the **Unity** version in `unity/`. Read **`UNITY_GUIDE.md`** before working on it.
+
 ## What this is
 
 A birthday-gift Android platformer for twin sisters **Janani** and **Janika**, due **21 Nov 2026**.
