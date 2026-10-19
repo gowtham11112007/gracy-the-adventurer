@@ -42,6 +42,8 @@ public static class Flow
         Icons.Fresh();
         MenuUI.Fresh();
         LevelUI.Fresh();
+        Sparkle.Fresh();
+        Fader.Fresh();
     }
 
     static readonly List<AudioSource> music = new(), sounds = new();
@@ -95,8 +97,12 @@ public static class Flow
 
     static void Reload()
     {
-        Time.timeScale = 1;
-        GameInput.Clear();
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        GameInput.Blocked = true; // (nothing moves while the screen fades)
+        Fader.Through(() =>
+        {
+            Time.timeScale = 1;
+            GameInput.Clear();
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        });
     }
 }

@@ -307,6 +307,8 @@ public class Room : MonoBehaviour
             for (int c = 0; c < Def.width; c++)
                 if (At(c, r) == 'o')
                     Gem.Create(art, new Vector2(c + 0.5f, TopY(r) - 0.85f));
+                else if (Village && (At(c, r) == 'm' || At(c, r) == 'W'))
+                    Creature.Create(this, art, At(c, r), c, r);
                 else if (Village)
                     global::Village.Scenery(At(c, r), art, new Vector2(c + 0.5f, TopY(r) - 1), c);
     }
@@ -373,6 +375,7 @@ public class Gem : MonoBehaviour
         if (j == null)
             return;
         j.Gems++;
+        Sparkle.Burst(transform.position + Vector3.up * 0.35f, new Color(0.8f, 0.6f, 1f), 6);
         Destroy(gameObject);
     }
 }

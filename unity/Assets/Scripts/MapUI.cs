@@ -115,6 +115,46 @@ public class MapUI : MonoBehaviour
         hb.onClick.AddListener(() => { click.Play(); Flow.ToTitle(); });
 
         toast = Words(root, "", new Vector2(0.5f, 0), new Vector2(0, 70), 30, Cream, 900);
+
+        // soft clouds drifting over the sea and the island
+        for (int i = 0; i < 4; i++)
+        {
+            var cloud = Box(root, "Cloud", new Vector2(0.5f, 0.5f), new Vector2(-600 + i * 380, 220 - i * 140), new Vector2(520, 160));
+            cloud.SetSiblingIndex(2); // (above the island, under the words and markers)
+            Picture(cloud, Shapes.Glow(), new Color(1f, 0.97f, 0.95f, 0.22f));
+            cloud.gameObject.AddComponent<Drift>().speed = 10 + i * 4;
+        }
+    }
+
+    GameObject card;
+
+    /// <summary>A level's card: its name, the most gems found there, and Play.</summary>
+    void Card(string id, string name, int index)
+    {
+        if (card != null) Destroy(card);
+        card = new GameObject("Card", typeof(RectTransform));
+        card.transform.SetParent(root, false);
+        var full = (RectTransform)card.transform;
+        full.anchorMin = Vector2.zero;
+        full.anchorMax = Vector2.one;
+        full.offsetMin = full.offsetMax = Vector2.zero;
+        card.AddComponent<Image>().color = new Color(0.04f, 0.02f, 0.08f, 0.55f);
+        var sheet = Box(full, "Panel", new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(440, 400));
+        Picture(sheet, Pic("popup_bg"), Color.white);
+        card.AddComponent<PopIn>();
+        Words(sheet, $"Level {index + 1}", new Vector2(0.5f, 1), new Vector2(0, -66), 30, Cream, 380);
+        Words(sheet, name, new Vector2(0.5f, 1), new Vector2(0, -118), 44, Gold, 400);
+        int best = PlayerPrefs.GetInt("gems_" + id, 0);
+        Words(sheet, Flow.Done(id) ? $"Finished   Gems {best}" : "Not finished yet", new Vector2(0.5f, 1), new Vector2(0, -180), 26, Cream, 380);
+        var play = Box(sheet, "Play", new Vector2(0.5f, 0), new Vector2(0, 110), new Vector2(250, 92));
+        var pb = play.gameObject.AddComponent<Button>();
+        pb.targetGraphic = Picture(play, Pic("btn_play"), Color.white, true);
+        play.gameObject.AddComponent<PressScale>();
+        pb.onClick.AddListener(() => { click.Play(); Flow.Play(id); });
+        var close = Box(sheet, "Close", new Vector2(1, 1), new Vector2(-40, -40), new Vector2(58, 58));
+        var cb = close.gameObject.AddComponent<Button>();
+        cb.targetGraphic = Picture(close, Pic("btn_close"), Color.white, true);
+        cb.onClick.AddListener(() => { click.Play(); Destroy(card); });
     }
 
     /// <summary>One level's marker: a stone with its number; gold and named when open, a lock when not.</summary>
@@ -122,8 +162,12 @@ public class MapUI : MonoBehaviour
     {
         var at = new Vector2(spot.x, spot.y);
         var m = Box(island, spot.name, at, Vector2.zero, new Vector2(86, 86));
-        if (open) // a soft gold glow under open levels
-            Picture(Box(m, "Glow", new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(170, 120)), Shapes.Glow(), new Color(1f, 0.8f, 0.4f, here ? 0.7f : 0.4f));
+        if (open) // a soft gold glow under open levels (breathing under the one she's up to)
+        {
+            var glow = Box(m, "Glow", new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(170, 120));
+            Picture(glow, Shapes.Glow(), new Color(1f, 0.8f, 0.4f, here ? 0.7f : 0.4f));
+            if (here) glow.gameObject.AddComponent<Breathe>().Setup(0.35f, 0.85f, 0.45f);
+        }
         var stone = Box(m, "Stone", new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(86, 86));
         var img = Picture(stone, Pic("btn_uncheck"), open ? Color.white : new Color(0.55f, 0.5f, 0.6f, 0.95f), true);
         var b = stone.gameObject.AddComponent<Button>();
@@ -154,7 +198,7 @@ public class MapUI : MonoBehaviour
             click.Play();
             if (!open) Toast("Finish the level before it to open " + name);
             else if (Room.Find(id) == null) Toast(name + " is coming soon");
-            else Flow.Play(id);
+            else Card(id, name, index);
         });
     }
 
@@ -171,7 +215,10 @@ public class MapUI : MonoBehaviour
         c.a = Mathf.Clamp01(toastTime);
         toast.color = c;
         var k = Keyboard.current;
-        if (k != null && k.escapeKey.wasPressedThisFrame) // Back: to the title
-            Flow.ToTitle();
+        if (k != null && k.escapeKey.wasPressedThisFrame) // Back: closes the level card, or goes to the title
+        {
+            if (card != null) Destroy(card);
+            else Flow.ToTitle();
+        }
     }
 }

@@ -8,6 +8,7 @@ Same grid as the rooms (12 rows, row 10 and 11 are ground, one character = one t
   w well   k scarecrow   p lamp post (glows)   c campfire (glows)   s sign   h hay   u sunflowers
   b bush   t tree   g grass   f fence   x wheelbarrow
   E  the Stone of Recall: touching it finishes the level
+  m  a mushroom creature    W  a wolf            (landing on their heads defeats them; touching them hurts)
 """
 import json
 
@@ -29,6 +30,9 @@ def level1():
                  56: "O", 58: "b", 60: "x", 62: "g", 63: "u", 65: "p", 68: "E"}
     for c, ch in on_ground.items():
         g[9][c] = ch
+    # creatures: mushrooms in the village and on the upper floor, a wolf near the end (stomp them!)
+    for c, r, ch in ((12, 9, "m"), (46, 9, "m"), (41, 4, "m"), (61, 9, "W")):
+        g[r][c] = ch
     for cols, r in ((range(13, 16), 8), (range(19, 22), 8), (range(48, 51), 8), (range(36, 46), 4)):
         for c in cols:
             g[r][c] = "o"

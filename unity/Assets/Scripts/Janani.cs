@@ -23,6 +23,15 @@ public class Janani : MonoBehaviour
     public bool Grounded { get; private set; }
     public bool FacingLeft => Look.Renderer.flipX;
     public Vector2 Feet => rb.position;
+    /// <summary>Coming down (landing on a creature's head defeats it).</summary>
+    public bool Falling => !Climbing && rb.linearVelocity.y < -0.5f;
+
+    /// <summary>Springs up off a creature she landed on.</summary>
+    public void Bounce()
+    {
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, 560 * Px);
+        jumping = false;
+    }
     public const float MaxHealth = 100;
     public float Health { get; private set; } = MaxHealth;
     public int Gems;
@@ -318,6 +327,8 @@ public class Janani : MonoBehaviour
             return;
         Hits++;
         Health = Mathf.Max(0, Health - damage);
+        if (feet != null)
+            feet.PlayOneShot(Resources.Load<AudioClip>("Audio/HeroDamaged"), 1.5f);
         if (Health <= 0)
         {
             Teleport(Room.Entrance);
