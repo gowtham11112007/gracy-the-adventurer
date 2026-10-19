@@ -157,15 +157,19 @@ public class MenuUI : MonoBehaviour
         var bg = Picture(back, Pic("MainBackground2"));
         bg.preserveAspect = false;
         back.gameObject.AddComponent<SlowDrift>();
-        // a soft shade behind the words so they read over the scene
-        var shade = Rect(ui.root, "Shade", new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(4000, 4000));
-        shade.gameObject.AddComponent<Image>().color = new Color(0.08f, 0.04f, 0.14f, 0.35f);
-        shade.GetComponent<Image>().raycastTarget = false;
-        Words(ui.root, "Gracy", new Vector2(0.5f, 1), new Vector2(0, -150), 118, Gold);
-        Words(ui.root, "The Adventurer", new Vector2(0.5f, 1), new Vector2(0, -250), 40, Cream);
-        ui.Press(ui.root, "btn_play", new Vector2(0.5f, 0), new Vector2(0, 300), 92, Flow.Play);
-        ui.Press(ui.root, "btn_options", new Vector2(0.5f, 0), new Vector2(0, 196), 70, ui.Options);
-        ui.Press(ui.root, "btn_quit", new Vector2(0.5f, 0), new Vector2(0, 110), 70, Application.Quit);
+        // light rays, fog, rising motes, Janani on her ledge, and a darker frame (TitleFx)
+        TitleFx.Scenery(ui.root);
+        // the logo and the buttons, a little right of the middle (Janani stands on the left)
+        TitleFx.Logo(ui.root, Medieval, new Vector2(150, -175));
+        var play = ui.Press(ui.root, "btn_play", new Vector2(0.5f, 0), new Vector2(150, 285), 96, Flow.Play);
+        var options = ui.Press(ui.root, "btn_options", new Vector2(0.5f, 0), new Vector2(150, 180), 70, ui.Options);
+        var quit = ui.Press(ui.root, "btn_quit", new Vector2(0.5f, 0), new Vector2(150, 98), 70, Application.Quit);
+        float delay = 0.5f;
+        foreach (var b in new[] { play, options, quit })
+        {
+            b.gameObject.AddComponent<Reveal>().delay = delay;
+            delay += 0.18f;
+        }
     }
 
     /// <summary>In a level: the pause button at the top right.</summary>

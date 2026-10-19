@@ -32,7 +32,7 @@ def level1():
     for cols, r in ((range(13, 16), 8), (range(19, 22), 8), (range(48, 51), 8), (range(36, 46), 4)):
         for c in cols:
             g[r][c] = "o"
-    return {"id": "level1", "name": "Lantern Village", "area_name": "Level 1", "area": "village", "mood": "village",
+    return {"id": "level1", "name": "Lantern Village", "area_name": "World 1 · Level 1", "area": "village", "mood": "village",
             "width": WIDE, "start": 2, "exits": [], "benches": [], "grid": ["".join(row) for row in g]}
 
 

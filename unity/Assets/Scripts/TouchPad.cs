@@ -52,16 +52,20 @@ public class TouchPad : MonoBehaviour
 
     void Build()
     {
-        Add(Act.Left, false, new Vector2(118, 128), 72, Icons.Arrow(), 180);
-        Add(Act.Right, false, new Vector2(300, 128), 72, Icons.Arrow(), 0);
+        // carved stone buttons from the Adventure UI Kit (the same stone as the pause button and the menus)
+        var arrow = Resources.Load<Sprite>("Art/Menu/Next");
+        var plain = Resources.Load<Sprite>("Art/Menu/btn_uncheck");
+        Add(Act.Left, false, new Vector2(118, 128), 72, arrow, 180, null);
+        Add(Act.Right, false, new Vector2(300, 128), 72, arrow, 0, null);
         var column = new Vector2(-150, 230); // jump in the middle, up above it, down below
-        Add(Act.Jump, true, column, 68, Icons.Jump(), 0);
-        Add(Act.Up, true, column + new Vector2(0, 118), 52, Icons.Arrow(), 90);
-        Add(Act.Down, true, column + new Vector2(0, -118), 52, Icons.Arrow(), 270);
+        Add(Act.Jump, true, column, 68, plain, 0, Icons.Jump());
+        Add(Act.Up, true, column + new Vector2(0, 118), 52, arrow, 90, null);
+        Add(Act.Down, true, column + new Vector2(0, -118), 52, arrow, 270, null);
         // (the magic button comes back when there's magic to throw)
     }
 
-    void Add(Act act, bool rightSide, Vector2 offset, float radius, Sprite icon, float turn)
+    /// <summary>A button: a stone face (turned for the arrows), with an icon on it if it has one.</summary>
+    void Add(Act act, bool rightSide, Vector2 offset, float radius, Sprite face, float turn, Sprite icon)
     {
         var b = new Button { act = act, rightSide = rightSide, offset = offset, radius = radius };
         var go = new GameObject(act.ToString(), typeof(RectTransform));
@@ -70,14 +74,24 @@ public class TouchPad : MonoBehaviour
         rt.anchorMin = rt.anchorMax = rightSide ? new Vector2(1, 0) : Vector2.zero;
         rt.anchoredPosition = offset;
         rt.sizeDelta = Vector2.one * radius * 2;
-        b.disc = go.AddComponent<Image>();
-        b.disc.sprite = Icons.Disc();
+        var stone = new GameObject("Stone", typeof(RectTransform));
+        stone.transform.SetParent(go.transform, false);
+        var srt = (RectTransform)stone.transform;
+        srt.sizeDelta = Vector2.one * radius * 1.7f;
+        srt.localEulerAngles = new Vector3(0, 0, turn);
+        b.disc = stone.AddComponent<Image>();
+        b.disc.sprite = face != null ? face : Icons.Disc();
+        b.disc.preserveAspect = true;
         b.disc.raycastTarget = false;
+        if (icon == null)
+        {
+            buttons.Add(b);
+            return;
+        }
         var pic = new GameObject("Icon", typeof(RectTransform));
         pic.transform.SetParent(go.transform, false);
         var prt = (RectTransform)pic.transform;
         prt.sizeDelta = Vector2.one * radius * (act == Act.Shoot ? 1.0f : 0.9f);
-        prt.localEulerAngles = new Vector3(0, 0, turn);
         b.icon = pic.AddComponent<Image>();
         b.icon.sprite = icon;
         b.icon.preserveAspect = true;
@@ -121,8 +135,11 @@ public class TouchPad : MonoBehaviour
         foreach (var b in buttons)
         {
             bool on = GameInput.Touch.Contains(b.act) || GameInput.Held(b.act);
-            b.disc.color = new Color(1, 1, 1, on ? 1f : 0.7f);
-            b.icon.color = new Color(1, 1, 1, on ? 0.95f : 0.65f);
+            // a held button sinks a little and lights up
+            b.disc.color = on ? new Color(1f, 0.95f, 1f, 1f) : new Color(1, 1, 1, 0.82f);
+            b.disc.transform.localScale = Vector3.one * (on ? 0.92f : 1f);
+            if (b.icon != null)
+                b.icon.color = on ? new Color(1f, 0.85f, 0.45f) : new Color(1f, 0.82f, 0.4f, 0.9f);
         }
     }
 }
