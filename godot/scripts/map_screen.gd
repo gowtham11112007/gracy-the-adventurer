@@ -17,6 +17,8 @@ var _canvas: Control
 
 
 func _ready() -> void:
+	Game.overlays.append(self) # (Back / Esc closes the newest pop-up first)
+	tree_exiting.connect(func() -> void: Game.overlays.erase(self))
 	layer = 45
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	var vp := get_viewport().get_visible_rect().size
@@ -45,7 +47,7 @@ func close() -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	var key := event as InputEventKey
-	if key and key.pressed and not key.echo and (key.keycode == KEY_ESCAPE or key.keycode == KEY_M):
+	if key and key.pressed and not key.echo and key.keycode == KEY_M: # (Esc and Back: Game.go_back)
 		get_viewport().set_input_as_handled()
 		close()
 

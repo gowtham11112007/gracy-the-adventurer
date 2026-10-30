@@ -15,6 +15,8 @@ const FLOOR := 672.0 ## where feet touch the forest floor
 var _vp: Vector2
 var _items: Array[Button] = []
 var _selected := 0
+var _menu_box: VBoxContainer
+var _menu_layer: CanvasLayer
 
 
 func _ready() -> void:
@@ -110,15 +112,22 @@ func _logo(ui: CanvasLayer) -> void:
 
 
 func _menu(ui: CanvasLayer) -> void:
-	# Continue (only when a save is loaded), then the save slots, the story, wardrobe, candles and settings.
-	# A Callable entry runs here; a Signal entry is emitted.
+	# Continue (when a save is loaded) or New Game, then the save slots, the story, wardrobe, candles and
+	# settings. A Callable entry runs here; a Signal entry is emitted.
 	var entries: Array = []
 	if Game.slot >= 1:
 		entries.append(["Continue", start_game])
+	else:
+		entries.append(["New Game", _new_game])
 	entries.append(["Save Slots", _open_slots])
 	entries.append_array([["Story", open_story], ["Wardrobe", open_wardrobe], ["Candles", open_shrine],
 		["Settings", _open_settings]])
+	if is_instance_valid(_menu_box): # (rebuilt after the save slots change)
+		_menu_box.queue_free()
+		_items.clear()
 	var box := VBoxContainer.new()
+	_menu_box = box
+	_menu_layer = ui
 	box.size = Vector2(440, 320)
 	box.position = Vector2((_vp.x - 440) / 2, 318)
 	box.add_theme_constant_override("separation", 4)
@@ -140,18 +149,31 @@ func _menu(ui: CanvasLayer) -> void:
 	UI.rise_in(box, 0.9, 1.0)
 
 
+## a new game in the first empty slot (all three used: the slots open, to load or clear one)
+func _new_game() -> void:
+	var slot := Game.first_empty_slot()
+	if slot == 0:
+		_open_slots()
+		return
+	Game.new_game(slot)
+	new_game_started.emit(slot)
+
+
 func _select(index: int) -> void:
 	_selected = index
 	for i in _items.size():
 		_items[i].lit = i == index
 
 
-## Crystals and candles found so far, quietly along the bottom.
+## How much of the world she has found so far, quietly along the bottom.
 func _progress(ui: CanvasLayer) -> void:
 	var crystals := 0
 	for k in Game.save.crystals:
 		crystals += (Game.save.crystals[k] as Array).size()
-	var l := UI.centered(UI.text("Crystals  %d / 15        Candles  %d / 5" % [crystals, Game.save.candles.size()], 20, UI.MIST), Vector2(_vp.x, 30))
+	var all := Game.world_totals()
+	var line := "Rooms  %d / %d        Candles  %d / %d        Crystals  %d / %d" % [Game.save.rooms_seen.size(), all.rooms,
+		Game.save.candles.size(), all.candles, crystals, all.crystals]
+	var l := UI.centered(UI.text(line, 20, UI.MIST), Vector2(_vp.x, 30))
 	l.position.y = _vp.y - 44
 	ui.add_child(l)
 	UI.rise_in(l, 1.4)
@@ -172,6 +194,10 @@ func _open_slots() -> void:
 	p.title = "Save Slots"
 	p.sheet_size = Vector2(940, 560)
 	add_child(p)
+	var had_game := Game.slot >= 1
+	p.closed.connect(func() -> void:
+		if (Game.slot >= 1) != had_game: # a slot was loaded or the loaded one deleted: Continue / New Game
+			_menu(_menu_layer))
 	for i in range(1, Game.SLOTS + 1):
 		var info := Game.slot_summary(i)
 		var row := HBoxContainer.new()
@@ -184,12 +210,17 @@ func _open_slots() -> void:
 		var name := UI.title("Slot %d" % i, 24)
 		name.position = Vector2(22, 10)
 		card.add_child(name)
-		var line := "Empty" if info.is_empty() else "Levels %d/5   Crystals %d/15   Candles %d/5   %s" % [
-			info.cleared, info.crystals, info.candles, _play_time(info.played)]
+		if not info.is_empty() and not String(info.where).is_empty(): # where she is resting
+			var where := UI.text(info.where, 18, UI.GOLD)
+			where.position = Vector2(118, 14)
+			card.add_child(where)
+		var all := Game.world_totals()
+		var line := "Empty" if info.is_empty() else "Rooms %d/%d    Candles %d/%d    Moves %d/3    %s" % [
+			info.rooms, all.rooms, info.candles, all.candles, info.moves, _play_time(info.played)]
 		var sub := UI.text(line, 18, UI.MIST if info.is_empty() else UI.CREAM)
 		sub.position = Vector2(22, 50)
 		card.add_child(sub)
-		var go := UI.button("New game" if info.is_empty() else "Load", "gold", 150, 70, 22)
+		var go := UI.button("New game" if info.is_empty() else "Load", "gold", 180, 70, 20)
 		var slot := i
 		go.pressed.connect(func() -> void:
 			if info.is_empty():
@@ -217,6 +248,10 @@ func _open_slots() -> void:
 				p.close()
 				_open_slots())
 			row.add_child(del)
+		else: # (the same width as a Delete button, so the slot cards line up)
+			var gap := Control.new()
+			gap.custom_minimum_size = Vector2(130, 70)
+			row.add_child(gap)
 		p.body.add_child(row)
 
 

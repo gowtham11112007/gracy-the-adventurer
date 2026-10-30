@@ -1,5 +1,6 @@
 extends Node2D
-## The birthday candles: an enchanted wood at night and five tall candles, one for each World 1 level.
+## The birthday candles: an enchanted wood at night and five tall candles, one for each candle hidden in the
+## world (the rooms marked with a candle in data/world.json).
 ## The candles Janani has found burn with a flickering flame (the Kenney particle pack's flame) and glow;
 ## the others wait, unlit. All five lit: the birthday finale is ready.
 
@@ -16,19 +17,24 @@ func _ready() -> void:
 	add_child(UI.fireflies(vp, 28, Color(1.0, 0.8, 0.95)))
 	var lit := 0
 	var spacing := minf(220.0, (vp.x - 160) / 5.0)
-	for i in 5:
-		var def: Dictionary = Game.levels.solo[i]
-		var on: bool = Game.save.candles.has(def.id)
+	var world := preload("res://scripts/world.gd")
+	var places: Array = world.rooms().filter(func(r: Dictionary) -> bool: return r.has.has("candle"))
+	for i in places.size():
+		var room: Dictionary = places[i]
+		var on: bool = Game.save.candles.has(room.id)
 		lit += 1 if on else 0
-		var at := Vector2(vp.x / 2 + (i - 2) * spacing, vp.y * 0.62)
+		var at := Vector2(vp.x / 2 + (i - (places.size() - 1) / 2.0) * spacing, vp.y * 0.62)
 		_candle(at, on, i)
 		var plate := UI.panel(Vector2(spacing - 24, 76), 16)
 		plate.position = at + Vector2(-(spacing - 24) / 2, 70)
 		add_child(plate)
-		var id := UI.centered(UI.title(def.id, 22, UI.GOLD if on else UI.MIST), Vector2(plate.size.x, 30))
-		id.position.y = 8
-		plate.add_child(id)
-		var name := UI.centered(UI.text(def.name, 17, UI.CREAM if on else UI.MIST), Vector2(plate.size.x, 26))
+		# where it is: the area, and the room's name once she has been there
+		var area: String = world.data().areas[room.area].name
+		var title := UI.centered(UI.text(area, 15, UI.GOLD if on else UI.MIST, "bold"), Vector2(plate.size.x, 26))
+		title.position.y = 10
+		plate.add_child(title)
+		var seen: bool = Game.save.rooms_seen.has(room.id)
+		var name := UI.centered(UI.text(String(room.name) if seen or on else "?", 17, UI.CREAM if on else UI.MIST), Vector2(plate.size.x, 26))
 		name.position.y = 40
 		plate.add_child(name)
 
@@ -39,7 +45,7 @@ func _ready() -> void:
 	head.position = Vector2((vp.x - head.size.x) / 2, 40)
 	ui.add_child(head)
 	var line := "All five candles are lit. The birthday is ready." if lit == 5 else \
-		"%d of 5 lit. One candle is hidden in every level of World 1." % lit
+		"%d of 5 lit. Look for the candle marks on the map." % lit
 	var sub := UI.centered(UI.text(line, 24, UI.GOLD if lit == 5 else UI.CREAM), Vector2(vp.x, 34))
 	sub.position.y = 118
 	ui.add_child(sub)
@@ -95,3 +101,8 @@ class Candle extends Node2D:
 		draw_rect(Rect2(-14, -height, 7, height), body.lightened(0.25)) # light on its left side
 		draw_rect(Rect2(7, -height, 7, height), body.darkened(0.12))
 		draw_line(Vector2(0, -height), Vector2(0, -height - 12), Color("#2a2420"), 3.0, true) # the wick
+
+
+## Back (Esc, the phone's Back button): to the title, like the back arrow
+func go_back() -> void:
+	back_to_map.emit()

@@ -208,3 +208,8 @@ func _mark_worn() -> void:
 		var s: StyleBoxFlat = UI.glass(36, 0.6, UI.GOLD if Game.OUTFITS[i].id == worn else UI.GOLD_DIM)
 		s.set_border_width_all(3 if Game.OUTFITS[i].id == worn else 2)
 		_cards[i].add_theme_stylebox_override("normal", s)
+
+
+## Back (Esc, the phone's Back button): to the title, like the back arrow
+func go_back() -> void:
+	back_to_map.emit()

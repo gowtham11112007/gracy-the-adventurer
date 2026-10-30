@@ -97,8 +97,9 @@ func _physics_process(delta: float) -> void:
 			_climb_col = col
 
 		# Currently climbing
-		# Pressing jump hops off the ladder
-		if Input.is_action_just_pressed("jump"):
+		# Pressing jump hops off the ladder (not the keyboard's Up key, which is also a jump key: tapping Up
+		# again while climbing must keep her climbing)
+		if Input.is_action_just_pressed("jump") and not Input.is_action_pressed("up"):
 			p.climbing = false
 			_climb_col = -1
 			var h := Input.get_axis("left", "right")

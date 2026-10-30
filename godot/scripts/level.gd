@@ -870,6 +870,9 @@ func _build_hud() -> void:
 	_hud.score.size = Vector2(220, 40)
 	_hud.score.position = Vector2(vp.x - 330, 28)
 	layer.add_child(_hud.score)
+	if def.get("room", false): # the world has no score and no lives: she just starts the room again
+		for quiet: Control in [_hud.score, _hud.lives, face]:
+			quiet.visible = false
 	var pause := UI.icon_button("pause", 60)
 	pause.position = Vector2(vp.x - 86, 18)
 	pause.pressed.connect(open_pause_menu)
@@ -941,10 +944,30 @@ func open_pause_menu() -> void:
 	p.add_audio_switches(def.get("mood", "meadow"))
 
 
+## Back (Esc, the phone's Back button) in a room or level: the pause menu
+func go_back() -> void:
+	open_pause_menu()
+
+
+## the world map straight from play (M): the game waits while it's open
+func open_map() -> void:
+	if get_tree().paused or not is_playing() or not def.get("room", false):
+		return
+	get_tree().paused = true
+	var m := preload("res://scripts/map_screen.gd").new()
+	m.closed.connect(func() -> void: get_tree().paused = false)
+	add_child(m)
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	var key := event as InputEventKey
-	if key and key.pressed and not key.echo and (key.keycode == KEY_ESCAPE or key.keycode == KEY_P):
+	if not key or not key.pressed or key.echo:
+		return
+	if key.keycode == KEY_P: # (Esc comes through Game.go_back)
 		open_pause_menu()
+	elif key.keycode == KEY_M:
+		get_viewport().set_input_as_handled() # (the map's own M must not close it straight away)
+		open_map()
 
 
 func _update_hud() -> void:
@@ -1345,7 +1368,8 @@ func _reach_checkpoint() -> void:
 ## classic: she pops up and falls through everything, then tries again at the checkpoint
 func _die() -> void:
 	_dying = true
-	Game.state.lives -= 1
+	if not def.get("room", false):
+		Game.state.lives -= 1
 	_update_hud()
 	player.frozen = true
 	player.look.play("hurt")

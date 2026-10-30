@@ -16,6 +16,8 @@ var _dim: ColorRect
 
 
 func _ready() -> void:
+	Game.overlays.append(self) # (Back / Esc closes the newest pop-up)
+	tree_exiting.connect(func() -> void: Game.overlays.erase(self))
 	layer = 40
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	var vp := get_viewport().get_visible_rect().size
@@ -51,6 +53,7 @@ func _ready() -> void:
 
 
 func close() -> void:
+	Game.overlays.erase(self)
 	var tw := create_tween().set_parallel()
 	tw.tween_property(_sheet, "modulate:a", 0.0, 0.18)
 	tw.tween_property(_dim, "modulate:a", 0.0, 0.18)

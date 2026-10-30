@@ -5,7 +5,8 @@ extends Node
 ## - Level finish: Celebratory Victory Results Card (Score, Gems, Stars).
 ## - Boss finish: World 1 Ending Cutscene (Janika rescue & hug, Kitty kidnapped!).
 ## - Testing args still work: level=N col=X power=fire autorun (slash) screen=map/cottage/chapel/story/title.
-## - Keys: 1-5 levels, T title, M map, C cottage, S shrine.
+## - Back (Esc, or the phone's Back button): closes the newest pop-up, else the screen's go_back() decides
+##   (a room pauses, the wardrobe / candles / story return to the title, the title ignores it).
 
 var _current_screen: Node2D
 var _level: Node2D
@@ -13,6 +14,7 @@ var _keep_power := false
 
 
 func _ready() -> void:
+	Game.back_pressed.connect(_on_back)
 	var args := OS.get_cmdline_user_args()
 	for a in args:
 		if a.begins_with("outfit="): # (testing) wear an outfit for this run only, without saving it
@@ -26,6 +28,13 @@ func _ready() -> void:
 			open_room(a.get_slice("=", 1), entry)
 			if "autorun" in args:
 				_autorun()
+			for b in args:
+				if b.begins_with("power="): # (testing) with magic charged, so its button shows
+					_level.player.power = b.get_slice("=", 1)
+					_level.player.charges = 3
+					_level._update_hud()
+			if "pause" in args: # (testing) open the pause menu once the room has faded in
+				get_tree().create_timer(1.5).timeout.connect(func() -> void: _level.open_pause_menu())
 			return
 	if "screen=worldmap" in args: # (testing) the new world map: a few rooms explored, or all with "all"
 		var backdrop := preload("res://scripts/ui.gd").backdrop("teal_forest", Color(0.5, 0.55, 0.65))
@@ -282,20 +291,9 @@ func _sweep(cover: bool) -> void:
 		_wipe.visible = false # gone completely once the new screen shows
 
 
-func _unhandled_key_input(event: InputEvent) -> void:
-	var key := event as InputEventKey
-	if not key or not key.pressed:
+## Back with no pop-up open: the screen decides what it means (see Game.go_back)
+func _on_back() -> void:
+	if _wiping or not is_instance_valid(_current_screen):
 		return
-	# When a level is active, don't let shortcuts intercept movement/action keys (like 'S' for down/ladder)
-	if _level != null:
-		return
-	if key.keycode >= KEY_1 and key.keycode <= KEY_5:
-		open_level(key.keycode - KEY_1)
-	elif key.keycode == KEY_T:
-		open_title_screen()
-	elif key.keycode == KEY_M:
-		open_world_map()
-	elif key.keycode == KEY_C:
-		open_rpg_cottage()
-	elif key.keycode == KEY_S:
-		open_rpg_chapel()
+	if _current_screen.has_method("go_back"):
+		_current_screen.go_back()

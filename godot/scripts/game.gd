@@ -54,6 +54,7 @@ var _textures := {}
 
 
 func _ready() -> void:
+	add_child(BackKey.new())
 	load_save()
 	manifest = _load_json("res://data/manifest.json")
 	levels = _load_json("res://data/levels.json")
@@ -184,9 +185,32 @@ func slot_summary(i: int) -> Dictionary:
 			if not seen.has(int(n)):
 				seen.append(int(n))
 		crystals += seen.size()
+	var at: Dictionary = preload("res://scripts/world.gd").room(String(parsed.get("room", "m1")))
 	return { "cleared": (parsed.get("cleared", []) as Array).size(), "crystals": crystals,
 		"candles": (parsed.get("candles", []) as Array).size(), "saved_at": int(parsed.get("saved_at", 0)),
-		"played": float(parsed.get("played", 0.0)) }
+		"played": float(parsed.get("played", 0.0)), "rooms": (parsed.get("rooms_seen", []) as Array).size(),
+		"moves": (parsed.get("abilities", []) as Array).size(), "where": String(at.get("name", "")) }
+
+
+## How much there is to find in the whole world: rooms, candles and big crystals (for "3 / 5" counters).
+func world_totals() -> Dictionary:
+	if _totals.is_empty():
+		var crystals := 0
+		if _rooms.is_empty():
+			room_def("m1") # (loads data/rooms.json)
+		for r: Dictionary in _rooms.values():
+			for row: String in r.grid:
+				crystals += row.count("X")
+		_totals = { "rooms": _rooms.size(), "candles": 5, "crystals": crystals }
+	return _totals
+
+
+## The first save slot with nothing in it (0 when all are used).
+func first_empty_slot() -> int:
+	for i in range(1, SLOTS + 1):
+		if not has_slot(i):
+			return i
+	return 0
 
 
 ## Plays a saved slot.
@@ -492,6 +516,47 @@ func room_def(id: String) -> Dictionary:
 
 
 var _rooms: Dictionary = {}
+
+# ------------------------------------------------------------- going back ---
+
+## Esc on a computer or the Back button on a phone, when no pop-up is open: the screen decides (main.gd)
+signal back_pressed
+## the pop-ups and the map that are open, newest last: Back closes the newest first
+var overlays: Array[Node] = []
+var _last_back := -1000
+
+
+## Back: close the newest pop-up, or else tell the screen (a room pauses, a page returns to the title).
+func go_back() -> void:
+	var now := Time.get_ticks_msec()
+	if now - _last_back < 250: # (some phones send the Back button twice)
+		return
+	_last_back = now
+	overlays = overlays.filter(func(n: Node) -> bool: return is_instance_valid(n) and n.is_inside_tree())
+	if not overlays.is_empty():
+		var top: Node = overlays.back()
+		if top.get("can_close") != false:
+			top.close()
+		return
+	back_pressed.emit()
+
+
+## listens for Esc and the phone's Back button all the time, even while the game is paused
+class BackKey extends Node:
+	func _ready() -> void:
+		process_mode = Node.PROCESS_MODE_ALWAYS
+
+	func _input(event: InputEvent) -> void:
+		var key := event as InputEventKey
+		if key and key.pressed and not key.echo and (key.keycode == KEY_ESCAPE or key.keycode == KEY_BACK):
+			get_viewport().set_input_as_handled()
+			get_parent().go_back()
+
+	func _notification(what: int) -> void:
+		if what == NOTIFICATION_WM_GO_BACK_REQUEST:
+			get_parent().go_back()
+
+var _totals: Dictionary = {}  ## world_totals(), worked out once
 
 
 func beta_level() -> Dictionary:

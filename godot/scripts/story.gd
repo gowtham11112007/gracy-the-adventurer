@@ -11,6 +11,7 @@ const TILE := 64
 var mode := "intro"
 var _step := 0
 var _busy := false
+var _ended := false
 var _steps: Array[Callable] = []
 
 var _actors: Dictionary = {}
@@ -140,7 +141,20 @@ func _run_next() -> void:
 	cur_step.call()
 
 
+## Back (Esc, the phone's Back button): skips the scene, like the Skip button
+func go_back() -> void:
+	_finish_cutscene()
+
+
+## Janika as tall as her twin: Janani is drawn 1.2x; the detailed Janani stands 168 px, Janika's picture 128 px
+func _twin_scale() -> float:
+	return 1.2 * (168.0 if Game.hd.has(Game.outfit()) else 128.0) / 128.0
+
+
 func _finish_cutscene() -> void:
+	if _ended: # (Skip and Back pressed together must not start the next screen twice)
+		return
+	_ended = true
 	finished.emit(mode)
 
 
@@ -163,7 +177,7 @@ func _setup_intro(vp_size: Vector2) -> void:
 	janika.centered = false
 	janika.offset = Vector2(-52, -150)
 	janika.position = Vector2(-180, gy)
-	janika.scale = Vector2(1.15, 1.15)
+	janika.scale = Vector2.ONE * _twin_scale()
 	add_child(janika)
 	_actors["janika"] = janika
 
@@ -308,7 +322,7 @@ func _setup_world1end(vp_size: Vector2) -> void:
 	janika.centered = false
 	janika.offset = Vector2(-52, -150)
 	janika.position = Vector2(vp_size.x * 0.62, gy - 110)
-	janika.scale = Vector2(1.15, 1.15)
+	janika.scale = Vector2.ONE * _twin_scale()
 	add_child(janika)
 	_actors["janika"] = janika
 
